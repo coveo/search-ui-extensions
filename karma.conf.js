@@ -35,7 +35,13 @@ var configuration = {
         fixWebpackSourcePaths: true
     },
     webpack: webpackConfig,
-    browsers:['ChromeHeadless']
+    browsers:['ChromeHeadlessNoSandbox'],
+    customLaunchers: {
+        ChromeHeadlessNoSandbox: {
+            base: 'ChromeHeadless',
+            flags: ['--no-sandbox']
+        }
+    }
 };
 
 module.exports = function(config) {
