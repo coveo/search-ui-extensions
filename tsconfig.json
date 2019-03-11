@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "typeRoots": [
+      "lib"
+    ],
+    "types": [
+      "jasmine"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.svg"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
