@@ -4,6 +4,8 @@ This repository contains additionnal components meant to be used in conjunction 
 
 ## Setup
 
+Requires Node JS >= 8.0.
+
 1. `npm install`
 2. `npm run build`
 

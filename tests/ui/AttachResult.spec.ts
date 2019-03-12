@@ -87,16 +87,11 @@ describe("AttachResult", () => {
             attachResult.cmp.detach().then(() => { done(); });
         });
 
-        it("should only attach if not attached", (done) => {
-            attachResult.cmp.attach()
-                .then(() => {
-                    expect(faker.attach).toHaveBeenCalledWith(fakeResult);
-                    return attachResult.cmp.attach();
-                })
-                .then(() => {
-                    expect(faker.attach).toHaveBeenCalledTimes(1);
-                    done();
-                });;
+        it("should only attach if not attached", async () => {
+            await attachResult.cmp.attach();
+            expect(faker.attach).toHaveBeenCalledWith(fakeResult);
+            await attachResult.cmp.attach();
+            expect(faker.attach).toHaveBeenCalledTimes(1);
         });
 
         it("should not change state if attach fails", (done) => {
@@ -111,21 +106,15 @@ describe("AttachResult", () => {
                 });
         });
 
-        it("should have the correct css class", (done) => {
-            attachResult.cmp.attach()
-                .then(() => {
-                    expect(attachResult.cmp.element.querySelector(".coveo-icon-attached")).not.toBeNull();
-                    done();
-                });
+        it("should have the correct css class", async () => {
+            await attachResult.cmp.attach();
+            expect(attachResult.cmp.element.querySelector(".coveo-icon-attached")).not.toBeNull();
         });
 
-        it("should display the correct tooltip", (done) => {
+        it("should display the correct tooltip", async () => {
             expect(attachResult.cmp.element.querySelector(".coveo-caption-for-icon").innerHTML).toBe("attach me");
-            attachResult.cmp.attach()
-                .then(() => {
-                    expect(attachResult.cmp.element.querySelector(".coveo-caption-for-icon").innerHTML).toBe("detach me");
-                    done();
-                });
+            await attachResult.cmp.attach();
+            expect(attachResult.cmp.element.querySelector(".coveo-caption-for-icon").innerHTML).toBe("detach me");
         });
     });
 
@@ -150,16 +139,11 @@ describe("AttachResult", () => {
             attachResult.cmp.attach().then(() => { done(); });
         });
 
-        it("should only detach if attached", (done) => {
-            attachResult.cmp.detach()
-                .then(() => {
-                    expect(faker.detach).toHaveBeenCalledWith(fakeResult);
-                    return attachResult.cmp.detach();
-                })
-                .then(() => {
-                    expect(faker.detach).toHaveBeenCalledTimes(1);
-                    done();
-                });;
+        it("should only detach if attached", async () => {
+            await attachResult.cmp.detach();
+            expect(faker.detach).toHaveBeenCalledWith(fakeResult);
+            await attachResult.cmp.detach();
+            expect(faker.detach).toHaveBeenCalledTimes(1);
         });
 
         it("should not change state if attach fails", (done) => {
@@ -174,21 +158,15 @@ describe("AttachResult", () => {
                 });
         });
 
-        it("should have the correct css class", (done) => {
-            attachResult.cmp.detach()
-                .then(() => {
-                    expect(attachResult.cmp.element.querySelector(".coveo-icon-attach")).not.toBeNull();
-                    done();
-                });
+        it("should have the correct css class", async () => {
+            await attachResult.cmp.detach()
+            expect(attachResult.cmp.element.querySelector(".coveo-icon-attach")).not.toBeNull();
         });
 
-        it("should display the correct tooltip", (done) => {
+        it("should display the correct tooltip", async () => {
             expect(attachResult.cmp.element.querySelector(".coveo-caption-for-icon").innerHTML).toBe("detach me");
-            attachResult.cmp.detach()
-                .then(() => {
-                    expect(attachResult.cmp.element.querySelector(".coveo-caption-for-icon").innerHTML).toBe("attach me");
-                    done();
-                });
+            await attachResult.cmp.detach();
+            expect(attachResult.cmp.element.querySelector(".coveo-caption-for-icon").innerHTML).toBe("attach me");
         });
     });
 
@@ -217,21 +195,21 @@ describe("AttachResult", () => {
             expect(attachResult.cmp.isAttached()).toBeFalsy();
             attachResult.cmp.element.click();
             setTimeout(() => {
+                expect(faker.attach).toHaveBeenCalled();
                 expect(attachResult.cmp.isAttached()).toBeTruthy();
                 done();
             }, 50);
         });
         
-        it("should detach when it is attached", (done) => {
-            attachResult.cmp.attach()
-                .then(() => {
-                    expect(attachResult.cmp.isAttached()).toBeTruthy();
-                    attachResult.cmp.element.click();
-                    setTimeout(() => {
-                        expect(attachResult.cmp.isAttached()).toBeFalsy();
-                        done();
-                    }, 50);
-                });
+        it("should detach when it is attached", async (done) => {
+            await attachResult.cmp.attach();
+            expect(attachResult.cmp.isAttached()).toBeTruthy();
+            attachResult.cmp.element.click();
+            setTimeout(() => {
+                expect(faker.detach).toHaveBeenCalled();
+                expect(attachResult.cmp.isAttached()).toBeFalsy();
+                done();
+            }, 50);
         });
     });
 });

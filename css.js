@@ -3,7 +3,7 @@ let sass = require('node-sass');
 let fs = require('fs');
 
 let result = sass.renderSync({
-  file: './sass/Index.scss',
+  file: './src/sass/Index.scss',
   outFile: './bin/css/CoveoJsSearchExtensions.css'
 })
 

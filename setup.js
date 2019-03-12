@@ -3,10 +3,10 @@ const fs = require('fs');
 const ncp = require('ncp').ncp;
 
 const folderToCopy = [{
-  "src":'./pages',
+  "src":'./src/pages',
   "dest":'./bin'
 },{
-  "src":'./img',
+  "src":'./src/img',
   "dest":'./bin/img'
 }];
 

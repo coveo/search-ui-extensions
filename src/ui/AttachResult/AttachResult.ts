@@ -8,8 +8,8 @@ import {
     IAnalyticsCaseAttachMeta,
     IAnalyticsCaseDetachMeta,
     analyticsActionCauseList
-} from "coveo-search-ui";
-import * as PaperclipIcon from "../../icons/paperclip.svg";
+} from 'coveo-search-ui';
+import * as PaperclipIcon from '../../icons/paperclip.svg';
 
 export interface IAttachResultOptions {
     /** Specifies the tooltip displayed when the result is not attached. */
@@ -29,23 +29,48 @@ export interface IAttachResultOptions {
  * system, for instance a case, incident, request, etc.
  */
 export class AttachResult extends Component {
-    static ID = "AttachResult";
+    static ID = 'AttachResult';
 
-    protected loading: boolean;
-    protected attached: boolean;
-    protected resultUriHash: string;
-    protected buttonElement: HTMLElement;
-    protected tooltipElement: HTMLElement;
+    private loading: boolean;
+    private attached: boolean;
+    private buttonElement: HTMLElement;
+    private tooltipElement: HTMLElement;
 
     static options: IAttachResultOptions = {
-        attachCaption: ComponentOptions.buildStringOption({ defaultValue: "Attach Result" }),
-        detachCaption: ComponentOptions.buildStringOption({ defaultValue: "Detach Result" }),
-        attach: ComponentOptions.buildCustomOption(name => () => new Promise<void>((resolve, reject) => { resolve(); }), {
-            defaultFunction: () => () => new Promise<void>((resolve, reject) => { resolve(); })
+        attachCaption: ComponentOptions.buildStringOption({
+            defaultValue: 'Attach Result'
         }),
-        detach: ComponentOptions.buildCustomOption(name => () => new Promise<void>((resolve, reject) => { resolve(); }), {
-            defaultFunction: () => () => new Promise<void>((resolve, reject) => { resolve(); })
-        })
+        detachCaption: ComponentOptions.buildStringOption({
+            defaultValue: 'Detach Result'
+        }),
+        attach: ComponentOptions.buildCustomOption(
+            name => (result: IQueryResult) =>
+                new Promise<void>((resolve, reject) => {
+                    console.log('attached ', result);
+                    resolve();
+                }),
+            {
+                defaultFunction: () => (result: IQueryResult) =>
+                    new Promise<void>((resolve, reject) => {
+                        console.log('attached ', result);
+                        resolve();
+                    })
+            }
+        ),
+        detach: ComponentOptions.buildCustomOption(
+            name => (result: IQueryResult) =>
+                new Promise<void>((resolve, reject) => {
+                    console.log('detached ', result);
+                    resolve();
+                }),
+            {
+                defaultFunction: () => (result: IQueryResult) =>
+                    new Promise<void>((resolve, reject) => {
+                        console.log('detached ', result);
+                        resolve();
+                    })
+            }
+        )
     };
 
     constructor(
@@ -56,56 +81,39 @@ export class AttachResult extends Component {
     ) {
         super(element, AttachResult.ID, bindings);
 
-        this.options = ComponentOptions.initComponentOptions(element, AttachResult, options);
+        this.options = ComponentOptions.initComponentOptions(
+            element,
+            AttachResult,
+            options
+        );
         this.queryResult = this.queryResult || this.resolveResult();
 
         this.initialize();
 
-        this.bind.on(this.element, "click", this.toggleAttached);
+        this.bind.on(this.element, 'click', this.toggleAttached);
     }
 
     /**
      * Gets whether or not the result is currently attached.
      */
-    public isAttached() : boolean {
+    public isAttached(): boolean {
         return this.attached;
     }
 
     /**
      * Attach the query result.
      */
-    public attach() : Promise<void> {
+    public attach(): Promise<void> {
         if (this.attached || this.loading) {
             return Promise.resolve();
         }
 
         this.setLoading(true);
-        return this.options.attach(this.queryResult)
-            .then(() => { this.attached = true; })
-            .then(() => { 
-                let customData: IAnalyticsCaseAttachMeta = {
-                    resultUriHash: this.queryResult.raw.urihash,
-                    author: this.queryResult.raw.author,
-                    articleID: null,
-                    caseID: null
-                };
-          
-                this.usageAnalytics.logCustomEvent<IAnalyticsCaseAttachMeta>(analyticsActionCauseList.caseAttach, customData, this.root);
+        return this.options
+            .attach(this.queryResult)
+            .then(() => {
+                this.attached = true;
             })
-            .finally(() => { this.setLoading(false); });
-    }
-
-    /**
-     * Detach the query result.
-     */
-    public detach() : Promise<void> {
-        if (!this.attached && !this.loading) {
-            return Promise.resolve();
-        }
-
-        this.setLoading(true);
-        return this.options.detach(this.queryResult)
-            .then(() => { this.attached = false; })
             .then(() => {
                 let customData: IAnalyticsCaseAttachMeta = {
                     resultUriHash: this.queryResult.raw.urihash,
@@ -113,14 +121,53 @@ export class AttachResult extends Component {
                     articleID: null,
                     caseID: null
                 };
-          
-                this.usageAnalytics.logCustomEvent<IAnalyticsCaseDetachMeta>(analyticsActionCauseList.caseDetach, customData, this.root);
+
+                this.usageAnalytics.logCustomEvent<IAnalyticsCaseAttachMeta>(
+                    analyticsActionCauseList.caseAttach,
+                    customData,
+                    this.root
+                );
             })
-            .finally(() => { this.setLoading(false); });
+            .finally(() => {
+                this.setLoading(false);
+            });
+    }
+
+    /**
+     * Detach the query result.
+     */
+    public detach(): Promise<void> {
+        if (!this.attached && !this.loading) {
+            return Promise.resolve();
+        }
+
+        this.setLoading(true);
+        return this.options
+            .detach(this.queryResult)
+            .then(() => {
+                this.attached = false;
+            })
+            .then(() => {
+                let customData: IAnalyticsCaseAttachMeta = {
+                    resultUriHash: this.queryResult.raw.urihash,
+                    author: this.queryResult.raw.author,
+                    articleID: null,
+                    caseID: null
+                };
+
+                this.usageAnalytics.logCustomEvent<IAnalyticsCaseDetachMeta>(
+                    analyticsActionCauseList.caseDetach,
+                    customData,
+                    this.root
+                );
+            })
+            .finally(() => {
+                this.setLoading(false);
+            });
     }
 
     /** Toggle the state of the component. If the current result is not attached, attach it, if not, detach it. */
-    public toggleAttached() : void {
+    public toggleAttached(): void {
         if (this.attached) {
             this.detach();
         } else {
@@ -128,53 +175,67 @@ export class AttachResult extends Component {
         }
     }
 
-    protected initialize() : void {
+    protected initialize(): void {
         // Adds HTML elements needed to display this component.
-        this.buttonElement = $$("div", {}, PaperclipIcon).el;
+        this.buttonElement = $$('div', {}, PaperclipIcon).el;
         this.element.appendChild(this.buttonElement);
 
-        this.tooltipElement = $$("div", { className: "coveo-caption-for-icon" }).el;
+        this.tooltipElement = $$('div', {
+            className: 'coveo-caption-for-icon'
+        }).el;
         this.element.appendChild(this.tooltipElement);
 
+        this.updateInitialAttachedState();
+    }
+
+    protected updateInitialAttachedState() {
         this.attached = false;
         this.render();
 
         // Resolve the current result for the component and the initial state.
         if (this.options.isAttached) {
             this.setLoading(true);
-            this.options.isAttached(this.queryResult)
-                .then(attached => { this.attached = attached; })
-                .catch(error => { 
-                    this.logger.error("Error retrieving initial result attached state.", error);
+            this.options
+                .isAttached(this.queryResult)
+                .then(attached => {
+                    this.attached = attached;
                 })
-                .finally(() => { this.setLoading(false); });
+                .catch(error => {
+                    this.logger.error(
+                        'Error retrieving initial result attached state.',
+                        error
+                    );
+                })
+                .finally(() => {
+                    this.setLoading(false);
+                });
         }
     }
 
     /** Set the loading property and updates the component UI. */
-    protected setLoading(loading: boolean) : void {
+    protected setLoading(loading: boolean): void {
         this.loading = loading;
         this.render();
     }
 
-    protected render() : void {
-        $$(this.buttonElement).removeClass("coveo-icon-attached");
-        $$(this.buttonElement).removeClass("coveo-icon-attach");
-        $$(this.buttonElement).removeClass("coveo-icon-loading");
+    protected render(): void {
+        $$(this.buttonElement).removeClass('coveo-icon-attached');
+        $$(this.buttonElement).removeClass('coveo-icon-attach');
+        $$(this.buttonElement).removeClass('coveo-icon-loading');
 
         if (this.loading) {
-            $$(this.buttonElement).addClass("coveo-icon-loading");
+            $$(this.buttonElement).addClass('coveo-icon-loading');
         } else {
             if (this.attached) {
-                $$(this.buttonElement).addClass("coveo-icon-attached");
+                $$(this.buttonElement).addClass('coveo-icon-attached');
                 $$(this.tooltipElement).text(this.options.detachCaption);
             } else {
-                $$(this.buttonElement).addClass("coveo-icon-attach");
+                $$(this.buttonElement).addClass('coveo-icon-attach');
                 $$(this.tooltipElement).text(this.options.attachCaption);
             }
         }
     }
 }
 
-Initialization.registerComponentFields(AttachResult.ID, ["urihash"]);
+Initialization.registerComponentFields(AttachResult.ID, ['urihash']);
 Initialization.registerAutoCreateComponent(AttachResult);
