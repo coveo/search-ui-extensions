@@ -7,7 +7,8 @@ import {
     Initialization,
     IAnalyticsCaseAttachMeta,
     IAnalyticsCaseDetachMeta,
-    analyticsActionCauseList
+    analyticsActionCauseList,
+    IAnalyticsActionCause
 } from 'coveo-search-ui';
 import * as PaperclipIcon from '../../icons/paperclip.svg';
 
@@ -97,7 +98,7 @@ export class AttachResult extends Component {
      * Gets whether or not the result is currently attached.
      */
     public isAttached(): boolean {
-        return this.attached;
+        return !!this.attached;
     }
 
     /**
@@ -113,20 +114,7 @@ export class AttachResult extends Component {
             .attach(this.queryResult)
             .then(() => {
                 this.attached = true;
-            })
-            .then(() => {
-                let customData: IAnalyticsCaseAttachMeta = {
-                    resultUriHash: this.queryResult.raw.urihash,
-                    author: this.queryResult.raw.author,
-                    articleID: null,
-                    caseID: null
-                };
-
-                this.usageAnalytics.logCustomEvent<IAnalyticsCaseAttachMeta>(
-                    analyticsActionCauseList.caseAttach,
-                    customData,
-                    this.root
-                );
+                this.logAnalyticsCaseEvent(analyticsActionCauseList.caseAttach);
             })
             .finally(() => {
                 this.setLoading(false);
@@ -146,20 +134,7 @@ export class AttachResult extends Component {
             .detach(this.queryResult)
             .then(() => {
                 this.attached = false;
-            })
-            .then(() => {
-                let customData: IAnalyticsCaseAttachMeta = {
-                    resultUriHash: this.queryResult.raw.urihash,
-                    author: this.queryResult.raw.author,
-                    articleID: null,
-                    caseID: null
-                };
-
-                this.usageAnalytics.logCustomEvent<IAnalyticsCaseDetachMeta>(
-                    analyticsActionCauseList.caseDetach,
-                    customData,
-                    this.root
-                );
+                this.logAnalyticsCaseEvent(analyticsActionCauseList.caseDetach);
             })
             .finally(() => {
                 this.setLoading(false);
@@ -168,15 +143,10 @@ export class AttachResult extends Component {
 
     /** Toggle the state of the component. If the current result is not attached, attach it, if not, detach it. */
     public toggleAttached(): void {
-        if (this.attached) {
-            this.detach();
-        } else {
-            this.attach();
-        }
+        this.attached ? this.detach() : this.attach();
     }
 
     protected initialize(): void {
-        // Adds HTML elements needed to display this component.
         this.buttonElement = $$('div', {}, PaperclipIcon).el;
         this.element.appendChild(this.buttonElement);
 
@@ -216,6 +186,21 @@ export class AttachResult extends Component {
     protected setLoading(loading: boolean): void {
         this.loading = loading;
         this.render();
+    }
+
+    protected logAnalyticsCaseEvent(cause: IAnalyticsActionCause) {
+        let customData: IAnalyticsCaseAttachMeta = {
+            resultUriHash: this.queryResult.raw.urihash,
+            author: this.queryResult.raw.author,
+            articleID: null,
+            caseID: null
+        };
+
+        this.usageAnalytics.logCustomEvent<IAnalyticsCaseDetachMeta>(
+            cause,
+            customData,
+            this.root
+        );
     }
 
     protected render(): void {
