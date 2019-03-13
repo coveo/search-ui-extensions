@@ -13,12 +13,12 @@ var configuration = {
             watched: false
         },
         { pattern: 'src/Index.ts' },
-        { pattern: 'tests/**/*.spec.ts' }
+        { pattern: 'src/tests/**/*.spec.ts' }
     ],
     preprocessors: {
         // Builds both the components and the tests.
         'src/**/*.ts': ['webpack'],
-        'tests/**/*.spec.ts': ['webpack'],
+        'src/tests/**/*.spec.ts': ['webpack'],
     },
     // Required for Chrome, if you use it.
     mime: { 'text/x-typescript': ['ts'] },

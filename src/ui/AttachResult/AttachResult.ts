@@ -17,9 +17,9 @@ export interface IAttachResultOptions {
     /** Specifies the tooltip displayed when the result is already attached. */
     detachCaption?: string;
     /** The function that is called when the user wants to attach a result. */
-    attach: (queryResult: IQueryResult) => Promise<void>;
+    attach?: (queryResult: IQueryResult) => Promise<void>;
     /** The function called when the user wants to un-link a result. */
-    detach: (queryResult: IQueryResult) => Promise<void>;
+    detach?: (queryResult: IQueryResult) => Promise<void>;
     /** Optional function to check the initial state of the component. */
     isAttached?: (queryResult: IQueryResult) => Promise<boolean>;
 }
