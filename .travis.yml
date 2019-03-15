@@ -1,6 +1,9 @@
 language: node_js
 node_js:
-  - "lts/*"
+    - 'lts/*'
 
 addons:
-  chrome: stable
+    chrome: stable
+
+script:
+    - npm run testCoverage

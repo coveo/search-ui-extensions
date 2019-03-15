@@ -1,24 +1,15 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "noImplicitReturns": true,
-    "sourceMap": true,
-    "skipLibCheck": true,
-    "typeRoots": [
-      "lib"
-    ],
-    "types": [
-      "jasmine"
-    ]
-  },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.svg"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "noImplicitReturns": true,
+        "sourceMap": true,
+        "skipLibCheck": true,
+        "typeRoots": ["lib"],
+        "types": ["jasmine"]
+    },
+    "include": ["src/**/*.ts", "src/**/*.svg"],
+    "exclude": ["node_modules"]
 }
