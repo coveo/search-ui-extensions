@@ -1,9 +1,23 @@
 language: node_js
 node_js:
-    - 'lts/*'
+  - 'lts/*'
 
 addons:
-    chrome: stable
+  chrome: stable
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
 
 script:
-    - npm run testCoverage
+  - npm run testCoverage
+
+deploy:
+  - provider: npm
+    email: sandbox_JSUI@coveo.com
+    api_key: $NPM_TOKEN
+    on:
+      repo: coveo/search-ui-extensions
+      tags: true
+      all_branches: true
