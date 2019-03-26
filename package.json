@@ -1,4 +1,6 @@
 {
+    "author": "Coveo <sandbox_JSUI@coveo.com> (http://source.coveo.com/)",
+    "license": "Apache-2.0",
     "name": "coveo-search-ui-extensions",
     "version": "0.0.2",
     "description": "Small generic components to extend the functionality of Coveo's Search UI framework.",
@@ -29,8 +31,6 @@
         "starter",
         "seed"
     ],
-    "author": "Coveo <sandbox_JSUI@coveo.com> (http://source.coveo.com/)",
-    "license": "Apache-2.0",
     "devDependencies": {
         "@types/jasmine": "^3.3.9",
         "@types/node": "^11.11.3",
