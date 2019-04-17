@@ -1,10 +1,9 @@
 'use strict';
-const fs = require('fs');
 const ncp = require('ncp').ncp;
 
 const folderToCopy = [
     {
-        src: './src/pages',
+        src: './pages',
         dest: './bin'
     },
     {

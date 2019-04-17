@@ -1,5 +1,4 @@
 const webpackConfig = require('./webpack.config.js');
-const StringReplacePlugin = require('string-replace-webpack-plugin');
 
 // These modifications are required to have proper coverage with karma-coverage-istanbul-reporter.
 webpackConfig.devtool = 'inline-source-map';

@@ -1,7 +1,7 @@
 import {
     AttachResult,
     IAttachResultOptions
-} from '../../ui/AttachResult/AttachResult';
+} from '../../src/components/AttachResult/AttachResult';
 import { Mock, Fake } from 'coveo-search-ui-tests';
 import { IQueryResult } from 'coveo-search-ui';
 
