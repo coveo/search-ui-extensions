@@ -13,7 +13,10 @@ webpackConfig.module.rules.push({
     loader: 'istanbul-instrumenter-loader',
     exclude: [
         /\.spec\.ts$/
-    ]
+    ],
+    query: {
+        esModules: true
+    }
 });
 
 webpackConfig.externals.push({

@@ -1,14 +1,19 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
+        "module": "es6",
         "target": "es5",
         "noImplicitAny": true,
         "noUnusedLocals": true,
         "noImplicitReturns": true,
         "sourceMap": true,
         "skipLibCheck": true,
-        "typeRoots": ["lib"],
-        "types": ["jasmine"]
+        "lib": [ "es2015", "dom", "es2018.promise" ],
+        "outDir": "./bin/js",
+
+        "declaration": true,
+        "declarationDir": "./bin/typings",
+
+        "types": ["jasmine", "coveo-search-ui", "coveo-search-ui-tests"]
     },
     "include": ["src/**/*.ts", "src/**/*.svg"],
     "exclude": ["node_modules"]
