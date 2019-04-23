@@ -8,13 +8,14 @@
         "sourceMap": true,
         "skipLibCheck": true,
         "lib": [ "es2015", "dom", "es2018.promise" ],
-        "outDir": "./bin/js",
+        "outDir": "../bin/js",
 
         "declaration": true,
-        "declarationDir": "./bin/typings",
+        "declarationDir": "../bin/typings",
+        "typeRoots": ["../src/typings"],
 
         "types": ["jasmine", "coveo-search-ui", "coveo-search-ui-tests"]
     },
-    "include": ["src/**/*.ts", "src/**/*.svg"],
+    "include": ["../src/**/*.ts", "../src/**/*.svg"],
     "exclude": ["node_modules"]
 }

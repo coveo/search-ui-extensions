@@ -26,7 +26,9 @@ module.exports = {
             {
                 test: /\.ts$/,
                 loader: 'ts-loader',
-                options: {}
+                options: {
+                    configFile : require('path').resolve('./config/tsconfig.json')
+                }
             },
             {
                 test: /\.svg$/,
