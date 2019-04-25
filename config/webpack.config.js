@@ -1,10 +1,12 @@
+const path = require('path')
+
 module.exports = {
     mode: 'production',
     entry: {
         CoveoJsSearchExtensions: './src/Index'
     },
     output: {
-        path: require('path').resolve('./bin/js'),
+        path: path.resolve('./bin/js'),
         filename:  `[name].js`,
         libraryTarget: 'umd',
         library: 'CoveoExtension',
@@ -27,7 +29,7 @@ module.exports = {
                 test: /\.ts$/,
                 loader: 'ts-loader',
                 options: {
-                    configFile : require('path').resolve('./config/tsconfig.json')
+                    configFile : path.resolve('./config/tsconfig.json')
                 }
             },
             {

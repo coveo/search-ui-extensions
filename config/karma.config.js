@@ -1,4 +1,5 @@
 const webpackConfig = require('./webpack.config.karma.js');
+const path = require('path');
 
 var configuration = {
     frameworks: ['jasmine'],
@@ -26,7 +27,7 @@ var configuration = {
     // Creates coverage files.
     reporters: ['coverage-istanbul', 'spec'],
     coverageIstanbulReporter: {
-        dir: '../bin/coverage',
+        dir: path.resolve('./bin/coverage'),
         reports: ['cobertura', 'json', 'lcov', 'text-summary'],
         fixWebpackSourcePaths: true
     },
