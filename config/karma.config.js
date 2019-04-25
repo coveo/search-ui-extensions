@@ -26,7 +26,7 @@ var configuration = {
     // Creates coverage files.
     reporters: ['coverage-istanbul', 'spec'],
     coverageIstanbulReporter: {
-        dir: './bin/coverage',
+        dir: '../bin/coverage',
         reports: ['cobertura', 'json', 'lcov', 'text-summary'],
         fixWebpackSourcePaths: true
     },
