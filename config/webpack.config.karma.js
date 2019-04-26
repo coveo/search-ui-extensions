@@ -5,7 +5,10 @@ webpackConfig.devtool = 'inline-source-map';
 webpackConfig.module.rules.find(
     rule => rule.loader === 'ts-loader'
 ).options.compilerOptions = {
-    inlineSourceMap: true
+    module: "commonjs",
+    inlineSourceMap: true,
+    sourceMap: undefined,
+    outDir: undefined
 };
 webpackConfig.module.rules.push({
     enforce: 'post',

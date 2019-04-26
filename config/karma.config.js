@@ -10,8 +10,7 @@ var configuration = {
             watched: false
         },
         {
-            pattern:
-                '../node_modules/coveo-search-ui-tests/bin/js/CoveoJsSearchTests.js',
+            pattern: '../node_modules/coveo-search-ui-tests/bin/js/CoveoJsSearchTests.js',
             watched: false
         },
         { pattern: '../src/Index.ts' },
