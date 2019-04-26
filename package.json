@@ -4,16 +4,20 @@
     "name": "coveo-search-ui-extensions",
     "version": "0.0.2",
     "description": "Small generic components to extend the functionality of Coveo's Search UI framework.",
-    "main": "./bin/js/CoveoJsSearchExtensions.js",
+
+    "main": "./bin/js/index.js",
+    "types": "./bin/typings",
+
+    "sideEffects": false,
+    
     "scripts": {
-        "test": "karma start --single-run",
+        "test": "karma start ./config/karma.config.js --single-run",
         "testCoverage": "npm run test && cat ./bin/coverage/lcov.info | node ./node_modules/coveralls/bin/coveralls.js",
-        "setup": "node setup.js",
-        "build": "npm run setup && npm run css && webpack",
-        "minimize": "webpack --minimize",
-        "css": "node css.js",
-        "dev": "node dev.server.js",
-        "watchTest": "karma start",
+        "build": "npm run setup && npm run css && tsc -p ./config/",
+        "setup": "node ./scripts/setup.js",
+        "css": "node ./scripts/css.js",
+        "dev": "node ./scripts/dev.server.js",
+        "watchTest": "karma start ./config/karma.config.js",
         "lint": "prettier --write --single-quote --tab-width 4 src/**/*"
     },
     "pre-commit": [

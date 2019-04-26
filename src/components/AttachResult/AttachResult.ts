@@ -10,7 +10,7 @@ import {
     analyticsActionCauseList,
     IAnalyticsActionCause
 } from 'coveo-search-ui';
-import * as PaperclipIcon from '../../icons/paperclip.svg';
+import * as PaperclipIcon from '../../../img/paperclip.svg';
 
 export interface IAttachResultOptions {
     /** Specifies the tooltip displayed when the result is not attached. */

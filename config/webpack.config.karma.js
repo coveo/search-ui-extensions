@@ -1,12 +1,14 @@
 const webpackConfig = require('./webpack.config.js');
-const StringReplacePlugin = require('string-replace-webpack-plugin');
 
 // These modifications are required to have proper coverage with karma-coverage-istanbul-reporter.
 webpackConfig.devtool = 'inline-source-map';
 webpackConfig.module.rules.find(
     rule => rule.loader === 'ts-loader'
 ).options.compilerOptions = {
-    inlineSourceMap: true
+    module: "commonjs",
+    inlineSourceMap: true,
+    sourceMap: undefined,
+    outDir: undefined
 };
 webpackConfig.module.rules.push({
     enforce: 'post',
@@ -14,7 +16,10 @@ webpackConfig.module.rules.push({
     loader: 'istanbul-instrumenter-loader',
     exclude: [
         /\.spec\.ts$/
-    ]
+    ],
+    query: {
+        esModules: true
+    }
 });
 
 webpackConfig.externals.push({

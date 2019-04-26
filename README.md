@@ -25,7 +25,7 @@ The code is written in [typescript](http://www.typescriptlang.org/) and compiled
 
 -   Under the `src` folder, you have all the typescript source code for the custom components, with `src/Index.ts` being the starting point of the application.
 
--   Under the `sass` folder, you have all the css for the extension.
+-   Under the `src/sass` folder, you have all the css for the extension.
 
 -   Under the `tests` folder, you have all the tests for the custom components.
 
