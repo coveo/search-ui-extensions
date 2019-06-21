@@ -4,12 +4,9 @@
     "name": "coveo-search-ui-extensions",
     "version": "0.0.2",
     "description": "Small generic components to extend the functionality of Coveo's Search UI framework.",
-
     "main": "./bin/js/index.js",
     "types": "./bin/typings",
-
     "sideEffects": false,
-    
     "scripts": {
         "test": "karma start ./config/karma.config.js --single-run",
         "testCoverage": "npm run test && cat ./bin/coverage/lcov.info | node ./node_modules/coveralls/bin/coveralls.js",
