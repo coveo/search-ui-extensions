@@ -15,11 +15,16 @@
     "css": "node ./scripts/css.js",
     "dev": "node ./scripts/dev.server.js",
     "watchTest": "karma start ./config/karma.config.js",
-    "lint": "prettier --write --single-quote --tab-width 4 src/**/*"
+    "lint": "prettier --write src/**/* tests/**/*"
   },
   "pre-commit": [
     "lint"
   ],
+  "prettier": {
+    "printWidth": 120,
+    "tabWidth": 4,
+    "singleQuote": true
+  },
   "keywords": [
     "coveo",
     "search",
