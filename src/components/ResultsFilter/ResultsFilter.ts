@@ -99,10 +99,10 @@ export class ResultsFilter extends Component {
         if (Coveo.Checkbox === undefined) {
             await load('Checkbox');
         }
-        return new Checkbox(checkbox => this.handleCheckboxChange(), this.options.text);
+        return new Checkbox(this.handleCheckboxChange.bind(this), this.options.text);
     }
 
-    private handleCheckboxChange() {
+    private handleCheckboxChange(checkbox: Checkbox) {
         this.queryStateModel.set(QueryStateModel.getFacetId(ResultsFilter.ID), this.checkbox.isSelected());
         this.triggerQuery();
     }
