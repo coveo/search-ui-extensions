@@ -3,6 +3,10 @@ const ncp = require('ncp').ncp;
 
 const folderToCopy = [
     {
+        src: './.npmignore',
+        dest: './bin'
+    },
+    {
         src: './pages',
         dest: './bin'
     },

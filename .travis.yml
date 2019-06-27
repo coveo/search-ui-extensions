@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - lts/*
+- lts/*
 addons:
   chrome: stable
 notifications:
@@ -8,14 +8,14 @@ notifications:
     on_success: change
     on_failure: always
 script:
-  - npm run build
-  - npm run testCoverage
+- npm run build
+- npm run testCoverage
 deploy:
-  - provider: npm
-    email: sandbox_JSUI@coveo.com
-    skip_cleanup: true
-    api_key:
-      secure: X0u5/OSpsboHSyWqj3V2IjYsdljZAYHrmG6dsE7ZWj8CgEZFtTGpBUZ0GuPd47huGr4Yo5JV2uvA8TJREdXo0gJK4S1/n9CPZHRXTYlF1Qx65RfEFQYaZ9gtsJr5nULbX4C751kQRZl25oX9IKnkPaF+MHyOAs9pD3G5zdsoEj872aF7vkJ9T+fSPtnOMt/P7WRx2CLNvLCqbPHzOc+uDDaT6m0SSVDh1aebSEl4AryCe1zQlvftf8bLo5T7462NScF7k6jDJgUESfSNK9Q6qvW7W7jbFPfo3JIucFm/v0Q4SV2UPjzfD8sEAucKtSBvLwFVYfTREZmle3v7DgdI4iFe8a5ELzohjrq4NzJecy3w3E3DdZcnIE6OpdHaoooW9XMHWAmX5/7CMzbjMxuKNgeA9Xrmmd2Ni9FwFo7KJ4g25rjSa7OnmRmphEyp/jpnF4mXfC5s6sgQI9ZkDB3Pl4giL/3AHKOZLJcq12TbW2/ZS7JRHGo6TpLgMyBWz9uwaPPdjOx6VZi0scP6g0Gy++czauan1KAlkS79fYvgm7upx16qxb6T4CUUqqkD9DQjwBbON8hd6HcVnItIXlTYhpbgABfhQZdSfHGx9ozueEOydyPyO3Ewyl9LyrdweI20Fm5G5Sd93lOvKHSU1wsxTqVEbyRZtfRY6+m0ovlBv4Y=
-    on:
-      tags: true
-      repo: coveo/search-ui-extensions
+  provider: npm
+  email: sandbox_JSUI@coveo.com
+  skip_cleanup: true
+  api_key:
+    secure: Ukf3uIDRzht6DlaFxjSKUA3/RmEN07i99SbWHHE5BpYodfNssBPHa369RxOQ+/zkMrt3ZSbCMCYLduaqPYMSaStjUd00h5FcOCm802IkJo/Fwe2qvRjHYlnlOIAGeyzvh1J7jVV2cppcuX7o4tFXdQwqbenbWmgV4P2z707nLOpEN208qrascaSpuCiS7h/3mg9pnlDU5/UqCFwu3sKf6iBeiTOhtq/T9HNRlxMmW2BAyOL8odhjP/ezarhSgS10dwYxKCDEt+2Vgw1UeQ72z/FCXFDtMQEkioYdb5pXSqp8kHRifG2UOESTV7zjolYlgNjXm0J4KvclM2F/Q9GzyJRFNog1S7lMfUS+VAc3egcAMTqNW/SybdMvfyhycK8AWaeKJc4v0gj9hzPwMs9FJS2LUZ8KxgaXgfjr0Sa+JyaWRE+MmOmAE3WB2RtErYXJaPzQLvxY6mpLvUbZQGYS8f7RrPsnkHOsAwVEj9pHIZc1T4N4HEARgEogvmoZOnRTKenL9fFULTuHTZ1XxcA1h1z58koKjDXhPNCZriiyGuLgCbZG2qBzoSNTvBYaLYIgXHROqyAIGh3teVNl1gZTstiAEVzrkvIc9iLORtsRBL2bBxmsWgWfrghh9NW/3QeGLDEe5PlW9ILivFF/arXtJBd0Bp5SrjhSwtmQ9e0h9wk=
+  on:
+    tags: true
+    repo: coveo/search-ui-extensions
