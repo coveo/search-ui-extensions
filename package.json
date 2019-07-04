@@ -18,7 +18,9 @@
     "dev": "node ./scripts/dev.server.js",
     "watchTest": "karma start ./config/karma.config.js",
     "lint": "prettier --write src/**/* tests/**/*",
-    "clean": "rm -fr ./bin"
+    "clean": "rm -fr ./bin",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "pre-commit": [
     "lint"
@@ -70,6 +72,7 @@
     "webpack-dev-server": "^3.2.1"
   },
   "dependencies": {
-    "snyk": "^1.180.0"
-  }
+    "snyk": "^1.189.0"
+  },
+  "snyk": true
 }
