@@ -1,16 +1,16 @@
 const path = require('path')
 
 module.exports = {
-    mode: 'production',
+    mode: 'development',
     entry: {
         CoveoJsSearchExtensions: './src/Index'
     },
     output: {
-        path: path.resolve('./bin/js'),
+        path: path.resolve('./bin/js/commonjs'),
         filename:  `[name].js`,
         libraryTarget: 'umd',
         library: 'CoveoExtension',
-        publicPath: '/js/'
+        publicPath: '/js/commonjs'
     },
     externals: [
         {

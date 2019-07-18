@@ -1,13 +1,21 @@
 import {
     AttachResult,
     IAttachResultOptions
-} from '../../src/components/AttachResult/AttachResult';
+} from '../../../src/components/AttachResult/AttachResult';
 import { Mock, Fake } from 'coveo-search-ui-tests';
-import { IQueryResult } from 'coveo-search-ui';
+import { IQueryResult, Logger } from 'coveo-search-ui';
 
 describe('AttachResult', () => {
     let attachResult: Mock.IBasicComponentSetup<AttachResult>;
     let fakeResult = Fake.createFakeResult();
+
+    beforeAll(() => {
+        Logger.disable();
+    });
+
+    afterAll(() => {
+        Logger.enable();
+    });
 
     beforeEach(() => {
         attachResult = Mock.basicResultComponentSetup<AttachResult>(
