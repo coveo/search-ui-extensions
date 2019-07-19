@@ -35,7 +35,7 @@ export class UserActions extends Component {
 
     this.bind.onRootElement(QueryEvents.newQuery, () => this.hide());
 
-    this.show();
+    this.hide();
   }
 
   public toggle() {
@@ -48,6 +48,7 @@ export class UserActions extends Component {
 
   public show() {
     if (!this.isVisible) {
+      this.bindings.usageAnalytics.logCustomEvent({ name: 'openUserActions', type: 'User Actions' }, {}, this.element);
       this.render();
       this.root.classList.add(UserActions.USER_ACTION_OPENNED);
       this.isVisible = true;

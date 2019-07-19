@@ -49,7 +49,6 @@ export class ResponsiveUserActions implements IResponsiveComponent {
     this.dropdownHeader = new ResponsiveDropdownHeader('user-actions', $$(button));
     this.dropdownHeader.element.on('click', () => {
       this.userActions.toggle();
-      this.userActions.bindings.usageAnalytics.logCustomEvent({ name: 'openUserActions', type: 'User Actions' }, {}, this.userActions.element);
     });
   }
 }

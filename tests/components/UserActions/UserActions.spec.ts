@@ -35,6 +35,7 @@ describe('UserActions', () => {
     sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
     const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+    mock.cmp.show();
 
     expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-summary .coveo-accordion-header-title').innerText).toBe('Session Summary');
   });
@@ -48,6 +49,7 @@ describe('UserActions', () => {
     const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
     const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+    mock.cmp.show();
     const summerySection = mock.cmp.element.querySelector('.coveo-summary');
 
     expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
@@ -64,6 +66,7 @@ describe('UserActions', () => {
     const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
     const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+    mock.cmp.show();
     const detailSection = mock.cmp.element.querySelector('.coveo-details');
 
     expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
@@ -83,7 +86,7 @@ describe('UserActions', () => {
 
     Mock.basicComponentSetup<UserActions>(UserActions, {
       userId: FAKE_USER_ID
-    });
+    }).cmp.show();
 
     expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
 
@@ -102,6 +105,7 @@ describe('UserActions', () => {
     sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
     const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+    mock.cmp.show();
 
     const hideSpy = sandbox.spy(mock.cmp, 'hide');
 
@@ -122,6 +126,7 @@ describe('UserActions', () => {
       const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
       const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+      mock.cmp.show();
       const accordionSections = mock.cmp.element.querySelectorAll('.coveo-accordion');
 
       expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
@@ -146,6 +151,7 @@ describe('UserActions', () => {
       const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
       const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+      mock.cmp.show();
       const accordionSections = mock.cmp.element.querySelectorAll('.coveo-accordion');
 
       expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
