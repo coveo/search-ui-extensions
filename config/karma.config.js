@@ -27,7 +27,7 @@ var configuration = {
   reporters: ['coverage-istanbul', 'spec'],
   coverageIstanbulReporter: {
     dir: path.resolve('./bin/coverage'),
-    reports: ['cobertura', 'json', 'lcov', 'text-summary'],
+    reports: ['html', 'cobertura', 'json', 'lcov', 'text-summary'],
     fixWebpackSourcePaths: true
   },
   webpack: webpackConfig,

@@ -19,13 +19,15 @@ export function buildAccessToken(token: string) {
  */
 export function buildActionHistoryResponse(actions: IActionHistory[]) {
   return {
-    value: actions && actions.map(action => {
-      return {
-        name: action.name,
-        time: action.time.toString(),
-        value: JSON.stringify(action.value, null, 0)
-      };
-    }),
+    value:
+      actions &&
+      actions.map(action => {
+        return {
+          name: action.name,
+          time: action.time.toString(),
+          value: JSON.stringify(action.value, null, 0)
+        };
+      }),
     debug: false,
     internalExecutionLog: [''],
     executionTime: 0.949252553
@@ -40,9 +42,9 @@ export function buildSearchInterfaceWithResults(results: Promise<IQueryResults> 
   searchEndpoint.accessToken = buildAccessToken('testAccessToken');
   (searchEndpoint.search as any).and.returnValue(results);
 
-  searchInterface.options.endpoint = searchEndpoint
+  searchInterface.options.endpoint = searchEndpoint;
 
-  searchInterface.queryController.getEndpoint = () => searchEndpoint
+  searchInterface.queryController.getEndpoint = () => searchEndpoint;
 
   return searchInterface;
 }

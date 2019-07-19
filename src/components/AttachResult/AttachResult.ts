@@ -47,11 +47,13 @@ export class AttachResult extends Component {
     attach: ComponentOptions.buildCustomOption(
       name => (result: IQueryResult) =>
         new Promise<void>((resolve, reject) => {
+          console.log('attached ', result);
           resolve();
         }),
       {
         defaultFunction: () => (result: IQueryResult) =>
           new Promise<void>((resolve, reject) => {
+            console.log('attached ', result);
             resolve();
           })
       }
@@ -59,11 +61,13 @@ export class AttachResult extends Component {
     detach: ComponentOptions.buildCustomOption(
       name => (result: IQueryResult) =>
         new Promise<void>((resolve, reject) => {
+          console.log('detached ', result);
           resolve();
         }),
       {
         defaultFunction: () => (result: IQueryResult) =>
           new Promise<void>((resolve, reject) => {
+            console.log('detached ', result);
             resolve();
           })
       }

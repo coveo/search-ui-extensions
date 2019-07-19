@@ -176,6 +176,6 @@ describe('ResponsiveUserActions', () => {
       expect(logCustomEventStub.callCount).toBe(1);
       expect(logCustomEventStub.args[0][0].name).toBe('openUserActions');
       expect(logCustomEventStub.args[0][0].type).toBe('User Actions');
-    })
+    });
   });
 });

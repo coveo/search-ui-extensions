@@ -121,49 +121,18 @@ describe('UserProfilingModel', () => {
           searchInterface: buildSearchInterfaceWithResults(),
           organization: TEST_ORGANIZATION
         });
-  
+
         const actionsPromise = model.getActions(TEST_USER);
-  
+
         expect(requests.length).toBeGreaterThan(0);
-  
+
         const lastRequest = requests[requests.length - 1];
-  
+
         expect(lastRequest.method).toBe('POST');
         expect(lastRequest.url).toMatch('user/actions');
-  
+
         lastRequest.respond(200, { 'Content-Type': 'application/json' }, JSON.stringify(buildActionHistoryResponse(FAKE_HISTORY_ACTIONS), null, 0));
-  
-        return actionsPromise.then(
-          data => {
-            expect(data.length).toEqual(FAKE_HISTORY_ACTIONS.length);
-            data.forEach((action, i) => {
-              expect(action.type).toEqual(FAKE_HISTORY_ACTIONS[i].name);
-              expect(action.timestamp.valueOf()).toEqual(FAKE_HISTORY_ACTIONS[i].time);
-              expect(JSON.stringify(action.raw)).toEqual(JSON.stringify(FAKE_HISTORY_ACTIONS[i].value));
-            });
-          },
-          error => {
-            expect(error).toBe(false);
-          }
-        );
-      }); 
-      it('should fetch all actions of a user from the backend even when the search call for document details fails', () => {
-        const model = new UserProfileModel(document.createElement('div'), {
-          searchInterface: buildSearchInterfaceWithResults(Promise.reject()),
-          organization: TEST_ORGANIZATION
-        });
-  
-        const actionsPromise = model.getActions(TEST_USER);
-  
-        expect(requests.length).toBeGreaterThan(0);
-  
-        const lastRequest = requests[requests.length - 1];
-  
-        expect(lastRequest.method).toBe('POST');
-        expect(lastRequest.url).toMatch('user/actions');
-  
-        lastRequest.respond(200, { 'Content-Type': 'application/json' }, JSON.stringify(buildActionHistoryResponse(FAKE_HISTORY_ACTIONS), null, 0));
-  
+
         return actionsPromise.then(
           data => {
             expect(data.length).toEqual(FAKE_HISTORY_ACTIONS.length);
@@ -178,7 +147,38 @@ describe('UserProfilingModel', () => {
           }
         );
       });
-    })
+      it('should fetch all actions of a user from the backend even when the search call for document details fails', () => {
+        const model = new UserProfileModel(document.createElement('div'), {
+          searchInterface: buildSearchInterfaceWithResults(Promise.reject()),
+          organization: TEST_ORGANIZATION
+        });
+
+        const actionsPromise = model.getActions(TEST_USER);
+
+        expect(requests.length).toBeGreaterThan(0);
+
+        const lastRequest = requests[requests.length - 1];
+
+        expect(lastRequest.method).toBe('POST');
+        expect(lastRequest.url).toMatch('user/actions');
+
+        lastRequest.respond(200, { 'Content-Type': 'application/json' }, JSON.stringify(buildActionHistoryResponse(FAKE_HISTORY_ACTIONS), null, 0));
+
+        return actionsPromise.then(
+          data => {
+            expect(data.length).toEqual(FAKE_HISTORY_ACTIONS.length);
+            data.forEach((action, i) => {
+              expect(action.type).toEqual(FAKE_HISTORY_ACTIONS[i].name);
+              expect(action.timestamp.valueOf()).toEqual(FAKE_HISTORY_ACTIONS[i].time);
+              expect(JSON.stringify(action.raw)).toEqual(JSON.stringify(FAKE_HISTORY_ACTIONS[i].value));
+            });
+          },
+          error => {
+            expect(error).toBe(false);
+          }
+        );
+      });
+    });
   });
 
   describe('getDocuments', () => {
@@ -281,7 +281,6 @@ describe('UserProfilingModel', () => {
       );
     });
     it('should give no document when the search call for documents details fails', () => {
-      
       const model = new UserProfileModel(document.createElement('div'), {
         searchInterface: buildSearchInterfaceWithResults(Promise.reject()),
         organization: TEST_ORGANIZATION

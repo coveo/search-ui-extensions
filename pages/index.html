@@ -1,35 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, height=device-height" />
-    <title>Title</title>
-    <link rel="stylesheet" href="./css/CoveoFullSearch.css" />
-    <link rel="stylesheet" href="./css/CoveoJsSearchExtensions.css" />
-    <script src="http://localhost:8080/js/CoveoJsSearch.Lazy.js"></script>
-    <script src="js/commonjs/CoveoJsSearchExtensions.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            Coveo.SearchEndpoint.configureSampleEndpointV2();
-            Coveo.init(document.body, {
-                AttachResult: {
-                    attach: function (id) {
-                        return new Promise((resolve, reject) => {
-                            console.log('attached ' + id);
-                            setTimeout(resolve, 1000);
-                        });
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, height=device-height"
+        />
+        <title>Title</title>
+        <link rel="stylesheet" href="./css/CoveoFullSearch.css" />
+        <link rel="stylesheet" href="./css/CoveoJsSearchExtensions.css" />
+        <script src="http://localhost:8080/js/CoveoJsSearch.Lazy.js"></script>
+        <script src="js/commonjs/CoveoJsSearchExtensions.js"></script>
+        <script>
+            let attachedIds = [];
+            document.addEventListener('DOMContentLoaded', function() {
+                Coveo.SearchEndpoint.configureSampleEndpointV2();
+                Coveo.init(document.body, {
+                    AttachResult: {
+                        attach: function(result) {
+                            return new Promise((resolve, reject) => {
+                                console.log('attached ', result);
+                                attachedIds.push(result.raw.urihash);
+                                setTimeout(resolve, 1000);
+                            });
+                        },
+                        detach: function(result) {
+                            return new Promise((resolve, reject) => {
+                                console.log('detached ', result);
+                                attachedIds.pop(result.raw.urihash);
+                                setTimeout(resolve, 1000);
+                            });
+                        },
+                        isAttached: function(result) {
+                            return new Promise((resolve, reject) => {
+                                setTimeout(() => resolve(attachedIds.indexOf(result.raw.urihash) >= 0), 1000);
+                            });
+                        }
                     },
-                    detach: function (id) {
-                        return new Promise((resolve, reject) => {
-                            console.log('detached ' + id);
-                            setTimeout(resolve, 1000);
-                        });
-                    },
-                    isAttached: function (id) {
-                        return new Promise((resolve, reject) => {
-                            setTimeout(() => resolve(false), 1000);
-                        });
+                    ResultsFilter: {
+                        getValues: function() {
+                            return attachedIds
+                        }
                     }
                 }
             });
@@ -55,12 +66,43 @@
             <div class="CoveoFacet" data-title="Year" data-field="@year" data-tab="All"></div>
             <div class="CoveoFacet" data-title="Month" data-field="@month" data-tab="All"></div>
         </div>
-        <div class="coveo-results-column">
-            <div class="CoveoShareQuery"></div>
-            <div class="CoveoExportToExcel"></div>
-            <div class="CoveoPreferencesPanel">
-                <div class="CoveoResultsPreferences"></div>
-                <div class="CoveoResultsFiltersPreferences"></div>
+        <div class="coveo-search-section">
+            <div class="CoveoSettings"></div>
+            <div class="CoveoSearchbox" data-enable-omnibox="true"></div>
+        </div>
+        <div class="coveo-main-section">
+            <div class="coveo-facet-column">
+                <div class="CoveoResultsFilter" data-text="Show Only Attached Results"></div>
+                <div
+                    class="CoveoFacet"
+                    data-title="Type"
+                    data-field="@objecttype"
+                    data-tab="All"
+                ></div>
+                <div
+                    class="CoveoFacet"
+                    data-title="FileType"
+                    data-field="@filetype"
+                    data-tab="All"
+                ></div>
+                <div
+                    class="CoveoFacet"
+                    data-title="Author"
+                    data-field="@author"
+                    data-tab="All"
+                ></div>
+                <div
+                    class="CoveoFacet"
+                    data-title="Year"
+                    data-field="@year"
+                    data-tab="All"
+                ></div>
+                <div
+                    class="CoveoFacet"
+                    data-title="Month"
+                    data-field="@month"
+                    data-tab="All"
+                ></div>
             </div>
             <div class="CoveoBreadcrumb"></div>
             <div class="coveo-results-header">

@@ -6,3 +6,4 @@ export { UserActions } from './components/UserActions/UserActions';
 export { DocumentsClicked } from './components/UserActions/DocumentsClicked';
 export { Queries } from './components/UserActions/Queries';
 export { UserProfilingEndpoint } from './rest/UserProfilingEndpoint';
+export { ResultsFilter } from './components/ResultsFilter/ResultsFilter';
