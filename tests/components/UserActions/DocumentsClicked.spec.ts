@@ -36,7 +36,8 @@ describe('DocumentsClicked', () => {
       const emptyElement = mock.cmp.element.querySelector<HTMLLIElement>('.coveo-empty');
       expect(emptyElement).not.toBeNull();
       expect(emptyElement.innerText).toBe('No document clicked by this user');
-    });});
+    });
+  });
   it('should show "Documents Clicked" as title', () => {
     const model = sandbox.createStubInstance(UserProfileModel);
     model.getDocuments.returns(Promise.resolve(Fake.createFakeResults(20).results));
@@ -105,7 +106,7 @@ describe('DocumentsClicked', () => {
     const model = sandbox.createStubInstance(UserProfileModel);
     model.getDocuments.returns(Promise.reject());
     sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-    
+
     Mock.basicComponentSetup<DocumentsClicked>(DocumentsClicked, { userId: 'testuserId' });
 
     expect(model.getDocuments.called).toBe(true);
@@ -122,6 +123,34 @@ describe('DocumentsClicked', () => {
     return delay(() => {
       expect(mock.cmp.element.childElementCount).toBe(0);
       expect(errorLoggerStub.called).toBe(true);
+    });
+  });
+
+  describe('template', () => {
+    it('should use the given template in options', () => {
+      const results = Fake.createFakeResults(20).results;
+      const model = sandbox.createStubInstance(UserProfileModel);
+      model.getDocuments.returns(Promise.resolve(results));
+      sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
+
+      sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
+      const instantiateToElementStub = sandbox.stub().returns(Promise.resolve(document.createElement('div')));
+
+      Mock.basicComponentSetup<DocumentsClicked>(DocumentsClicked, {
+        userId: 'testuserId',
+        max: results.length,
+        nbShowed: results.length,
+        template: {
+          instantiateToElement: instantiateToElementStub
+        }
+      });
+
+      return delay(() => {
+        expect(instantiateToElementStub.callCount).toBe(results.length);
+        results.forEach((result, i) => {
+          expect(instantiateToElementStub.args[i][0]).toBe(result);
+        });
+      });
     });
   });
 });

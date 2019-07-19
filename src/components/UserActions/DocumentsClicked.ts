@@ -16,7 +16,7 @@ import './Strings';
 
 export interface IDocumentsClickedOptions {
   max: number;
-  showed: number;
+  nbShowed: number;
   title: string;
   template: Template;
   userId: string;
@@ -25,7 +25,7 @@ export interface IDocumentsClickedOptions {
 export class DocumentsClicked extends Component {
   static ID = 'DocumentsClicked';
   static options: IDocumentsClickedOptions = {
-    showed: ComponentOptions.buildNumberOption({
+    nbShowed: ComponentOptions.buildNumberOption({
       defaultValue: 4,
       min: 1,
       required: true
@@ -67,7 +67,7 @@ export class DocumentsClicked extends Component {
   private render() {
     new ExpandableList<IQueryResult>(this.element, this.all, {
       max: this.options.max,
-      min: this.options.showed,
+      min: this.options.nbShowed,
       itemProcessor: result => {
         QueryUtils.setStateObjectOnQueryResult(this.queryStateModel.get(), result);
         QueryUtils.setSearchInterfaceObjectOnQueryResult(this.searchInterface, result);
