@@ -176,6 +176,7 @@ describe('Queries', () => {
 
         expect(logSearchEventStub.callCount).toBe(1);
         expect(logSearchEventStub.args[0][0].name).toBe('userActionsSubmit');
+        expect(logSearchEventStub.args[0][0].type).toBe('User Actions');
       });
     });
   });

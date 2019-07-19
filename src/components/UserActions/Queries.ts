@@ -71,7 +71,7 @@ export class Queries extends Component {
               if (omniboxElement != null) {
                 const omnibox = get(omniboxElement, Omnibox, true) as Omnibox;
                 omnibox.setText(query);
-                this.usageAnalytics.logSearchEvent({ name: 'userActionsSubmit', type: 'user actions' }, {});
+                this.usageAnalytics.logSearchEvent({ name: 'userActionsSubmit', type: 'User Actions' }, {});
                 this.queryController.executeQuery();
               }
             });

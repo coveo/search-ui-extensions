@@ -151,6 +151,31 @@ describe('ResponsiveUserActions', () => {
 
       expect(button.innerHTML).toMatch(title);
     });
-    it('should trigger a custom event that has "openUserActions" as name and "User Actions" as type')
+    it('should trigger a custom event that has "openUserActions" as name and "User Actions" as type', () => {
+      const model = sandbox.createStubInstance(UserProfileModel);
+      model.getDocuments.returns(Promise.reject());
+      model.getQueries.returns(Promise.reject());
+      sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
+      sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
+
+      const mock = Mock.basicComponentSetup<UserActions>(UserActions, { userId: 'someId' });
+      const headerSection = document.createElement('div');
+      headerSection.classList.add(ResponsiveComponentsManager.DROPDOWN_HEADER_WRAPPER_CSS_CLASS);
+      mock.env.root.appendChild(headerSection);
+
+      const responsiveUserActions = new ResponsiveUserActions($$(mock.env.root), UserActions.ID, {});
+
+      const logCustomEventStub = sandbox.stub(mock.env.usageAnalytics, 'logCustomEvent');
+
+      responsiveUserActions.registerComponent(mock.cmp);
+      responsiveUserActions.handleResizeEvent();
+
+      const button = mock.env.root.querySelector<HTMLElement>(`a.${ResponsiveDropdownHeader.DEFAULT_CSS_CLASS_NAME}`);
+      button.click();
+
+      expect(logCustomEventStub.callCount).toBe(1);
+      expect(logCustomEventStub.args[0][0].name).toBe('openUserActions');
+      expect(logCustomEventStub.args[0][0].type).toBe('User Actions');
+    })
   });
 });
