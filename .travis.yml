@@ -8,6 +8,7 @@ notifications:
     on_success: change
     on_failure: always
 script:
+- npm run lint
 - npm run build
 - npm run testCoverage
 deploy:
