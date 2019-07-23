@@ -24,7 +24,7 @@
     "prepare": "npm run snyk-protect"
   },
   "pre-commit": [
-    "lint"
+    "lint-fix"
   ],
   "files": [
     "bin/**/*"
