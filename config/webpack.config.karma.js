@@ -3,10 +3,8 @@ const path = require('path');
 
 // These modifications are required to have proper coverage with karma-coverage-istanbul-reporter.
 webpackConfig.devtool = 'inline-source-map';
-webpackConfig.module.rules.find(
-    rule => rule.loader === 'ts-loader'
-).options.compilerOptions = {
-    module: "commonjs",
+webpackConfig.module.rules.find(rule => rule.loader === 'ts-loader').options.compilerOptions = {
+    module: 'commonjs',
     inlineSourceMap: true,
     sourceMap: undefined,
     outDir: undefined
