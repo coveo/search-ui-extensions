@@ -1,13 +1,13 @@
 import { createSandbox, SinonSandbox } from 'sinon';
 import { Mock } from 'coveo-search-ui-tests';
-import { RecentQueries } from '../../../src/components/UserActions/RecentQueries';
+import { QueryList } from '../../../src/components/UserActions/QueryList';
 import { InitializationUtils } from '../../../src/utils/initialization';
 import { UserProfileModel, UserAction } from '../../../src/models/UserProfileModel';
 import { delay, generate } from '../../utils';
 import { Logger, Omnibox } from 'coveo-search-ui';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 
-describe('RecentQueries', () => {
+describe('QueryList', () => {
     const TEST_QUERIES = generate(20, i => {
         const query = `${Math.random()}`;
         return new UserAction(UserActionType.Search, new Date(i), { query_expression: query, origin_level_1: 'foo' }, null, query);
@@ -36,7 +36,7 @@ describe('RecentQueries', () => {
 
         sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
 
-        const mock = Mock.basicComponentSetup<RecentQueries>(RecentQueries, { userId: 'testuserId' });
+        const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
 
         return delay(() => {
             const emptyElement = mock.cmp.element.querySelector<HTMLLIElement>('.coveo-empty');
@@ -52,7 +52,7 @@ describe('RecentQueries', () => {
 
         sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
 
-        const mock = Mock.basicComponentSetup<RecentQueries>(RecentQueries, { userId: 'testuserId' });
+        const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
 
         return delay(() => {
             expect(mock.cmp.element.querySelector('.coveo-title').innerHTML).toMatch('Recent Queries');
@@ -65,7 +65,7 @@ describe('RecentQueries', () => {
 
         sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
 
-        const mock = Mock.basicComponentSetup<RecentQueries>(RecentQueries, { userId: 'testuserId' });
+        const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
 
         return delay(() => {
             const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
@@ -80,7 +80,7 @@ describe('RecentQueries', () => {
 
         sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
 
-        const mock = Mock.basicComponentSetup<RecentQueries>(RecentQueries, { userId: 'testuserId', numberOfItems: 10 });
+        const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId', numberOfItems: 10 });
 
         return delay(() => {
             const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
@@ -95,7 +95,7 @@ describe('RecentQueries', () => {
 
         sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
 
-        const mock = Mock.basicComponentSetup<RecentQueries>(RecentQueries);
+        const mock = Mock.basicComponentSetup<QueryList>(QueryList);
 
         return delay(() => {
             mock.env.element.querySelector<HTMLButtonElement>('.coveo-more-less').click();
@@ -111,7 +111,7 @@ describe('RecentQueries', () => {
         model.getActions.returns(Promise.resolve(TEST_QUERIES));
         sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
 
-        const mock = Mock.basicComponentSetup<RecentQueries>(RecentQueries, { userId: 'testuserId' });
+        const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
 
         const queries = TEST_QUERIES.reverse();
 
@@ -129,7 +129,7 @@ describe('RecentQueries', () => {
         model.getActions.returns(Promise.reject());
         sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
 
-        Mock.basicComponentSetup<RecentQueries>(RecentQueries, { userId: 'testuserId' });
+        Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
 
         expect(model.getActions.called).toBe(true);
     });
@@ -141,7 +141,7 @@ describe('RecentQueries', () => {
 
         const errorLoggerStub = sandbox.stub(Logger.prototype, 'error');
 
-        const mock = Mock.basicComponentSetup<RecentQueries>(RecentQueries, { userId: 'testuserId' });
+        const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
 
         return delay(() => {
             expect(mock.cmp.element.childElementCount).toBe(0);
@@ -155,7 +155,7 @@ describe('RecentQueries', () => {
             model.getActions.returns(Promise.resolve(TEST_QUERIES));
             sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
 
-            const mock = Mock.basicComponentSetup<RecentQueries>(RecentQueries, { userId: 'testuserId' });
+            const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
 
             const omnibox = new Omnibox(document.createElement('div'), {}, { ...mock.env });
             mock.env.root.appendChild(omnibox.element);
@@ -179,7 +179,7 @@ describe('RecentQueries', () => {
             model.getActions.returns(Promise.resolve(TEST_QUERIES));
             sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
 
-            const mock = Mock.basicComponentSetup<RecentQueries>(RecentQueries, { userId: 'testuserId' });
+            const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
 
             const executeQueryStub = sandbox.stub(mock.env.queryController, 'executeQuery');
 
@@ -196,7 +196,7 @@ describe('RecentQueries', () => {
             model.getActions.returns(Promise.resolve(TEST_QUERIES));
             sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
 
-            const mock = Mock.basicComponentSetup<RecentQueries>(RecentQueries, { userId: 'testuserId' });
+            const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
 
             const omnibox = new Omnibox(document.createElement('div'), {}, { ...mock.env });
             mock.env.root.appendChild(omnibox.element);

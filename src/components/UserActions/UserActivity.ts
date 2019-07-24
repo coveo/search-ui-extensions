@@ -6,9 +6,31 @@ import { duplicate, search, view, dot } from '../../utils/icons';
 import { UserActionType } from '../../rest/UserProfilingEndpoint';
 import './Strings';
 
+/**
+ * Initialization options of the **UserActivity** class.
+ */
 export interface IUserActivityOptions {
+    /**
+     * Identifier of the user from which Clicked Documents are shown.
+     *
+     * **Require**
+     */
     userId: string;
+
+    /**
+     * List of event cause to unfold.
+     * This option override the **unfoldExclude** option.
+     *
+     * Default: `['didyoumeanAutomatic','didyoumeanClick','omniboxAnalytics','omniboxFromLink','searchboxSubmit','searchFromLink','userActionsSubmit']`
+     */
     unfoldInclude: string[];
+
+    /**
+     * List of event cause to fold.
+     * This option is override by the **unfoldInclude** option.
+     *
+     * Default: `[]`
+     */
     unfoldExclude: string[];
 }
 

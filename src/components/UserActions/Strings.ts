@@ -3,13 +3,13 @@ import { Translation, Language } from '../../utils/translation';
 Translation.register(Language.English, {
     UserActions_no_actions: 'No actions available for this user',
 
-    RecentQueries_more: 'Show More',
-    RecentQueries_less: 'Show Less',
-    RecentQueries_no_queries: 'No queries made by this user',
+    QueryList_more: 'Show More',
+    QueryList_less: 'Show Less',
+    QueryList_no_queries: 'No queries made by this user',
 
-    RecentClickedDocuments_more: 'Show More',
-    RecentClickedDocuments_less: 'Show Less',
-    RecentClickedDocuments_no_clicked_documents: 'No document clicked by this user',
+    ClickedDocumentList_more: 'Show More',
+    ClickedDocumentList_less: 'Show Less',
+    ClickedDocumentList_no_clicked_documents: 'No document clicked by this user',
 
     UserActivity_start_date: 'Start Date',
     UserActivity_start_time: 'Start Time',

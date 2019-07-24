@@ -5,7 +5,7 @@ import { createSandbox, SinonSandbox } from 'sinon';
 import { UserProfileModel, UserAction } from '../../../src/models/UserProfileModel';
 import { delay } from '../../utils';
 import { InitializationUtils } from '../../../src/utils/initialization';
-import { RecentClickedDocuments, RecentQueries, UserActivity } from '../../../src/Index';
+import { ClickedDocumentList, QueryList, UserActivity } from '../../../src/Index';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 
 describe('UserActions', () => {
@@ -83,7 +83,7 @@ describe('UserActions', () => {
         });
     });
 
-    it('should show a summary section that have a RecentClickedDocuments and a Queries component', () => {
+    it('should show a summary section that have a ClickedDocumentList and a Queries component', () => {
         const model = sandbox.createStubInstance(UserProfileModel);
         model.getActions.returns(Promise.resolve(ACTIONS));
 
@@ -98,8 +98,8 @@ describe('UserActions', () => {
             const summarySection = mock.cmp.element.querySelector('.coveo-summary');
 
             expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
-            expect(summarySection.querySelector(`.Coveo${RecentClickedDocuments.ID}`)).not.toBeNull();
-            expect(summarySection.querySelector(`.Coveo${RecentQueries.ID}`)).not.toBeNull();
+            expect(summarySection.querySelector(`.Coveo${ClickedDocumentList.ID}`)).not.toBeNull();
+            expect(summarySection.querySelector(`.Coveo${QueryList.ID}`)).not.toBeNull();
         });
     });
 
@@ -139,7 +139,7 @@ describe('UserActions', () => {
         return delay(() => {
             expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
 
-            [RecentClickedDocuments.ID, RecentQueries.ID, UserActivity.ID].forEach(component => {
+            [ClickedDocumentList.ID, QueryList.ID, UserActivity.ID].forEach(component => {
                 expect(automaticallyCreateComponentsInsideStub.args[0][1].options[component]).toBeDefined();
                 expect(automaticallyCreateComponentsInsideStub.args[0][1].options[component].userId).toBe(FAKE_USER_ID);
             });

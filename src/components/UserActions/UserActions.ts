@@ -4,8 +4,8 @@ import { InitializationUtils } from '../../utils/initialization';
 import { ResponsiveUserActions } from './ResponsiveUserActions';
 import { arrowDown } from '../../utils/icons';
 import './Strings';
-import { RecentClickedDocuments } from './RecentClickedDocuments';
-import { RecentQueries } from './RecentQueries';
+import { ClickedDocumentList } from './ClickedDocumentList';
+import { QueryList } from './QueryList';
 import { UserActivity } from './UserActivity';
 
 /**
@@ -183,10 +183,10 @@ export class UserActions extends Component {
         Initialization.automaticallyCreateComponentsInside(element, {
             options: {
                 ...this.searchInterface.options.originalOptionsObject,
-                RecentQueries: {
+                QueryList: {
                     userId: this.options.userId
                 },
-                RecentClickedDocuments: {
+                ClickedDocumentList: {
                     userId: this.options.userId
                 },
                 UserActivity: {
@@ -201,8 +201,8 @@ export class UserActions extends Component {
         const element = document.createElement('div');
 
         const summarySection = this.buildAccordion(this.options.summaryLabel, [
-            this.buildCoveoElement(RecentClickedDocuments),
-            this.buildCoveoElement(RecentQueries)
+            this.buildCoveoElement(ClickedDocumentList),
+            this.buildCoveoElement(QueryList)
         ]);
         summarySection.classList.add(`coveo-summary`);
 

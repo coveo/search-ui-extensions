@@ -16,9 +16,9 @@ import './Strings';
 import { UserActionType } from '../../rest/UserProfilingEndpoint';
 
 /**
- * Initialization options of the **RecentClickedDocuments** class.
+ * Initialization options of the **ClickedDocumentList** class.
  */
-export interface IRecentClickedDocuments {
+export interface IClickedDocumentList {
     /**
      * Number of Clicked Documents shown.
      *
@@ -51,16 +51,16 @@ export interface IRecentClickedDocuments {
 /**
  * Display the list of the most recent clicked documents of a user.
  */
-export class RecentClickedDocuments extends Component {
+export class ClickedDocumentList extends Component {
     /**
      * Identifier of the Search-UI component.
      */
-    static readonly ID = 'RecentClickedDocuments';
+    static readonly ID = 'ClickedDocumentList';
 
     /**
-     * Default initialization options of the **RecentClickedDocuments** class.
+     * Default initialization options of the **ClickedDocumentList** class.
      */
-    static readonly options: IRecentClickedDocuments = {
+    static readonly options: IClickedDocumentList = {
         numberOfItems: ComponentOptions.buildNumberOption({
             defaultValue: 4,
             min: 1
@@ -80,16 +80,16 @@ export class RecentClickedDocuments extends Component {
     private sortedDocumentsList: IQueryResult[];
 
     /**
-     * Create an instance of **RecentClickedDocuments**. Initialize is needed the **UserProfileModel** and fetch user actions related to the **UserId**.
+     * Create an instance of **ClickedDocumentList**. Initialize is needed the **UserProfileModel** and fetch user actions related to the **UserId**.
      *
      * @param element Element on which to bind the component.
      * @param options Initialization options of the component.
      * @param bindings Bindings of the Search-UI environment.
      */
-    constructor(public element: HTMLElement, public options: IRecentClickedDocuments, public bindings: IComponentBindings) {
-        super(element, RecentClickedDocuments.ID, bindings);
+    constructor(public element: HTMLElement, public options: IClickedDocumentList, public bindings: IComponentBindings) {
+        super(element, ClickedDocumentList.ID, bindings);
 
-        this.options = ComponentOptions.initComponentOptions(element, RecentClickedDocuments, options);
+        this.options = ComponentOptions.initComponentOptions(element, ClickedDocumentList, options);
         this.userProfileModel = InitializationUtils.getUserProfileModel(this.root, this.bindings);
         this.userProfileModel.getActions(this.options.userId).then(actions => {
             this.sortedDocumentsList = actions
@@ -119,11 +119,11 @@ export class RecentClickedDocuments extends Component {
                 });
             },
             listLabel: this.options.listLabel,
-            messageWhenEmpty: l(`${RecentClickedDocuments.ID}_no_clicked_documents`),
-            showMoreMessage: l(`${RecentClickedDocuments.ID}_more`),
-            showLessMessage: l(`${RecentClickedDocuments.ID}_less`)
+            messageWhenEmpty: l(`${ClickedDocumentList.ID}_no_clicked_documents`),
+            showMoreMessage: l(`${ClickedDocumentList.ID}_more`),
+            showLessMessage: l(`${ClickedDocumentList.ID}_less`)
         });
     }
 }
 
-Initialization.registerAutoCreateComponent(RecentClickedDocuments);
+Initialization.registerAutoCreateComponent(ClickedDocumentList);

@@ -1,13 +1,13 @@
 import { createSandbox, SinonSandbox } from 'sinon';
 import { Mock, Fake } from 'coveo-search-ui-tests';
-import { RecentClickedDocuments } from '../../../src/components/UserActions/RecentClickedDocuments';
+import { ClickedDocumentList } from '../../../src/components/UserActions/ClickedDocumentList';
 import { InitializationUtils } from '../../../src/utils/initialization';
 import { UserProfileModel, UserAction } from '../../../src/models/UserProfileModel';
 import { Logger, Initialization } from 'coveo-search-ui';
 import { delay, generate } from '../../utils';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 
-describe('RecentClickedDocuments', () => {
+describe('ClickedDocumentList', () => {
     const TEST_CLICKS = generate(20, i => {
         const document = Fake.createFakeResult();
         return new UserAction(UserActionType.Click, new Date(i), { origin_level_1: 'foo', uri_hash: document.uri }, document);
@@ -35,7 +35,7 @@ describe('RecentClickedDocuments', () => {
         model.getActions.returns(Promise.resolve([]));
         sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
 
-        const mock = Mock.basicComponentSetup<RecentClickedDocuments>(RecentClickedDocuments, { userId: 'testuserId' });
+        const mock = Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList, { userId: 'testuserId' });
 
         return delay(() => {
             const emptyElement = mock.cmp.element.querySelector<HTMLLIElement>('.coveo-empty');
@@ -49,7 +49,7 @@ describe('RecentClickedDocuments', () => {
         model.getActions.returns(Promise.resolve(TEST_CLICKS));
         sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
 
-        const mock = Mock.basicComponentSetup<RecentClickedDocuments>(RecentClickedDocuments, { userId: 'testuserId' });
+        const mock = Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList, { userId: 'testuserId' });
 
         return delay(() => {
             expect(mock.cmp.element.querySelector('.coveo-title').innerHTML).toMatch('Recent Clicked Documents');
@@ -63,7 +63,7 @@ describe('RecentClickedDocuments', () => {
 
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
-        const mock = Mock.basicComponentSetup<RecentClickedDocuments>(RecentClickedDocuments, { userId: 'testuserId' });
+        const mock = Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList, { userId: 'testuserId' });
 
         return delay(() => {
             const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
@@ -79,7 +79,7 @@ describe('RecentClickedDocuments', () => {
 
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
-        const mock = Mock.basicComponentSetup<RecentClickedDocuments>(RecentClickedDocuments, { userId: 'testuserId', numberOfItems: 10 });
+        const mock = Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList, { userId: 'testuserId', numberOfItems: 10 });
 
         return delay(() => {
             const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
@@ -95,7 +95,7 @@ describe('RecentClickedDocuments', () => {
 
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
-        const mock = Mock.basicComponentSetup<RecentClickedDocuments>(RecentClickedDocuments);
+        const mock = Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList);
 
         return delay(() => {
             const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
@@ -115,7 +115,7 @@ describe('RecentClickedDocuments', () => {
 
         const createComponentInside = sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
-        const mock = Mock.basicComponentSetup<RecentClickedDocuments>(RecentClickedDocuments, { userId: 'testuserId' });
+        const mock = Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList, { userId: 'testuserId' });
 
         const sortedClick = TEST_CLICKS.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()).reverse();
 
@@ -134,7 +134,7 @@ describe('RecentClickedDocuments', () => {
         model.getActions.returns(Promise.reject());
         sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
 
-        Mock.basicComponentSetup<RecentClickedDocuments>(RecentClickedDocuments, { userId: 'testuserId' });
+        Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList, { userId: 'testuserId' });
 
         expect(model.getActions.called).toBe(true);
     });
@@ -146,7 +146,7 @@ describe('RecentClickedDocuments', () => {
 
         const errorLoggerStub = sandbox.stub(Logger.prototype, 'error');
 
-        const mock = Mock.basicComponentSetup<RecentClickedDocuments>(RecentClickedDocuments, { userId: 'testuserId' });
+        const mock = Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList, { userId: 'testuserId' });
 
         return delay(() => {
             expect(mock.cmp.element.childElementCount).toBe(0);
@@ -163,7 +163,7 @@ describe('RecentClickedDocuments', () => {
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
             const instantiateToElementStub = sandbox.stub().returns(Promise.resolve(document.createElement('div')));
 
-            Mock.basicComponentSetup<RecentClickedDocuments>(RecentClickedDocuments, {
+            Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList, {
                 userId: 'testuserId',
                 max: TEST_CLICKS.length,
                 show: TEST_CLICKS.length,

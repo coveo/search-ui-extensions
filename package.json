@@ -73,7 +73,7 @@
         "webpack-dev-server": "^3.2.1"
     },
     "dependencies": {
-        "snyk": "^1.190.0"
+        "snyk": "^2.0.0"
     },
     "snyk": true
 }

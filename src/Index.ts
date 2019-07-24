@@ -3,7 +3,7 @@
 export { AttachResult } from './components/AttachResult/AttachResult';
 export { UserActivity } from './components/UserActions/UserActivity';
 export { UserActions } from './components/UserActions/UserActions';
-export { RecentClickedDocuments } from './components/UserActions/RecentClickedDocuments';
-export { RecentQueries } from './components/UserActions/RecentQueries';
+export { ClickedDocumentList } from './components/UserActions/ClickedDocumentList';
+export { QueryList } from './components/UserActions/QueryList';
 export { UserProfilingEndpoint } from './rest/UserProfilingEndpoint';
 export { ResultsFilter } from './components/ResultsFilter/ResultsFilter';
