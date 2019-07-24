@@ -2,10 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, height=device-height"
-        />
+        <meta name="viewport" content="width=device-width, height=device-height" />
         <title>Title</title>
         <link rel="stylesheet" href="./css/CoveoFullSearch.css" />
         <link rel="stylesheet" href="./css/CoveoJsSearchExtensions.css" />
@@ -39,7 +36,7 @@
                     },
                     ResultsFilter: {
                         getValues: function() {
-                            return attachedIds
+                            return attachedIds;
                         }
                     }
                 });
@@ -58,36 +55,11 @@
         <div class="coveo-main-section">
             <div class="coveo-facet-column">
                 <div class="CoveoResultsFilter" data-text="Show Only Attached Results"></div>
-                <div
-                    class="CoveoFacet"
-                    data-title="Type"
-                    data-field="@objecttype"
-                    data-tab="All"
-                ></div>
-                <div
-                    class="CoveoFacet"
-                    data-title="FileType"
-                    data-field="@filetype"
-                    data-tab="All"
-                ></div>
-                <div
-                    class="CoveoFacet"
-                    data-title="Author"
-                    data-field="@author"
-                    data-tab="All"
-                ></div>
-                <div
-                    class="CoveoFacet"
-                    data-title="Year"
-                    data-field="@year"
-                    data-tab="All"
-                ></div>
-                <div
-                    class="CoveoFacet"
-                    data-title="Month"
-                    data-field="@month"
-                    data-tab="All"
-                ></div>
+                <div class="CoveoFacet" data-title="Type" data-field="@objecttype" data-tab="All"></div>
+                <div class="CoveoFacet" data-title="FileType" data-field="@filetype" data-tab="All"></div>
+                <div class="CoveoFacet" data-title="Author" data-field="@author" data-tab="All"></div>
+                <div class="CoveoFacet" data-title="Year" data-field="@year" data-tab="All"></div>
+                <div class="CoveoFacet" data-title="Month" data-field="@month" data-tab="All"></div>
             </div>
             <div class="coveo-results-column">
                 <div class="CoveoShareQuery"></div>
@@ -106,27 +78,14 @@
                         <span class="CoveoResultLayout"></span>
                     </div>
                     <div class="coveo-sort-section">
-                        <span
-                            class="CoveoSort"
-                            data-sort-criteria="relevancy"
-                            data-caption="Relevance"
-                        ></span>
-                        <span
-                            class="CoveoSort"
-                            data-sort-criteria="date descending,date ascending"
-                            data-caption="Date"
-                        ></span>
+                        <span class="CoveoSort" data-sort-criteria="relevancy" data-caption="Relevance"></span>
+                        <span class="CoveoSort" data-sort-criteria="date descending,date ascending" data-caption="Date"></span>
                     </div>
                 </div>
                 <div class="CoveoHiddenQuery"></div>
                 <div class="CoveoDidYouMean"></div>
                 <div class="CoveoErrorReport"></div>
-                <div
-                    class="CoveoResultList"
-                    data-layout="list"
-                    data-wait-animation="fade"
-                    data-auto-select-fields-to-include="true"
-                >
+                <div class="CoveoResultList" data-layout="list" data-wait-animation="fade" data-auto-select-fields-to-include="true">
                     <script type="text/html" class="result-template">
                         <div class="coveo-result-frame">
                           <div class="CoveoResultActionsMenu">
@@ -169,12 +128,7 @@
                         </div>
                     </script>
                 </div>
-                <div
-                    class="CoveoResultList"
-                    data-layout="card"
-                    data-wait-animation="fade"
-                    data-auto-select-fields-to-include="true"
-                ></div>
+                <div class="CoveoResultList" data-layout="card" data-wait-animation="fade" data-auto-select-fields-to-include="true"></div>
                 <div class="CoveoPager"></div>
                 <div class="CoveoLogo"></div>
                 <div class="CoveoResultsPerPage"></div>

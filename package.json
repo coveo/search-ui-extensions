@@ -17,13 +17,14 @@
     "css": "node ./scripts/css.js",
     "dev": "node ./scripts/dev.server.js",
     "watchTest": "karma start ./config/karma.config.js",
-    "lint": "prettier --write src/**/* tests/**/*",
+    "lint": "prettier --check **/*",
+    "lint-fix": "prettier --write **/* ",
     "clean": "rimraf bin",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect"
   },
   "pre-commit": [
-    "lint"
+    "lint-fix"
   ],
   "files": [
     "bin/**/*"

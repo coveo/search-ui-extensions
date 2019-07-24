@@ -1,4 +1,4 @@
-const path = require('path')
+const path = require('path');
 
 module.exports = {
     mode: 'development',
@@ -7,7 +7,7 @@ module.exports = {
     },
     output: {
         path: path.resolve('./bin/js/commonjs'),
-        filename:  `[name].js`,
+        filename: `[name].js`,
         libraryTarget: 'umd',
         library: 'CoveoExtension',
         publicPath: '/js/commonjs'
@@ -29,7 +29,7 @@ module.exports = {
                 test: /\.ts$/,
                 loader: 'ts-loader',
                 options: {
-                    configFile : path.resolve('./config/tsconfig.json')
+                    configFile: path.resolve('./config/tsconfig.json')
                 }
             },
             {
