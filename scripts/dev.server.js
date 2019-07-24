@@ -11,7 +11,7 @@ const compiler = webpack(webpackConfig);
 
 var server = new WebpackDevServer(compiler, {
     contentBase: ['bin/', 'node_modules/coveo-search-ui/bin/'],
-    publicPath: '/js/',
+    publicPath: '/js/commonjs',
     compress: true
 });
 server.listen(port, 'localhost', function() {});

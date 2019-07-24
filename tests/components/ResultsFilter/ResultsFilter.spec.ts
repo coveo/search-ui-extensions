@@ -1,4 +1,4 @@
-import { ResultsFilter, IResultsFilterOptions } from '../../src/components/ResultsFilter/ResultsFilter';
+import { ResultsFilter, IResultsFilterOptions } from '../../../src/components/ResultsFilter/ResultsFilter';
 import { Mock, Simulate } from 'coveo-search-ui-tests';
 import { QueryStateModel } from 'coveo-search-ui';
 

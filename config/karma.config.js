@@ -31,6 +31,10 @@ var configuration = {
         fixWebpackSourcePaths: true
     },
     webpack: webpackConfig,
+    webpackMiddleware: {
+        stats: 'minimal',
+        logLevel: 'warn'
+    },
     browsers: ['ChromeHeadlessNoSandbox'],
     customLaunchers: {
         ChromeHeadlessNoSandbox: {

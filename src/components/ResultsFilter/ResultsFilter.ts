@@ -46,11 +46,7 @@ export class ResultsFilter extends Component {
         })
     };
 
-    constructor(
-        public element: HTMLElement,
-        public options: IResultsFilterOptions,
-        public bindings?: IComponentBindings
-    ) {
+    constructor(public element: HTMLElement, public options: IResultsFilterOptions, public bindings?: IComponentBindings) {
         super(element, ResultsFilter.ID, bindings);
 
         this.options = ComponentOptions.initComponentOptions(element, ResultsFilter, options);
@@ -59,11 +55,7 @@ export class ResultsFilter extends Component {
 
         this.queryStateModel.registerNewAttribute(QueryStateModel.getFacetId(ResultsFilter.ID), false);
         this.bind.onRootElement(QueryEvents.buildingQuery, this.handleBuildingQuery.bind(this));
-        this.bind.onQueryState(
-            'change:',
-            QueryStateModel.getFacetId(ResultsFilter.ID),
-            this.handleQueryStateChange.bind(this)
-        );
+        this.bind.onQueryState('change:', QueryStateModel.getFacetId(ResultsFilter.ID), this.handleQueryStateChange.bind(this));
     }
 
     public isSelected(): boolean {
