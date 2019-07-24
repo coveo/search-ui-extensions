@@ -1,0 +1,7 @@
+<svg width="1em" height="1em" fill="#004990" viewBox="0 0 30 30">
+  <circle cx="15" cy="15" r="15" fill="#f7f8f9"/>
+  <g transform="translate(6, 5)">
+    <path d="M4 5h7v1H4V5m0 3h7v1H4V8m0 3h7v1H4v-1"/>
+    <path d="M15 1c.009-.525.066-1-1-1H1.002c-.651 0-1 .33-1 1v15c0 .66.351 1 1 1H3v2c.075.546.383 1 1 1h13c.718 0 1-.295 1-1V3c.001-.468-.406-.99-1-1h-2V1M2 15V2h11v13H2m14 3H5v-.995L14 17c.5.005.976-.428 1-1l.021-12H16v14"/>
+  </g>
+</svg>

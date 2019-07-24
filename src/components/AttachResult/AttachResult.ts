@@ -82,11 +82,7 @@ export class AttachResult extends Component {
     ) {
         super(element, AttachResult.ID, bindings);
 
-        this.options = ComponentOptions.initComponentOptions(
-            element,
-            AttachResult,
-            options
-        );
+        this.options = ComponentOptions.initComponentOptions(element, AttachResult, options);
         this.queryResult = this.queryResult || this.resolveResult();
 
         this.initialize();
@@ -171,10 +167,7 @@ export class AttachResult extends Component {
                     this.attached = attached;
                 })
                 .catch(error => {
-                    this.logger.error(
-                        'Error retrieving initial result attached state.',
-                        error
-                    );
+                    this.logger.error('Error retrieving initial result attached state.', error);
                 })
                 .finally(() => {
                     this.setLoading(false);
@@ -196,11 +189,7 @@ export class AttachResult extends Component {
             caseID: null
         };
 
-        this.usageAnalytics.logCustomEvent<IAnalyticsCaseDetachMeta>(
-            cause,
-            customData,
-            this.root
-        );
+        this.usageAnalytics.logCustomEvent<IAnalyticsCaseDetachMeta>(cause, customData, this.root);
     }
 
     protected render(): void {

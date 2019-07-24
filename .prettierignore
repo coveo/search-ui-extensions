@@ -1,2 +1,10 @@
 *.svg
 *.gif
+bin/**/*
+node_modules/**/*
+.vscode/**/*
+.gitignore
+.prettierignore
+.snyk
+.travis.yml
+LICENSE

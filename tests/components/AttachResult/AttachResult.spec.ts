@@ -1,18 +1,21 @@
-import {
-    AttachResult,
-    IAttachResultOptions
-} from '../../src/components/AttachResult/AttachResult';
+import { AttachResult, IAttachResultOptions } from '../../../src/components/AttachResult/AttachResult';
 import { Mock, Fake } from 'coveo-search-ui-tests';
-import { IQueryResult } from 'coveo-search-ui';
+import { IQueryResult, Logger } from 'coveo-search-ui';
 
 describe('AttachResult', () => {
     let attachResult: Mock.IBasicComponentSetup<AttachResult>;
     let fakeResult = Fake.createFakeResult();
 
+    beforeAll(() => {
+        Logger.disable();
+    });
+
+    afterAll(() => {
+        Logger.enable();
+    });
+
     beforeEach(() => {
-        attachResult = Mock.basicResultComponentSetup<AttachResult>(
-            AttachResult
-        );
+        attachResult = Mock.basicResultComponentSetup<AttachResult>(AttachResult);
     });
 
     afterEach(() => {
@@ -21,12 +24,8 @@ describe('AttachResult', () => {
 
     it('should have two children elements', () => {
         expect(attachResult.cmp.element.childNodes.length).toBe(2);
-        expect(
-            attachResult.cmp.element.querySelector('.coveo-caption-for-icon')
-        ).not.toBeNull();
-        expect(
-            attachResult.cmp.element.querySelector('.coveo-icon-attach')
-        ).not.toBeNull();
+        expect(attachResult.cmp.element.querySelector('.coveo-caption-for-icon')).not.toBeNull();
+        expect(attachResult.cmp.element.querySelector('.coveo-icon-attach')).not.toBeNull();
     });
 
     describe('when configuring isAttached', () => {
@@ -43,21 +42,13 @@ describe('AttachResult', () => {
         });
 
         it('should call isAttached on initialize', () => {
-            attachResult = Mock.optionsResultComponentSetup(
-                AttachResult,
-                { isAttached: faker.isAttached },
-                fakeResult
-            );
+            attachResult = Mock.optionsResultComponentSetup(AttachResult, { isAttached: faker.isAttached }, fakeResult);
             expect(faker.isAttached).toHaveBeenCalledWith(fakeResult);
         });
 
         it('should be attached when isAttached returns true', done => {
             isAttachedSpy.and.returnValue(Promise.resolve(true));
-            attachResult = Mock.optionsResultComponentSetup(
-                AttachResult,
-                { isAttached: faker.isAttached },
-                fakeResult
-            );
+            attachResult = Mock.optionsResultComponentSetup(AttachResult, { isAttached: faker.isAttached }, fakeResult);
             setTimeout(() => {
                 expect(attachResult.cmp.isAttached()).toBeTruthy();
                 done();
@@ -66,11 +57,7 @@ describe('AttachResult', () => {
 
         it('should be detached when isAttached returns false', done => {
             isAttachedSpy.and.returnValue(Promise.resolve(false));
-            attachResult = Mock.optionsResultComponentSetup(
-                AttachResult,
-                { isAttached: faker.isAttached },
-                fakeResult
-            );
+            attachResult = Mock.optionsResultComponentSetup(AttachResult, { isAttached: faker.isAttached }, fakeResult);
             setTimeout(() => {
                 expect(attachResult.cmp.isAttached()).toBeFalsy();
                 done();
@@ -79,11 +66,7 @@ describe('AttachResult', () => {
 
         it('should be detached when isAttached throws', done => {
             isAttachedSpy.and.returnValue(Promise.reject('error'));
-            attachResult = Mock.optionsResultComponentSetup(
-                AttachResult,
-                { isAttached: faker.isAttached },
-                fakeResult
-            );
+            attachResult = Mock.optionsResultComponentSetup(AttachResult, { isAttached: faker.isAttached }, fakeResult);
             setTimeout(() => {
                 expect(attachResult.cmp.isAttached()).toBeFalsy();
                 done();
@@ -138,23 +121,13 @@ describe('AttachResult', () => {
 
         it('should have the correct css class', async () => {
             await attachResult.cmp.attach();
-            expect(
-                attachResult.cmp.element.querySelector('.coveo-icon-attached')
-            ).not.toBeNull();
+            expect(attachResult.cmp.element.querySelector('.coveo-icon-attached')).not.toBeNull();
         });
 
         it('should display the correct tooltip', async () => {
-            expect(
-                attachResult.cmp.element.querySelector(
-                    '.coveo-caption-for-icon'
-                ).innerHTML
-            ).toBe('attach me');
+            expect(attachResult.cmp.element.querySelector('.coveo-caption-for-icon').innerHTML).toBe('attach me');
             await attachResult.cmp.attach();
-            expect(
-                attachResult.cmp.element.querySelector(
-                    '.coveo-caption-for-icon'
-                ).innerHTML
-            ).toBe('detach me');
+            expect(attachResult.cmp.element.querySelector('.coveo-caption-for-icon').innerHTML).toBe('detach me');
         });
     });
 
@@ -205,33 +178,19 @@ describe('AttachResult', () => {
 
         it('should have the correct css class', async () => {
             await attachResult.cmp.detach();
-            expect(
-                attachResult.cmp.element.querySelector('.coveo-icon-attach')
-            ).not.toBeNull();
+            expect(attachResult.cmp.element.querySelector('.coveo-icon-attach')).not.toBeNull();
         });
 
         it('should display the correct tooltip', async () => {
-            expect(
-                attachResult.cmp.element.querySelector(
-                    '.coveo-caption-for-icon'
-                ).innerHTML
-            ).toBe('detach me');
+            expect(attachResult.cmp.element.querySelector('.coveo-caption-for-icon').innerHTML).toBe('detach me');
             await attachResult.cmp.detach();
-            expect(
-                attachResult.cmp.element.querySelector(
-                    '.coveo-caption-for-icon'
-                ).innerHTML
-            ).toBe('attach me');
+            expect(attachResult.cmp.element.querySelector('.coveo-caption-for-icon').innerHTML).toBe('attach me');
         });
     });
 
     describe('click', () => {
         beforeEach(() => {
-            attachResult = Mock.optionsResultComponentSetup(
-                AttachResult,
-                {},
-                fakeResult
-            );
+            attachResult = Mock.optionsResultComponentSetup(AttachResult, {}, fakeResult);
         });
 
         it('should attach when it is not attached', () => {

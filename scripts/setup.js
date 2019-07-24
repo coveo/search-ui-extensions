@@ -7,7 +7,7 @@ const folderToCopy = [
         dest: './bin'
     },
     {
-        src: './src/img',
+        src: './img',
         dest: './bin/img'
     }
 ];
