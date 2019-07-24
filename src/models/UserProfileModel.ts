@@ -1,162 +1,166 @@
-import { Model, QueryBuilder, IQueryResult, SearchInterface } from 'coveo-search-ui';
-import { UserProfilingEndpoint, IActionHistory, ActionHistoryType } from '../rest/UserProfilingEndpoint';
+import { Model, QueryBuilder, IQueryResult, IComponentBindings } from 'coveo-search-ui';
+import { UserProfilingEndpoint, IActionHistory, UserActionType } from '../rest/UserProfilingEndpoint';
 
 /**
  * Represent an action that a user has made.
  */
 export class UserAction {
-  constructor(
-    public type: 'Ticket submitted' | ActionHistoryType,
-    public timestamp: Date,
-    public raw: {
-      [key: string]: string;
-      query_expression?: string;
-      uri_hash?: string;
-      event_type?: string;
-      event_value?: string;
-      origin_level_1?: string;
-      cause?: string;
-      content_id_key?: string;
-      content_id_value?: string;
-    },
-    public document?: IQueryResult,
-    public query?: string
-  ) {}
+    constructor(
+        public type: UserActionType,
+        public timestamp: Date,
+        public raw: {
+            [key: string]: string;
+            query_expression?: string;
+            uri_hash?: string;
+            event_type?: string;
+            event_value?: string;
+            origin_level_1?: string;
+            cause?: string;
+            content_id_key?: string;
+            content_id_value?: string;
+        },
+        public document?: IQueryResult,
+        public query?: string
+    ) {}
 }
 
+/**
+ * Initialization options of the **UserProfileModel** class.
+ */
 export interface IUserProfileModelOptions {
-  searchInterface: SearchInterface;
-  organization?: string;
-  restUri?: string;
+    /**
+     * Organization id of the organizatrion.
+     */
+    organization?: string;
+
+    /**
+     * Uri of the User Profiling Endpoint.
+     */
+    restUri?: string;
 }
 
 /**
  * Model that store each user profile informations such as actions made by them,
  */
 export class UserProfileModel extends Model {
-  public static ID = 'UserProfileModel';
+    /**
+     * Identifier of the Search-UI component.
+     */
+    public static readonly ID = 'UserProfileModel';
 
-  private static ERROR_MESSAGE = Object.freeze({
-    FETCH_CLICKED_DOCUMENT_FAIL: 'Fetching clicked documents details failed'
-  });
-
-  private endpoint: UserProfilingEndpoint;
-  private getOrFetchCache: { [userId: string]: Promise<UserAction[]> };
-
-  /**
-   * Create a `UserProfileModel` and bound it to `element`.
-   * Also create a `UserProfilingEndpoint` that will be use to fetch actions made by a user.
-   * @param element An element on which the model will be bound on.
-   * @param options A set of options necessary for the component creation.
-   */
-  constructor(element: HTMLElement, public options: IUserProfileModelOptions) {
-    super(element, UserProfileModel.ID, {});
-
-    const SEARCH_INTERFACE_ENDPOINT = this.options.searchInterface.options.endpoint;
-
-    this.getOrFetchCache = {};
-
-    this.endpoint = new UserProfilingEndpoint({
-      uri: this.options.restUri || this.parseEndpointUri(SEARCH_INTERFACE_ENDPOINT.options.restUri),
-      accessToken: SEARCH_INTERFACE_ENDPOINT.accessToken,
-      organization: this.options.organization ? this.options.organization : SEARCH_INTERFACE_ENDPOINT.options.queryStringArguments.organizationId
+    private static readonly ERROR_MESSAGE = Object.freeze({
+        FETCH_CLICKED_DOCUMENT_FAIL: 'Fetching clicked documents details failed'
     });
-  }
 
-  /**
-   * Get all actions related to a user.
-   * @param userId The identifier of a user.
-   */
-  public async getActions(userId: string): Promise<UserAction[]> {
-    const actions = <UserAction[]>this.get(userId);
-    return (Array.isArray(actions) && actions) || this.fetchActions(userId);
-  }
+    private endpoint: UserProfilingEndpoint;
+    private getOrFetchCache: { [userId: string]: Promise<UserAction[]> };
 
-  /**
-   * Get all document clicked by a user.
-   * @param userId The identifier of a user.
-   */
-  public async getDocuments(userId: string): Promise<IQueryResult[]> {
-    return (await this.getActions(userId))
-      .filter(action => action.document && action.type === ActionHistoryType.Click)
-      .map(action => action.document);
-  }
+    /**
+     * Create a `UserProfileModel` and bound it to `element`.
+     * Also create a `UserProfilingEndpoint` that will be use to fetch actions made by a user.
+     *
+     * @param element An element on which the model will be bound on.
+     * @param options A set of options necessary for the component creation.
+     */
+    constructor(element: HTMLElement, public options: IUserProfileModelOptions, public bindings: IComponentBindings) {
+        super(element, UserProfileModel.ID, {});
 
-  public async getQueries(userId: string): Promise<string[]> {
-    return (await this.getActions(userId)).filter(action => action.query).map(action => action.query);
-  }
+        const SEARCH_INTERFACE_ENDPOINT = this.bindings.searchInterface.options.endpoint;
 
-  private fetchActions(userId: string) {
-    const pendingFetch = this.getOrFetchCache[userId];
-    const doFetch = () => {
-      const pendingFetch = this.endpoint.getActions(userId).then(actions => this.parseGetActionsResponse(userId, actions));
-      this.getOrFetchCache[userId] = pendingFetch;
-      return pendingFetch;
-    };
-    return pendingFetch || doFetch();
-  }
+        this.options.restUri = this.options.restUri || this.parseEndpointUri(SEARCH_INTERFACE_ENDPOINT.options.restUri);
+        this.options.organization = this.options.organization || SEARCH_INTERFACE_ENDPOINT.options.queryStringArguments.organizationId;
 
-  private parseGetActionsResponse(userId: string, actions: IActionHistory[]): Promise<UserAction[]> {
-    const userActions = this.buildUserActions(actions);
+        this.getOrFetchCache = {};
 
-    this.registerNewAttribute(userId, userActions);
-
-    return userActions;
-  }
-
-  private async fetchDocuments(urihashes: string[]): Promise<{ [urihash: string]: IQueryResult }> {
-    if (urihashes.length === 0) {
-      return Promise.resolve({});
+        this.endpoint = new UserProfilingEndpoint({
+            uri: this.options.restUri,
+            accessToken: SEARCH_INTERFACE_ENDPOINT.accessToken,
+            organization: this.options.organization
+        });
     }
 
-    const QUERY = new QueryBuilder();
-    QUERY.advancedExpression.addFieldExpression('@urihash', '==', urihashes.filter(x => x));
-
-    // Here we directly use the Search Endpoint to query without side effects.
-    const searchRequest = await this.options.searchInterface.queryController.getEndpoint().search(QUERY.build());
-
-    const documentsDict = searchRequest.results.reduce(
-      (acc, result) => ({ ...acc, [result.raw.urihash]: { ...result, searchInterface: this.options.searchInterface } }),
-      {}
-    );
-
-    return documentsDict;
-  }
-
-  private async buildUserActions(actions: IActionHistory[]): Promise<UserAction[]> {
-    let documents = {} as { [urihash: string]: IQueryResult };
-    const urihashes = actions.filter(this.isClick).map(action => action.value.uri_hash);
-
-    try {
-      documents = await this.fetchDocuments(urihashes);
-    } catch (error) {
-      this.logger.error(UserProfileModel.ERROR_MESSAGE.FETCH_CLICKED_DOCUMENT_FAIL, error);
+    /**
+     * Get all actions related to a user.
+     *
+     * @param userId The identifier of a user.
+     */
+    public async getActions(userId: string): Promise<UserAction[]> {
+        const actions = <UserAction[]>this.get(userId);
+        return (Array.isArray(actions) && actions) || this.fetchActions(userId);
     }
 
-    return actions.map(action => {
-      return new UserAction(
-        action.name,
-        new Date(action.time),
-        action.value,
-        this.isClickOrView(action) ? documents[action.value.uri_hash] : undefined,
-        this.isSearch(action) ? action.value.query_expression : undefined
-      );
-    });
-  }
+    private fetchActions(userId: string) {
+        const pendingFetch = this.getOrFetchCache[userId];
+        const doFetch = () => {
+            const pendingFetch = this.endpoint.getActions(userId).then(actions => this.parseGetActionsResponse(userId, actions));
+            this.getOrFetchCache[userId] = pendingFetch;
+            return pendingFetch;
+        };
+        return pendingFetch || doFetch();
+    }
 
-  private isClick(action: IActionHistory) {
-    return action.name === ActionHistoryType.Click;
-  }
+    private parseGetActionsResponse(userId: string, actions: IActionHistory[]): Promise<UserAction[]> {
+        const userActions = this.buildUserActions(actions);
 
-  private isClickOrView(action: IActionHistory) {
-    return this.isClick(action) || action.name === ActionHistoryType.PageView;
-  }
+        this.registerNewAttribute(userId, userActions);
 
-  private isSearch(action: IActionHistory) {
-    return action.name === ActionHistoryType.Search;
-  }
+        return userActions;
+    }
 
-  private parseEndpointUri(url: string) {
-    return url ? /^((.*:)\/\/([A-Za-z0-9\-\.]+)(:[0-9]+)?)(.*)$/.exec(url)[1] : '';
-  }
+    private async fetchDocuments(urihashes: string[]): Promise<{ [urihash: string]: IQueryResult }> {
+        if (urihashes.length === 0) {
+            return Promise.resolve({});
+        }
+
+        const QUERY = new QueryBuilder();
+        QUERY.advancedExpression.addFieldExpression('@urihash', '==', urihashes.filter(x => x));
+
+        // Here we directly use the Search Endpoint to query without side effects.
+        const searchRequest = await this.bindings.queryController.getEndpoint().search(QUERY.build());
+
+        const documentsDict = searchRequest.results.reduce(
+            (acc, result) => ({ ...acc, [result.raw.urihash]: { ...result, searchInterface: this.bindings.searchInterface } }),
+            {}
+        );
+
+        return documentsDict;
+    }
+
+    private async buildUserActions(actions: IActionHistory[]): Promise<UserAction[]> {
+        let documents = {} as { [urihash: string]: IQueryResult };
+        const urihashes = actions.filter(this.isClick).map(action => action.value.uri_hash);
+
+        try {
+            documents = await this.fetchDocuments(urihashes);
+        } catch (error) {
+            this.logger.error(UserProfileModel.ERROR_MESSAGE.FETCH_CLICKED_DOCUMENT_FAIL, error);
+        }
+
+        return actions.map(action => {
+            return new UserAction(
+                action.name,
+                new Date(action.time),
+                action.value,
+                this.isClickOrView(action) ? documents[action.value.uri_hash] : undefined,
+                this.isSearch(action) ? action.value.query_expression : undefined
+            );
+        });
+    }
+
+    private isClick(action: IActionHistory) {
+        return action.name === UserActionType.Click;
+    }
+
+    private isClickOrView(action: IActionHistory) {
+        return this.isClick(action) || action.name === UserActionType.PageView;
+    }
+
+    private isSearch(action: IActionHistory) {
+        return action.name === UserActionType.Search;
+    }
+
+    private parseEndpointUri(url: string) {
+        // Parse the host from the Search Endpoint rest uri.
+        return url ? /^((.*:)\/\/([A-Za-z0-9\-\.]+)(:[0-9]+)?)(.*)$/.exec(url)[1] : '';
+    }
 }

@@ -1,20 +1,31 @@
 /**
  * Supported languages.
  */
-export type Language = 'en';
+export enum Language {
+    English = 'en'
+}
 
 /**
  * JSON format of imported strings.json files.
  */
-export interface ILanguageDictionary {
-  [key: string]: string;
+export default interface ILanguageDictionary {
+    [key: string]: string;
 }
 
+/**
+ * Translation utilities.
+ */
 export class Translation {
-  public static register(language: Language, values: ILanguageDictionary) {
-    // @ts-ignore
-    String.toLocaleString({
-      [language]: values
-    });
-  }
+    /**
+     * Register translations for a language.
+     *
+     * @param language Language of the dictionary.
+     * @param translationDictionary Key-Value dictionary that contain all traslation for a language.
+     */
+    public static register(language: Language, translationDictionary: ILanguageDictionary) {
+        // @ts-ignore
+        String.toLocaleString({
+            [language]: translationDictionary
+        });
+    }
 }

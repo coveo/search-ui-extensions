@@ -1,23 +1,23 @@
 @import './Variables.scss';
 
 .coveo-label {
-  color: black;
-  font-size: 1em;
-  font-weight: normal;
+    color: black;
+    font-size: 1em;
+    font-weight: normal;
 }
 
 .coveo-content {
-  color: black;
-  font-size: 1em;
-  font-weight: bold;
+    color: black;
+    font-size: 1em;
+    font-weight: bold;
 }
 
 .coveo-link {
-  color: $dodger-blue;
-  font-weight: bold;
-  text-decoration: none;
+    color: $dodger-blue;
+    font-weight: bold;
+    text-decoration: none;
 
-  &:hover {
-    text-decoration: underline;
-  }
+    &:hover {
+        text-decoration: underline;
+    }
 }

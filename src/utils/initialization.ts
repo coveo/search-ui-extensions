@@ -1,17 +1,24 @@
-import { get, Assert, SearchInterface } from 'coveo-search-ui';
+import { get, Assert, IComponentBindings } from 'coveo-search-ui';
 import { UserProfileModel } from '../models/UserProfileModel';
 
+/**
+ * Initialization utility functions container.
+ */
 export class InitializationUtils {
-  public static getUserProfileModel(element: HTMLElement, searchInterface: SearchInterface) {
-    Assert.exists(element);
-    Assert.exists(searchInterface);
+    /**
+     * Get of Initialize the User Profile Model.
+     *
+     * @param root Element on which to bind the **UserProfileModel**.
+     * @param bindings Bindings of the Search-UI framework environment.
+     */
+    public static getUserProfileModel(root: HTMLElement, bindings: IComponentBindings) {
+        Assert.exists(root);
+        Assert.exists(bindings);
 
-    let userProfileModel = get(element, UserProfileModel, true) as UserProfileModel;
-    if (!userProfileModel) {
-      userProfileModel = new UserProfileModel(element, {
-        searchInterface: searchInterface
-      });
+        let userProfileModel = get(root, UserProfileModel, true) as UserProfileModel;
+        if (!userProfileModel) {
+            userProfileModel = new UserProfileModel(root, {}, bindings);
+        }
+        return userProfileModel;
     }
-    return userProfileModel;
-  }
 }

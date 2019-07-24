@@ -1,21 +1,25 @@
-import { Translation } from '../../utils/translation';
+import { Translation, Language } from '../../utils/translation';
 
-Translation.register('en', {
-  user_actions_start_date: 'Start Date',
-  user_actions_start_time: 'Start Time',
-  user_actions_duration: 'Duration',
+Translation.register(Language.English, {
+    UserActions_no_actions: 'No actions available for this user',
 
-  user_actions_event: 'older event',
-  user_actions_events: 'older events',
+    RecentQueries_more: 'Show More',
+    RecentQueries_less: 'Show Less',
+    RecentQueries_no_queries: 'No queries made by this user',
 
-  user_actions_search: 'User Query',
-  user_actions_query: 'Query',
+    RecentClickedDocuments_more: 'Show More',
+    RecentClickedDocuments_less: 'Show Less',
+    RecentClickedDocuments_no_clicked_documents: 'No document clicked by this user',
 
-  user_actions_click: 'Clicked Document',
-  user_actions_view: 'Page View',
-  user_actions_custom: 'Custom',
+    UserActivity_start_date: 'Start Date',
+    UserActivity_start_time: 'Start Time',
+    UserActivity_duration: 'Duration',
+    UserActivity_other_event: 'Other Event',
+    UserActivity_other_events: 'Other Events',
 
-  user_actions_no_actions: 'No actions available for this user',
-  user_actions_no_queries: 'No queries made by this user',
-  user_actions_no_clicked_documents: 'No document clicked by this user'
+    UserActivity_search: 'User Query',
+    UserActivity_query: 'Query',
+    UserActivity_click: 'Clicked Document',
+    UserActivity_view: 'Page View',
+    UserActivity_custom: 'Custom Action'
 });

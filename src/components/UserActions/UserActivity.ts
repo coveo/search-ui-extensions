@@ -3,13 +3,13 @@ import { formatTime, formatDate, formatTimeInterval } from '../../utils/time';
 import { UserAction, UserProfileModel } from '../../models/UserProfileModel';
 import { InitializationUtils } from '../../utils/initialization';
 import { duplicate, search, view, dot } from '../../utils/icons';
-import { ActionHistoryType } from '../../rest/UserProfilingEndpoint';
+import { UserActionType } from '../../rest/UserProfilingEndpoint';
 import './Strings';
 
 export interface IUserActivityOptions {
-  userId: string;
-  unfoldInclude: string[];
-  unfoldExclude: string[];
+    userId: string;
+    unfoldInclude: string[];
+    unfoldExclude: string[];
 }
 
 const MAIN_CLASS = 'coveo-user-activity';
@@ -31,285 +31,303 @@ const ICON_CLASS = 'coveo-icon';
 
 const BUBBLE_CLASS = 'coveo-bubble';
 
-const SCOPE = 'user_actions_';
-
 export class UserActivity extends Component {
-  static ID = 'UserActivity';
-  static options: IUserActivityOptions = {
-    userId: ComponentOptions.buildStringOption({ required: true }),
-    unfoldInclude: ComponentOptions.buildListOption({
-      defaultValue: ['didyoumeanAutomatic', 'didyoumeanClick', 'omniboxAnalytics', 'omniboxFromLink', 'searchboxSubmit', 'searchFromLink'],
-      required: true
-    }),
-    unfoldExclude: ComponentOptions.buildListOption({
-      defaultValue: [],
-      required: true
-    })
-  };
+    static readonly ID = 'UserActivity';
+    static readonly options: IUserActivityOptions = {
+        userId: ComponentOptions.buildStringOption({ required: true }),
+        unfoldInclude: ComponentOptions.buildListOption({
+            defaultValue: [
+                'didyoumeanAutomatic',
+                'didyoumeanClick',
+                'omniboxAnalytics',
+                'omniboxFromLink',
+                'searchboxSubmit',
+                'searchFromLink',
+                'userActionsSubmit'
+            ],
+            required: true
+        }),
+        unfoldExclude: ComponentOptions.buildListOption({
+            defaultValue: [],
+            required: true
+        })
+    };
 
-  private actions: UserAction[];
-  private foldedActions: UserAction[];
-  private userProfileModel: UserProfileModel;
+    private actions: UserAction[];
+    private foldedActions: UserAction[];
+    private userProfileModel: UserProfileModel;
 
-  constructor(public element: HTMLElement, public options: IUserActivityOptions, public bindings: IComponentBindings) {
-    super(element, UserActivity.ID, bindings);
+    /**
+     * Create an instance of the **UserActivity** class. Initialize is needed the **UserProfileModel** and fetch user actions related to the **UserId**.
+     *
+     * @param element Element on which to bind the component.
+     * @param options Initialization options of the component.
+     * @param bindings Bindings of the Search-UI environment.
+     */
+    constructor(public element: HTMLElement, public options: IUserActivityOptions, public bindings: IComponentBindings) {
+        super(element, UserActivity.ID, bindings);
 
-    this.options = ComponentOptions.initComponentOptions(element, UserActivity, options);
-    this.userProfileModel = InitializationUtils.getUserProfileModel(this.root, this.bindings.searchInterface);
+        this.options = ComponentOptions.initComponentOptions(element, UserActivity, options);
+        this.userProfileModel = InitializationUtils.getUserProfileModel(this.root, this.bindings);
 
-    this.userProfileModel.getActions(this.options.userId).then(actions => {
-      this.actions = actions.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-      this.foldedActions = actions.filter(action => this.isNotRelevant(action));
-      this.render();
-    });
-  }
+        this.userProfileModel.getActions(this.options.userId).then(actions => {
+            this.actions = actions.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+            this.foldedActions = this.actions.filter(action => !this.isUnfoldByDefault(action));
+            this.render();
+        });
+    }
 
-  private isNotRelevant(action: UserAction) {
-    const isCustom = action.type === ActionHistoryType.Custom;
-    const isSearcch = action.type === ActionHistoryType.Search;
-    const isView = action.type === ActionHistoryType.PageView;
+    private isUnfoldByDefault(action: UserAction) {
+        const isCustom = action.type === UserActionType.Custom;
+        const isSearch = action.type === UserActionType.Search;
+        const isClick = action.type === UserActionType.Click;
 
-    const isNotAUserQuery = action.type === ActionHistoryType.Search && this.options.unfoldInclude.indexOf(action.raw.cause) === -1;
+        const cause = (isCustom && action.raw.event_value) || (isSearch && action.raw.cause) || '';
 
-    return isCustom || (isSearcch && isNotAUserQuery) || isView;
-  }
+        const useInclude = this.options.unfoldInclude && this.options.unfoldInclude.length > 0;
 
-  private render() {
-    const panel = document.createElement('div');
-    panel.classList.add(MAIN_CLASS);
+        const isExcluded = (isSearch || isCustom) && this.options.unfoldExclude.indexOf(cause) !== -1;
+        const isIncluded = (isSearch || isCustom) && this.options.unfoldInclude.indexOf(cause) !== -1;
 
-    const timestampSection = document.createElement('div');
-    timestampSection.classList.add(HEADER_CLASS);
+        return isClick || (useInclude && isIncluded) || (!useInclude && !isExcluded);
+    }
 
-    this.buildTimestampSection().forEach(el => timestampSection.appendChild(el));
+    private render() {
+        const panel = document.createElement('div');
+        panel.classList.add(MAIN_CLASS);
 
-    const activitySection = this.buildActivitySection();
-    activitySection.classList.add(ACTIVITY_CLASS);
+        const timestampSection = document.createElement('div');
+        timestampSection.classList.add(HEADER_CLASS);
 
-    panel.appendChild(timestampSection);
-    panel.appendChild(activitySection);
+        this.buildTimestampSection().forEach(el => timestampSection.appendChild(el));
 
-    this.element.innerHTML = '';
-    this.element.appendChild(panel);
-  }
+        const activitySection = this.buildActivitySection();
+        activitySection.classList.add(ACTIVITY_CLASS);
 
-  private buildActivitySection(): HTMLElement {
-    const list = document.createElement('ol');
+        panel.appendChild(timestampSection);
+        panel.appendChild(activitySection);
 
-    this.buildListItems(this.actions).forEach((el, i, array) => {
-      list.appendChild(el);
-      if (i < array.length - 1) {
-        list.appendChild(this.buildBubble());
-      }
-    });
+        this.element.innerHTML = '';
+        this.element.appendChild(panel);
+    }
 
-    return list;
-  }
+    private buildActivitySection(): HTMLElement {
+        const list = document.createElement('ol');
 
-  private buildBubble() {
-    const li = document.createElement('li');
-    li.classList.add(BUBBLE_CLASS);
-    return li;
-  }
+        this.buildListItems(this.actions).forEach((listItem, index, array) => {
+            list.appendChild(listItem);
+            if (index < array.length - 1) {
+                list.appendChild(this.buildBubble());
+            }
+        });
 
-  private buildListItems(actions: UserAction[]): HTMLElement[] {
-    const nbUnfoldedActions = this.actions.length - this.foldedActions.length;
+        return list;
+    }
 
-    return actions
-      .reduce((acc, action) => {
-        const last = acc[acc.length - 1];
-        if (this.foldedActions.indexOf(action) !== -1 && nbUnfoldedActions > 0) {
-          if (Array.isArray(last)) {
-            last.push(action);
-            return [...acc];
-          } else {
-            return [...acc, [action]];
-          }
-        } else {
-          return [...acc, action];
+    private buildBubble() {
+        const li = document.createElement('li');
+        li.classList.add(BUBBLE_CLASS);
+        return li;
+    }
+
+    private buildListItems(actions: UserAction[]): HTMLElement[] {
+        const nbUnfoldedActions = this.actions.length - this.foldedActions.length;
+
+        return actions
+            .reduce((acc, action) => {
+                const last = acc[acc.length - 1];
+                if (this.foldedActions.indexOf(action) !== -1 && nbUnfoldedActions > 0) {
+                    if (Array.isArray(last)) {
+                        last.push(action);
+                        return [...acc];
+                    } else {
+                        return [...acc, [action]];
+                    }
+                } else {
+                    return [...acc, action];
+                }
+            }, [])
+            .map(item => {
+                if (Array.isArray(item)) {
+                    return this.buildFolded(item);
+                } else {
+                    return this.buildListItem(item);
+                }
+            });
+    }
+
+    private buildListItem(action: UserAction): HTMLLIElement {
+        let li: HTMLLIElement;
+
+        switch (action.type) {
+            case UserActionType.Click:
+                li = this.buildClickEvent(action);
+                break;
+            case UserActionType.Search:
+                li = this.buildSearchEvent(action);
+                break;
+            case UserActionType.PageView:
+                li = this.buildViewEvent(action);
+                break;
+            default:
+            case UserActionType.Custom:
+                li = this.buildCustomEvent(action);
+                break;
         }
-      }, [])
-      .map(item => {
-        if (Array.isArray(item)) {
-          return this.buildFolded(item);
-        } else {
-          return this.buildListItem(item);
+        return li;
+    }
+
+    private buildFolded(actions: UserAction[]): HTMLLIElement {
+        const li = document.createElement('li');
+        li.classList.add(FOLDED_CLASS);
+
+        const hr = document.createElement('hr');
+
+        const span = document.createElement('span');
+        span.classList.add(TEXT_CLASS);
+        span.innerText = `${actions.length} ${actions.length > 1 ? l(`${UserActivity.ID}_other_events`) : l(`${UserActivity.ID}_other_event`)}`;
+
+        hr.appendChild(span);
+
+        li.addEventListener('click', () => {
+            this.foldedActions = this.foldedActions.filter(action => actions.indexOf(action) === -1);
+            this.render();
+        });
+
+        li.appendChild(hr);
+
+        return li;
+    }
+
+    private buildClickEvent(action: UserAction): HTMLLIElement {
+        const li = document.createElement('li');
+        li.classList.add(CLICK_EVENT_CLASS);
+
+        const dataElement = document.createElement('a');
+        dataElement.classList.add(DATA_CLASS);
+        dataElement.innerText = (action.document && action.document.title) || '';
+        dataElement.href = (action.document && action.document.clickUri) || '';
+
+        document.createAttributeNS('svg', 'svg');
+
+        li.appendChild(this.buildTitleElement(action));
+        if (action.document) {
+            li.appendChild(dataElement);
         }
-      });
-  }
+        li.appendChild(this.buildTimestampElement(action));
+        li.appendChild(this.buildIcon(duplicate));
 
-  private buildListItem(action: UserAction): HTMLLIElement {
-    let li: HTMLLIElement;
-
-    switch (action.type) {
-      case ActionHistoryType.Click:
-        li = this.buildClickEvent(action);
-        break;
-      case ActionHistoryType.Search:
-        li = this.buildSearchEvent(action);
-        break;
-      case ActionHistoryType.PageView:
-        li = this.buildViewEvent(action);
-        break;
-      default:
-      case ActionHistoryType.Custom:
-        li = this.buildCustomEvent(action);
-        break;
-    }
-    return li;
-  }
-
-  private buildFolded(actions: UserAction[]): HTMLLIElement {
-    const li = document.createElement('li');
-    li.classList.add(FOLDED_CLASS);
-
-    const hr = document.createElement('hr');
-
-    const span = document.createElement('span');
-    span.classList.add(TEXT_CLASS);
-    span.innerText = `${actions.length} ${actions.length > 1 ? l('user_actions_events') : l('user_actions_event')}`;
-
-    hr.appendChild(span);
-
-    li.addEventListener('click', () => {
-      this.foldedActions = this.foldedActions.filter(action => actions.indexOf(action) === -1);
-      this.render();
-    });
-
-    li.appendChild(hr);
-
-    return li;
-  }
-
-  private buildClickEvent(action: UserAction): HTMLLIElement {
-    const li = document.createElement('li');
-    li.classList.add(CLICK_EVENT_CLASS);
-
-    const dataElement = document.createElement('a');
-    dataElement.classList.add(DATA_CLASS);
-    dataElement.innerText = (action.document && action.document.title) || '';
-    dataElement.href = (action.document && action.document.clickUri) || '';
-
-    document.createAttributeNS('svg', 'svg');
-
-    li.appendChild(this.buildTitleElement(action));
-    if (action.document) {
-      li.appendChild(dataElement);
-    }
-    li.appendChild(this.buildTimestampElement(action));
-    li.appendChild(this.buildIcon(duplicate));
-
-    return li;
-  }
-
-  private buildSearchEvent(action: UserAction): HTMLLIElement {
-    const li = document.createElement('li');
-    li.classList.add(SEARCH_EVENT_CLASS);
-
-    li.appendChild(this.buildTitleElement(action));
-
-    if (action.query) {
-      const dataElement = document.createElement('div');
-      dataElement.classList.add(DATA_CLASS);
-      dataElement.innerText = action.query || '';
-
-      li.appendChild(dataElement);
+        return li;
     }
 
-    li.appendChild(this.buildTimestampElement(action));
-    li.appendChild(this.buildIcon(search));
+    private buildSearchEvent(action: UserAction): HTMLLIElement {
+        const li = document.createElement('li');
+        li.classList.add(SEARCH_EVENT_CLASS);
 
-    return li;
-  }
+        li.appendChild(this.buildTitleElement(action));
 
-  private buildViewEvent(action: UserAction): HTMLLIElement {
-    const li = document.createElement('li');
-    li.classList.add(VIEW_EVENT_CLASS);
+        if (action.query) {
+            const dataElement = document.createElement('div');
+            dataElement.classList.add(DATA_CLASS);
+            dataElement.innerText = action.query || '';
 
-    const dataElement = document.createElement('div');
-    dataElement.classList.add(DATA_CLASS);
-    dataElement.innerText = `${action.raw.content_id_key}: ${action.raw.content_id_value}`;
+            li.appendChild(dataElement);
+        }
 
-    li.appendChild(this.buildTitleElement(action));
-    li.appendChild(dataElement);
-    li.appendChild(this.buildTimestampElement(action));
-    li.appendChild(this.buildIcon(view));
+        li.appendChild(this.buildTimestampElement(action));
+        li.appendChild(this.buildIcon(search));
 
-    return li;
-  }
+        return li;
+    }
 
-  private buildCustomEvent(action: UserAction): HTMLLIElement {
-    const li = document.createElement('li');
-    li.classList.add(CUSTOM_EVENT_CLASS);
+    private buildViewEvent(action: UserAction): HTMLLIElement {
+        const li = document.createElement('li');
+        li.classList.add(VIEW_EVENT_CLASS);
 
-    const titleElem = document.createElement('div');
-    titleElem.classList.add(TITLE_CLASS);
-    titleElem.innerText = `${l(action.raw.event_type || `${SCOPE}custom`)}`;
+        const dataElement = document.createElement('div');
+        dataElement.classList.add(DATA_CLASS);
+        dataElement.innerText = `${action.raw.content_id_key}: ${action.raw.content_id_value}`;
 
-    const dataElement = document.createElement('div');
-    dataElement.classList.add(DATA_CLASS);
-    dataElement.innerText = action.raw.event_value || '';
+        li.appendChild(this.buildTitleElement(action));
+        li.appendChild(dataElement);
+        li.appendChild(this.buildTimestampElement(action));
+        li.appendChild(this.buildIcon(view));
 
-    li.appendChild(titleElem);
-    li.appendChild(dataElement);
-    li.appendChild(this.buildTimestampElement(action));
-    li.appendChild(this.buildIcon(dot));
+        return li;
+    }
 
-    return li;
-  }
+    private buildCustomEvent(action: UserAction): HTMLLIElement {
+        const li = document.createElement('li');
+        li.classList.add(CUSTOM_EVENT_CLASS);
 
-  private buildTimestampElement(action: UserAction) {
-    const el = document.createElement('div');
-    el.classList.add(TIMESTAMP_CLASS);
-    el.innerText = `${formatTime(action.timestamp)}${(action.raw.origin_level_1 && ` - ${action.raw.origin_level_1}`) || ''}`;
-    return el;
-  }
+        const titleElem = document.createElement('div');
+        titleElem.classList.add(TITLE_CLASS);
+        titleElem.innerText = `${l(action.raw.event_type || `${UserActivity.ID}_custom`)}`;
 
-  private buildTitleElement(action: UserAction) {
-    const title = action.type === ActionHistoryType.Search && !action.raw.query_expression ? 'query' : action.type.toLowerCase();
+        const dataElement = document.createElement('div');
+        dataElement.classList.add(DATA_CLASS);
+        dataElement.innerText = action.raw.event_value || '';
 
-    const el = document.createElement('div');
-    el.classList.add(TITLE_CLASS);
-    el.innerText = l(`${SCOPE}${title}`);
-    return el;
-  }
+        li.appendChild(titleElem);
+        li.appendChild(dataElement);
+        li.appendChild(this.buildTimestampElement(action));
+        li.appendChild(this.buildIcon(dot));
 
-  private buildIcon(icon: string) {
-    const el = document.createElement('div');
-    el.classList.add(ICON_CLASS);
-    el.innerHTML = icon;
-    return el;
-  }
+        return li;
+    }
 
-  private buildTimestampSection(): HTMLElement[] {
-    const startDate = this.actions[0];
-    const endDate = this.actions[this.actions.length - 1];
-    const duration = endDate.timestamp.getTime() - startDate.timestamp.getTime();
+    private buildTimestampElement(action: UserAction) {
+        const el = document.createElement('div');
+        el.classList.add(TIMESTAMP_CLASS);
+        el.innerText = `${formatTime(action.timestamp)}${(action.raw.origin_level_1 && ` - ${action.raw.origin_level_1}`) || ''}`;
+        return el;
+    }
 
-    return [
-      this.buildTimestampCell({ title: l('user_actions_start_date'), data: formatDate(startDate.timestamp) }),
-      this.buildTimestampCell({ title: l('user_actions_start_time'), data: formatTime(startDate.timestamp) }),
-      this.buildTimestampCell({ title: l('user_actions_duration'), data: formatTimeInterval(duration) })
-    ];
-  }
+    private buildTitleElement(action: UserAction) {
+        const title = action.type === UserActionType.Search && !action.raw.query_expression ? 'query' : action.type.toLowerCase();
 
-  private buildTimestampCell({ title, data }: { title: string; data: string }): HTMLElement {
-    const cell = document.createElement('div');
-    cell.classList.add(CELL_CLASS);
+        const el = document.createElement('div');
+        el.classList.add(TITLE_CLASS);
+        el.innerText = l(`${UserActivity.ID}_${title}`);
+        return el;
+    }
 
-    const titleElement = document.createElement('div');
-    titleElement.classList.add(TITLE_CLASS);
-    titleElement.innerText = title;
+    private buildIcon(icon: string) {
+        const el = document.createElement('div');
+        el.classList.add(ICON_CLASS);
+        el.innerHTML = icon;
+        return el;
+    }
 
-    const dataElement = document.createElement('div');
-    dataElement.classList.add(DATA_CLASS);
-    dataElement.innerText = data;
+    private buildTimestampSection(): HTMLElement[] {
+        const startDate = this.actions[0];
+        const endDate = this.actions[this.actions.length - 1];
+        const duration = endDate.timestamp.getTime() - startDate.timestamp.getTime();
 
-    cell.appendChild(titleElement);
-    cell.appendChild(dataElement);
+        return [
+            this.buildTimestampCell({ title: l(`${UserActivity.ID}_start_date`), data: formatDate(startDate.timestamp) }),
+            this.buildTimestampCell({ title: l(`${UserActivity.ID}_start_time`), data: formatTime(startDate.timestamp) }),
+            this.buildTimestampCell({ title: l(`${UserActivity.ID}_duration`), data: formatTimeInterval(duration) })
+        ];
+    }
 
-    return cell;
-  }
+    private buildTimestampCell({ title, data }: { title: string; data: string }): HTMLElement {
+        const cell = document.createElement('div');
+        cell.classList.add(CELL_CLASS);
+
+        const titleElement = document.createElement('div');
+        titleElement.classList.add(TITLE_CLASS);
+        titleElement.innerText = title;
+
+        const dataElement = document.createElement('div');
+        dataElement.classList.add(DATA_CLASS);
+        dataElement.innerText = data;
+
+        cell.appendChild(titleElement);
+        cell.appendChild(dataElement);
+
+        return cell;
+    }
 }
 
 Initialization.registerAutoCreateComponent(UserActivity);

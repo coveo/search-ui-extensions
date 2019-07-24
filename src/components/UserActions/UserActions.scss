@@ -6,293 +6,300 @@ $path-line-width: 0.05em;
 $headers-gap: 2em;
 $dot-width: $headers-gap / 3;
 $font-size: 1em;
+$search-ui-dropdown-header-color: #1d4f76;
 
 %bold-blue-text {
-  color: $coveo-blue-6;
-  font-size: $font-size;
-  font-weight: bold;
+    color: $coveo-blue-6;
+    font-size: $font-size;
+    font-weight: bold;
 }
 
 %white-box {
-  width: max-content;
-  border: 1px solid $coveo-blue-6;
-  background-color: white;
+    width: max-content;
+    border: 1px solid $coveo-blue-6;
+    background-color: white;
 }
 
-.coveo-user-actions {
-  margin-top: 10px;
-  max-width: 1200px;
-  padding: 0 1em;
-  border: 1px solid $heather;
-  background-color: $grey-1;
-
-  > h1 {
-    color: $coveo-blue-6;
-    font-size: 2em;
-    font-weight: bold;
-    margin: 0.5em 0;
-  }
-
-  .coveo-close {
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    text-align: right;
-  }
-
-  &-opened {
-    .coveo-user-actions {
-      display: block;
+.coveo-user-actions-opened {
+    .CoveoUserActions {
+        display: block;
     }
-
     .coveo-main-section {
-      display: none;
+        display: none;
     }
-  }
+}
+
+.CoveoUserActions {
+    display: none;
+    margin-top: 10px;
+    max-width: 1200px;
+    padding: 0 1em;
+    border: 1px solid $heather;
+    background-color: $grey-1;
+
+    > h1 {
+        color: $coveo-blue-6;
+        font-size: 2em;
+        font-weight: bold;
+        margin: 0.5em 0;
+    }
+
+    .coveo-close {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        text-align: right;
+    }
+
+    &-opened {
+        .coveo-user-actions {
+            display: block;
+        }
+
+        .coveo-main-section {
+            display: none;
+        }
+    }
 }
 
 .coveo-expandable-list {
-  padding-bottom: 1.5em;
+    padding-bottom: 1.5em;
 
-  .coveo-title {
-    font-size: 1em;
-    font-weight: normal;
-    margin: 0 0 0.75em;
-    text-transform: uppercase;
-  }
-
-  .coveo-list {
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
-
-    li {
-      margin: 0.25em 0;
+    .coveo-title {
+        font-size: 1em;
+        font-weight: normal;
+        margin: 0 0 0.75em;
+        text-transform: uppercase;
     }
-  }
 
-  .coveo-more-less {
-    font-size: 0.9em;
-    border: 0;
-    padding: 0;
-    color: $coveo-blue-6;
-    text-decoration: underline;
-    font-weight: bold;
-    background-color: transparent;
-    cursor: pointer;
-    margin-top: 0.5em;
-  }
+    .coveo-list {
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+
+        li {
+            margin: 0.25em 0;
+        }
+    }
+
+    .coveo-more-less {
+        font-size: 0.9em;
+        border: 0;
+        padding: 0;
+        color: $coveo-blue-6;
+        text-decoration: underline;
+        font-weight: bold;
+        background-color: transparent;
+        cursor: pointer;
+        margin-top: 0.5em;
+    }
 }
 
 .coveo-user-activity {
-  margin-top: 1em;
-  background-color: $grey-1;
+    margin-top: 1em;
+    background-color: $grey-1;
 
-  .coveo-header {
-    font-size: $font-size;
-    padding-bottom: $headers-gap;
-    display: flex;
-    flex-flow: row nowrap;
-    align-content: flex-start;
+    .coveo-header {
+        font-size: $font-size;
+        padding-bottom: $headers-gap;
+        display: flex;
+        flex-flow: row nowrap;
+        align-content: flex-start;
 
-    .coveo-cell {
-      margin-right: 2em;
-      &:last-child {
-        margin-right: 0em;
-      }
-    }
-
-    .coveo-data {
-      margin-top: 1em;
-      font-weight: bold;
-    }
-  }
-
-  .coveo-activity {
-    margin: 0;
-    padding: 0 0 1.5em 0;
-    list-style-type: none;
-
-    .coveo-data {
-      font-weight: bold;
-    }
-
-    $folded-grey: $grey-4;
-    $background-line-shenanigan: linear-gradient(180deg, transparent calc(50% - thin), $folded-grey 50%, transparent calc(50% + thin));
-
-    .coveo-folded {
-      cursor: pointer;
-      border: 0;
-      border-top: thin solid $folded-grey;
-      border-bottom: thin solid $folded-grey;
-      padding: 0.5em 0;
-      text-align: center;
-
-      background: $background-line-shenanigan;
-
-      hr {
-        height: 0;
-        border: 0;
-        border-bottom: thin solid $folded-grey;
-        overflow: visible;
-
-        .coveo-text {
-          position: relative;
-          top: -0.5em;
-          display: inline-block;
-          vertical-align: top;
-          line-height: 1em;
-          height: 1em;
-          padding: 0 0.5em;
-          background-color: $grey-1;
+        .coveo-cell {
+            margin-right: 2em;
+            &:last-child {
+                margin-right: 0em;
+            }
         }
-      }
-    }
 
-    .coveo-bubble {
-      height: 1.5em;
-      border-left: thin solid $coveo-blue-6;
-      margin-left: 0.5em;
-    }
-
-    .coveo-click {
-      a {
-        cursor: pointer;
-        color: $coveo-blue-6;
-        word-wrap: break-word;
-
-        text-decoration: none;
-        &:hover {
-          text-decoration: underline;
+        .coveo-data {
+            margin-top: 1em;
+            font-weight: bold;
         }
-      }
     }
 
-    .coveo-click,
-    .coveo-search,
-    .coveo-custom,
-    .coveo-view {
-      position: relative;
-      margin-left: 0.5em;
-      border-left: thin solid $coveo-blue-6;
-      padding-left: 1.5em;
+    .coveo-activity {
+        margin: 0;
+        padding: 0 0 1.5em 0;
+        list-style-type: none;
 
-      .coveo-icon {
-        position: absolute;
-        left: -0.75em;
-        top: -0.1em;
-        padding: 0;
-        height: 1.5em;
-        width: 1.5em;
-
-        & > svg {
-          height: 1.5em;
-          width: 1.5em;
+        .coveo-data {
+            font-weight: bold;
         }
-      }
 
-      & > div {
-        padding-bottom: 0.5em;
-      }
+        $folded-grey: $grey-4;
 
-      &:last-child {
-        padding-bottom: 0;
-        border-left: 0;
-      }
+        .coveo-folded {
+            cursor: pointer;
+            border: 0;
+            border-top: thin solid $folded-grey;
+            border-bottom: thin solid $folded-grey;
+            padding: 0.5em 0;
+            text-align: center;
+
+            hr {
+                height: 0;
+                border: 0;
+                border-bottom: thin solid $folded-grey;
+                overflow: visible;
+
+                .coveo-text {
+                    position: relative;
+                    top: -0.5em;
+                    display: inline-block;
+                    vertical-align: top;
+                    line-height: 1em;
+                    height: 1em;
+                    padding: 0 0.5em;
+                    background-color: $grey-1;
+                }
+            }
+        }
+
+        .coveo-bubble {
+            height: 1.5em;
+            border-left: thin solid $coveo-blue-6;
+            margin-left: 0.5em;
+        }
+
+        .coveo-click {
+            a {
+                cursor: pointer;
+                color: $coveo-blue-6;
+                word-wrap: break-word;
+
+                text-decoration: none;
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        .coveo-click,
+        .coveo-search,
+        .coveo-custom,
+        .coveo-view {
+            position: relative;
+            margin-left: 0.5em;
+            border-left: thin solid $coveo-blue-6;
+            padding-left: 1.5em;
+
+            .coveo-icon {
+                position: absolute;
+                left: -0.75em;
+                top: -0.1em;
+                padding: 0;
+                height: 1.5em;
+                width: 1.5em;
+
+                & > svg {
+                    height: 1.5em;
+                    width: 1.5em;
+                }
+            }
+
+            & > div {
+                padding-bottom: 0.5em;
+            }
+
+            &:last-child {
+                padding-bottom: 0;
+                border-left: 0;
+            }
+        }
     }
-  }
 }
 
 .coveo-accordion {
-  &:first-child {
-    border-top: 0;
+    &:first-child {
+        border-top: 0;
 
-    .coveo-accordion-header {
-      border-top: 0;
+        .coveo-accordion-header {
+            border-top: 0;
+        }
     }
-  }
-  &-header {
-    cursor: pointer;
-    display: flex;
+    &-header {
+        cursor: pointer;
+        display: flex;
 
-    flex-flow: row nowrap;
-    align-content: center;
-    align-items: baseline;
-    justify-content: space-between;
+        flex-flow: row nowrap;
+        align-content: center;
+        align-items: baseline;
+        justify-content: space-between;
 
-    border-top: 1px solid $heather;
-    padding: 1em 0;
+        border-top: 1px solid $heather;
+        padding: 1em 0;
 
-    &-title {
-      font-size: 1.5em;
-      font-weight: bold;
-      text-align: left;
-      width: auto;
-    }
+        &-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: left;
+            width: auto;
+        }
 
-    .coveo-arrow-down svg {
-      height: 1em;
-      fill: black;
-      transform: rotate(180deg);
-      width: 0.5em;
-      padding: 0.25em 0 0;
-    }
-  }
-
-  &.coveo-folded {
-    .coveo-accordion-foldable {
-      display: none;
+        .coveo-arrow-down svg {
+            height: 1em;
+            fill: black;
+            transform: rotate(180deg);
+            width: 0.5em;
+            padding: 0.25em 0 0;
+        }
     }
 
-    .coveo-arrow-down svg {
-      transform: initial;
-      padding: 0 0 0.25em;
+    &.coveo-folded {
+        .coveo-accordion-foldable {
+            display: none;
+        }
+
+        .coveo-arrow-down svg {
+            transform: initial;
+            padding: 0 0 0.25em;
+        }
     }
-  }
 }
 
 /**
  * Ensure base css for button is present.
  */
-
 .coveo-dropdown-header-wrapper {
-  width: 100%;
-  display: inline-flex;
-  flex-wrap: nowrap;
-  -webkit-box-pack: end;
-  justify-content: flex-end;
-  margin: 0px;
-  padding: 0px;
+    width: 100%;
+    display: inline-flex;
+    flex-wrap: nowrap;
+    -webkit-box-pack: end;
+    justify-content: flex-end;
+    margin: 0px;
+    padding: 0px;
 
-  .coveo-user-actions-dropdown-header {
-    border: thin solid #bcc3ca;
-    border-radius: 2px;
-    background-color: white;
-  }
-
-  a {
-    margin-right: 10px;
-  }
-
-  .coveo-dropdown-header {
-    font-size: 12px;
-    display: inline-block;
-    padding: 0 7px;
-    height: 22px;
-    font-weight: 700;
-    line-height: 20px;
-    letter-spacing: 0.09px;
-    vertical-align: middle;
-    white-space: normal;
-    color: #1d4f76;
-    cursor: pointer;
-    text-transform: uppercase;
-    p {
-      line-height: 16px;
+    .coveo-user-actions-dropdown-header {
+        border: thin solid #bcc3ca;
+        border-radius: 2px;
+        background-color: white;
     }
-    * {
-      display: inline-block;
-      margin: 0;
+
+    a {
+        margin-right: 10px;
     }
-  }
+
+    .coveo-dropdown-header {
+        font-size: 12px;
+        display: inline-block;
+        padding: 0 7px;
+        height: 22px;
+        font-weight: 700;
+        line-height: 20px;
+        letter-spacing: 0.09px;
+        vertical-align: middle;
+        white-space: normal;
+        color: $search-ui-dropdown-header-color;
+        cursor: pointer;
+        text-transform: uppercase;
+        p {
+            line-height: 16px;
+        }
+        * {
+            display: inline-block;
+            margin: 0;
+        }
+    }
 }
