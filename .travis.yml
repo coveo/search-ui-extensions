@@ -12,11 +12,22 @@ script:
     - npm run build
     - npm run testCoverage
 deploy:
-    provider: npm
-    email: sandbox_JSUI@coveo.com
-    skip_cleanup: true
-    api_key:
+    - provider: npm
+      email: sandbox_JSUI@coveo.com
+      skip_cleanup: true
+      api_key:
         secure: Ukf3uIDRzht6DlaFxjSKUA3/RmEN07i99SbWHHE5BpYodfNssBPHa369RxOQ+/zkMrt3ZSbCMCYLduaqPYMSaStjUd00h5FcOCm802IkJo/Fwe2qvRjHYlnlOIAGeyzvh1J7jVV2cppcuX7o4tFXdQwqbenbWmgV4P2z707nLOpEN208qrascaSpuCiS7h/3mg9pnlDU5/UqCFwu3sKf6iBeiTOhtq/T9HNRlxMmW2BAyOL8odhjP/ezarhSgS10dwYxKCDEt+2Vgw1UeQ72z/FCXFDtMQEkioYdb5pXSqp8kHRifG2UOESTV7zjolYlgNjXm0J4KvclM2F/Q9GzyJRFNog1S7lMfUS+VAc3egcAMTqNW/SybdMvfyhycK8AWaeKJc4v0gj9hzPwMs9FJS2LUZ8KxgaXgfjr0Sa+JyaWRE+MmOmAE3WB2RtErYXJaPzQLvxY6mpLvUbZQGYS8f7RrPsnkHOsAwVEj9pHIZc1T4N4HEARgEogvmoZOnRTKenL9fFULTuHTZ1XxcA1h1z58koKjDXhPNCZriiyGuLgCbZG2qBzoSNTvBYaLYIgXHROqyAIGh3teVNl1gZTstiAEVzrkvIc9iLORtsRBL2bBxmsWgWfrghh9NW/3QeGLDEe5PlW9ILivFF/arXtJBd0Bp5SrjhSwtmQ9e0h9wk=
-    on:
+      on:
         tags: true
         repo: coveo/search-ui-extensions
+        condition: "! $TRAVIS_TAG =~ .*beta.*"
+    - provider: npm
+      email: sandbox_JSUI@coveo.com
+      skip_cleanup: true
+      tag: beta
+      api_key:
+        secure: Ukf3uIDRzht6DlaFxjSKUA3/RmEN07i99SbWHHE5BpYodfNssBPHa369RxOQ+/zkMrt3ZSbCMCYLduaqPYMSaStjUd00h5FcOCm802IkJo/Fwe2qvRjHYlnlOIAGeyzvh1J7jVV2cppcuX7o4tFXdQwqbenbWmgV4P2z707nLOpEN208qrascaSpuCiS7h/3mg9pnlDU5/UqCFwu3sKf6iBeiTOhtq/T9HNRlxMmW2BAyOL8odhjP/ezarhSgS10dwYxKCDEt+2Vgw1UeQ72z/FCXFDtMQEkioYdb5pXSqp8kHRifG2UOESTV7zjolYlgNjXm0J4KvclM2F/Q9GzyJRFNog1S7lMfUS+VAc3egcAMTqNW/SybdMvfyhycK8AWaeKJc4v0gj9hzPwMs9FJS2LUZ8KxgaXgfjr0Sa+JyaWRE+MmOmAE3WB2RtErYXJaPzQLvxY6mpLvUbZQGYS8f7RrPsnkHOsAwVEj9pHIZc1T4N4HEARgEogvmoZOnRTKenL9fFULTuHTZ1XxcA1h1z58koKjDXhPNCZriiyGuLgCbZG2qBzoSNTvBYaLYIgXHROqyAIGh3teVNl1gZTstiAEVzrkvIc9iLORtsRBL2bBxmsWgWfrghh9NW/3QeGLDEe5PlW9ILivFF/arXtJBd0Bp5SrjhSwtmQ9e0h9wk=
+      on:
+        tags: true
+        repo: coveo/search-ui-extensions
+        condition: "$TRAVIS_TAG =~ .*beta.*"
