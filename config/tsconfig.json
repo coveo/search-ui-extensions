@@ -16,6 +16,6 @@
         "typeRoots": ["../src/typings"],
         "types": ["jasmine", "coveo-search-ui", "coveo-search-ui-tests"]
     },
-    "include": ["../src/**/*.ts", "../src/**/*.svg", "../src/**/*.json"],
+    "include": ["../src/**/*.ts", "../img/**/*.svg", "../src/**/*.json"],
     "exclude": ["node_modules"]
 }

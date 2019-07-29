@@ -10,7 +10,7 @@ import {
     analyticsActionCauseList,
     IAnalyticsActionCause
 } from 'coveo-search-ui';
-import * as PaperclipIcon from '../../../img/paperclip.svg';
+import { paperclipIcon } from '../../utils/icons';
 
 export interface IAttachResultOptions {
     /** Specifies the tooltip displayed when the result is not attached. */
@@ -143,7 +143,7 @@ export class AttachResult extends Component {
     }
 
     protected initialize(): void {
-        this.buttonElement = $$('div', {}, PaperclipIcon).el;
+        this.buttonElement = $$('div', {}, paperclipIcon).el;
         this.element.appendChild(this.buttonElement);
 
         this.tooltipElement = $$('div', {
