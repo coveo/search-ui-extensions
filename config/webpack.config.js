@@ -6,11 +6,11 @@ module.exports = {
         CoveoJsSearchExtensions: './src/Index'
     },
     output: {
-        path: path.resolve('./bin/js/commonjs'),
+        path: path.resolve('./bin/commonjs'),
         filename: `[name].js`,
         libraryTarget: 'umd',
         library: 'CoveoExtension',
-        publicPath: '/js/commonjs'
+        publicPath: '/commonjs'
     },
     externals: [
         {
