@@ -10,7 +10,7 @@
         "sourceMap": true,
         "skipLibCheck": true,
         "lib": ["es2015", "dom", "es2018.promise"],
-        "outDir": "../bin/js/es",
+        "outDir": "../bin/es6",
         "declaration": true,
         "declarationDir": "../bin/typings",
         "typeRoots": ["../src/typings"],

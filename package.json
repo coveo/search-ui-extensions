@@ -4,10 +4,11 @@
     "name": "coveo-search-ui-extensions",
     "version": "0.0.5",
     "description": "Small generic components to extend the functionality of Coveo's Search UI framework.",
-    "main": "./bin/js/commonjs/CoveoJsSearchExtensions.js",
+    "main": "./bin/commonjs/CoveoJsSearchExtensions.js",
+    "module": "./bin/es6/index.js",
     "types": "./bin/typings",
     "sideEffects": [
-        "./src/components/UserActions/Strings"
+        "./bin/es6/components/UserActions/Strings.js"
     ],
     "scripts": {
         "test": "karma start ./config/karma.config.js --single-run",
