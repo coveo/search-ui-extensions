@@ -7,3 +7,4 @@ export { ClickedDocumentList } from './components/UserActions/ClickedDocumentLis
 export { QueryList } from './components/UserActions/QueryList';
 export { UserProfilingEndpoint } from './rest/UserProfilingEndpoint';
 export { ResultsFilter } from './components/ResultsFilter/ResultsFilter';
+export { ViewedByCustomer } from './components/ViewedByCustomer/ViewedByCustomer';
