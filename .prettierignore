@@ -3,6 +3,7 @@
 bin/**/*
 node_modules/**/*
 .vscode/**/*
+.npmignore
 .gitignore
 .prettierignore
 .snyk
