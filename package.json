@@ -30,7 +30,8 @@
         "lint-fix"
     ],
     "files": [
-        "bin/**/*"
+        "bin/**/*",
+        "src/**/*.scss"
     ],
     "keywords": [
         "coveo",
