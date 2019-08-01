@@ -30,7 +30,11 @@
         "lint-fix"
     ],
     "files": [
-        "bin/**/*",
+        "bin/commonjs/**/*",
+        "bin/es6/**/*",
+        "bin/css/**/*",
+        "bin/img/**/*",
+        "bin/typings/**/*",
         "src/**/*.scss"
     ],
     "keywords": [
