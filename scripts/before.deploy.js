@@ -3,7 +3,7 @@ const { resolve } = require('path');
 
 const TAG = process.env.TRAVIS_TAG;
 if (!TAG) {
-    throw new Error('TRAVIS_TAG is not define in the current environment');
+    throw new Error('TRAVIS_TAG is not defined in the current environment');
 }
 
 const VERSION = TAG.slice(TAG.indexOf('v') + 1, TAG.length);
