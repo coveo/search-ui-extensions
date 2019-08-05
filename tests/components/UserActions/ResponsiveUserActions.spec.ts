@@ -1,10 +1,9 @@
 import { ResponsiveUserActions } from '../../../src/components/UserActions/ResponsiveUserActions';
 import { Mock } from 'coveo-search-ui-tests';
-import { UserActions, IUserActionsOptions } from '../../../src/components/UserActions/UserActions';
+import { UserActions } from '../../../src/components/UserActions/UserActions';
 import { $$, ResponsiveComponentsManager, Initialization, ResponsiveDropdownHeader } from 'coveo-search-ui';
 import { SinonSandbox, createSandbox } from 'sinon';
-import { InitializationUtils } from '../../../src/utils/initialization';
-import { UserProfileModel } from '../../../src/models/UserProfileModel';
+import { fakeUserProfileModel } from '../../utils';
 
 describe('ResponsiveUserActions', () => {
     let sandbox: SinonSandbox;
@@ -32,13 +31,15 @@ describe('ResponsiveUserActions', () => {
 
     describe('registerComponent', () => {
         it('should return true when the component is an instance of User Actions', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.reject());
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-            const userActions = Mock.basicComponentSetup<UserActions>(UserActions, { userId: 'someId' }).cmp;
+            const userActions = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                    return env;
+                })
+            ).cmp;
 
             const responsiveUserActions = new ResponsiveUserActions($$('div'), UserActions.ID, {});
 
@@ -56,13 +57,15 @@ describe('ResponsiveUserActions', () => {
 
     describe('handleResizeEvent', () => {
         it('should append the user actions button in the Responsive Header Wrapper section', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.reject());
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-            const mock = Mock.basicComponentSetup<UserActions>(UserActions, { userId: 'someId' });
+            const mock = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                    return env;
+                })
+            );
 
             const headerSection = document.createElement('div');
             headerSection.classList.add(ResponsiveComponentsManager.DROPDOWN_HEADER_WRAPPER_CSS_CLASS);
@@ -80,13 +83,15 @@ describe('ResponsiveUserActions', () => {
         });
 
         it('should not append the user actions button when the Responsive Header Wrapper is not available', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.reject());
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-            const mock = Mock.basicComponentSetup<UserActions>(UserActions, { userId: 'someId' });
+            const mock = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                    return env;
+                })
+            );
 
             const responsiveUserActions = new ResponsiveUserActions($$(mock.env.root), UserActions.ID, {});
 
@@ -111,13 +116,15 @@ describe('ResponsiveUserActions', () => {
 
     describe('user actions button', () => {
         it('should toggle the user actions panel when the button is clicked', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.reject());
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-            const mock = Mock.basicComponentSetup<UserActions>(UserActions, { userId: 'someId' });
+            const mock = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                    return env;
+                })
+            );
 
             const headerSection = document.createElement('div');
             headerSection.classList.add(ResponsiveComponentsManager.DROPDOWN_HEADER_WRAPPER_CSS_CLASS);
@@ -138,12 +145,15 @@ describe('ResponsiveUserActions', () => {
 
         it('should have the user action title as label', () => {
             const title = 'someTitle';
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.reject());
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-            const mock = Mock.basicComponentSetup<UserActions>(UserActions, { userId: 'someId', buttonLabel: title } as IUserActionsOptions);
+            const mock = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'someId', buttonLabel: title }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                    return env;
+                })
+            );
             const headerSection = document.createElement('div');
             headerSection.classList.add(ResponsiveComponentsManager.DROPDOWN_HEADER_WRAPPER_CSS_CLASS);
             mock.env.root.appendChild(headerSection);
@@ -159,13 +169,15 @@ describe('ResponsiveUserActions', () => {
         });
 
         it('should trigger a custom event that has "openUserActions" as name and "User Actions" as type', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.reject());
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-            const mock = Mock.basicComponentSetup<UserActions>(UserActions, { userId: 'someId' });
+            const mock = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'someId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                    return env;
+                })
+            );
 
             const headerSection = document.createElement('div');
             headerSection.classList.add(ResponsiveComponentsManager.DROPDOWN_HEADER_WRAPPER_CSS_CLASS);

@@ -1,7 +1,6 @@
-import { Component, IComponentBindings, Initialization, ComponentOptions, l } from 'coveo-search-ui';
+import { Component, IComponentBindings, Initialization, ComponentOptions, l, get } from 'coveo-search-ui';
 import { formatTime, formatDate, formatTimeInterval } from '../../utils/time';
 import { UserAction, UserProfileModel } from '../../models/UserProfileModel';
-import { InitializationUtils } from '../../utils/initialization';
 import { duplicate, search, view, dot } from '../../utils/icons';
 import { UserActionType } from '../../rest/UserProfilingEndpoint';
 import './Strings';
@@ -90,7 +89,7 @@ export class UserActivity extends Component {
         super(element, UserActivity.ID, bindings);
 
         this.options = ComponentOptions.initComponentOptions(element, UserActivity, options);
-        this.userProfileModel = InitializationUtils.getUserProfileModel(this.root, this.bindings);
+        this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
 
         this.userProfileModel.getActions(this.options.userId).then(actions => {
             this.actions = actions.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());

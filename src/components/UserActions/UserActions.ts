@@ -1,12 +1,12 @@
-import { Component, IComponentBindings, Initialization, ComponentOptions, QueryEvents, l } from 'coveo-search-ui';
+import { Component, IComponentBindings, Initialization, ComponentOptions, QueryEvents, l, get } from 'coveo-search-ui';
 
-import { InitializationUtils } from '../../utils/initialization';
 import { ResponsiveUserActions } from './ResponsiveUserActions';
 import { arrowDown } from '../../utils/icons';
-import './Strings';
 import { ClickedDocumentList } from './ClickedDocumentList';
 import { QueryList } from './QueryList';
 import { UserActivity } from './UserActivity';
+import { UserProfileModel } from '../../Index';
+import './Strings';
 
 /**
  * Initialization options of the **UserActions** class.
@@ -81,7 +81,7 @@ export class UserActions extends Component {
 
         this.options = ComponentOptions.initComponentOptions(element, UserActions, options);
 
-        InitializationUtils.getUserProfileModel(this.root, this.bindings)
+        (get(this.root, UserProfileModel) as UserProfileModel)
             .getActions(this.options.userId)
             .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
             .catch(() => this.renderNoActions());

@@ -2,12 +2,14 @@ import { createSandbox, SinonFakeXMLHttpRequest } from 'sinon';
 import { Fake } from 'coveo-search-ui-tests';
 import { UserProfileModel, UserAction } from '../../src/models/UserProfileModel';
 import { UserActionType } from '../../src/rest/UserProfilingEndpoint';
-import { buildActionHistoryResponse, buildSearchInterfaceWithResults } from '../utils';
-import { Logger } from 'coveo-search-ui';
+import { buildActionHistoryResponse, buildAccessToken } from '../utils';
+import { Logger, SearchEndpoint } from 'coveo-search-ui';
 
 describe('UserProfilingModel', () => {
     const TEST_URI_HASH = 'testUriHash';
     const TEST_ORGANIZATION = 'testOrg';
+    const TEST_REST_URI = 'testRestUri';
+    const TEST_TOKEN = buildAccessToken('testToken');
     const TEST_USER = 'testUser';
     const FAKE_HISTORY_ACTIONS = [
         {
@@ -98,35 +100,20 @@ describe('UserProfilingModel', () => {
         Logger.enable();
     });
 
-    it('should create a user profiling endpoint using the provided search interface', () => {
-        const searchInterface = buildSearchInterfaceWithResults();
-        const model = new UserProfileModel(document.createElement('div'), { organization: TEST_ORGANIZATION }, { searchInterface: searchInterface });
-
-        expect(model.bindings.searchInterface).toBe(searchInterface);
-    });
-
-    it('should parse the search endpoint uri', () => {
-        const core = 'https://test.coveo.test';
-        const searchInterface = buildSearchInterfaceWithResults();
-        searchInterface.queryController.getEndpoint().options.restUri = core + '/rest/search';
-
-        const model = new UserProfileModel(document.createElement('div'), { organization: TEST_ORGANIZATION }, { searchInterface: searchInterface });
-
-        expect(model.options.restUri).toBe(core);
-    });
-
     describe('getActions', () => {
         it('should attach available documents on click actions', async () => {
             const documentResults = Fake.createFakeResults(1);
             documentResults.results[0].raw.urihash = TEST_URI_HASH;
 
-            const searchInterface = buildSearchInterfaceWithResults(Promise.resolve(documentResults));
+            const endpoint = sandbox.createStubInstance(SearchEndpoint);
+            endpoint.search.returns(Promise.resolve(documentResults));
 
-            const model = new UserProfileModel(
-                document.createElement('div'),
-                { organization: TEST_ORGANIZATION },
-                { searchInterface: searchInterface, queryController: searchInterface.queryController }
-            );
+            const model = new UserProfileModel(document.createElement('div'), {
+                organizationId: TEST_ORGANIZATION,
+                restUri: TEST_REST_URI,
+                accessToken: TEST_TOKEN,
+                searchEndpoint: endpoint
+            });
 
             const actionsPromise = model.getActions(TEST_USER);
             requests[requests.length - 1].respond(
@@ -145,11 +132,15 @@ describe('UserProfilingModel', () => {
         });
 
         it('should attach no documents on click actions when no document are available to the searching user', async () => {
-            const model = new UserProfileModel(
-                document.createElement('div'),
-                { organization: TEST_ORGANIZATION },
-                { searchInterface: buildSearchInterfaceWithResults(Promise.resolve(Fake.createFakeResults(0))) }
-            );
+            const endpoint = sandbox.createStubInstance(SearchEndpoint);
+            endpoint.search.returns(Promise.resolve(Fake.createFakeResults(0)));
+
+            const model = new UserProfileModel(document.createElement('div'), {
+                organizationId: TEST_ORGANIZATION,
+                restUri: TEST_REST_URI,
+                accessToken: TEST_TOKEN,
+                searchEndpoint: endpoint
+            });
 
             const actionsPromise = model.getActions(TEST_USER);
 
@@ -164,11 +155,15 @@ describe('UserProfilingModel', () => {
         });
 
         it('should attach no documents on click actions when the search call for documents details fails', async () => {
-            const model = new UserProfileModel(
-                document.createElement('div'),
-                { organization: TEST_ORGANIZATION },
-                { searchInterface: buildSearchInterfaceWithResults(Promise.reject()) }
-            );
+            const endpoint = sandbox.createStubInstance(SearchEndpoint);
+            endpoint.search.returns(Promise.reject());
+
+            const model = new UserProfileModel(document.createElement('div'), {
+                organizationId: TEST_ORGANIZATION,
+                restUri: TEST_REST_URI,
+                accessToken: TEST_TOKEN,
+                searchEndpoint: endpoint
+            });
 
             const actionsPromise = model.getActions(TEST_USER);
 
@@ -183,11 +178,15 @@ describe('UserProfilingModel', () => {
         });
 
         it('should not fetch documents when there is no event with an urihash', async () => {
-            const model = new UserProfileModel(
-                document.createElement('div'),
-                { organization: TEST_ORGANIZATION },
-                { searchInterface: buildSearchInterfaceWithResults(Promise.resolve(Fake.createFakeResults(5))) }
-            );
+            const endpoint = sandbox.createStubInstance(SearchEndpoint);
+            endpoint.search.returns(Promise.resolve(Fake.createFakeResults(5)));
+
+            const model = new UserProfileModel(document.createElement('div'), {
+                organizationId: TEST_ORGANIZATION,
+                restUri: TEST_REST_URI,
+                accessToken: TEST_TOKEN,
+                searchEndpoint: endpoint
+            });
 
             const actionsPromise = model.getActions(TEST_USER);
 
@@ -202,11 +201,15 @@ describe('UserProfilingModel', () => {
         });
 
         it('should fetch all actions from a user', async () => {
-            const model = new UserProfileModel(
-                document.createElement('div'),
-                { organization: TEST_ORGANIZATION },
-                { searchInterface: buildSearchInterfaceWithResults() }
-            );
+            const endpoint = sandbox.createStubInstance(SearchEndpoint);
+            endpoint.search.returns(Promise.resolve(Fake.createFakeResults(10)));
+
+            const model = new UserProfileModel(document.createElement('div'), {
+                organizationId: TEST_ORGANIZATION,
+                restUri: TEST_REST_URI,
+                accessToken: TEST_TOKEN,
+                searchEndpoint: endpoint
+            });
 
             model.registerNewAttribute(TEST_USER, FAKE_USER_ACTIONS);
 
@@ -227,11 +230,15 @@ describe('UserProfilingModel', () => {
 
         describe('when no actions are present in the model', () => {
             it('should fetch all actions of a user from the backend', async () => {
-                const model = new UserProfileModel(
-                    document.createElement('div'),
-                    { organization: TEST_ORGANIZATION },
-                    { searchInterface: buildSearchInterfaceWithResults() }
-                );
+                const endpoint = sandbox.createStubInstance(SearchEndpoint);
+                endpoint.search.returns(Promise.resolve(Fake.createFakeResults(10)));
+
+                const model = new UserProfileModel(document.createElement('div'), {
+                    organizationId: TEST_ORGANIZATION,
+                    restUri: TEST_REST_URI,
+                    accessToken: TEST_TOKEN,
+                    searchEndpoint: endpoint
+                });
 
                 const actionsPromise = model.getActions(TEST_USER);
 
@@ -258,11 +265,15 @@ describe('UserProfilingModel', () => {
             });
 
             it('should fetch all actions of a user from the backend even when the search call for document details fails', async () => {
-                const model = new UserProfileModel(
-                    document.createElement('div'),
-                    { organization: TEST_ORGANIZATION },
-                    { searchInterface: buildSearchInterfaceWithResults(Promise.reject()) }
-                );
+                const endpoint = sandbox.createStubInstance(SearchEndpoint);
+                endpoint.search.returns(Promise.reject());
+
+                const model = new UserProfileModel(document.createElement('div'), {
+                    organizationId: TEST_ORGANIZATION,
+                    restUri: TEST_REST_URI,
+                    accessToken: TEST_TOKEN,
+                    searchEndpoint: endpoint
+                });
 
                 const actionsPromise = model.getActions(TEST_USER);
 

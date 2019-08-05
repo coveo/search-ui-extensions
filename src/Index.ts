@@ -6,4 +6,5 @@ export { UserActions } from './components/UserActions/UserActions';
 export { ClickedDocumentList } from './components/UserActions/ClickedDocumentList';
 export { QueryList } from './components/UserActions/QueryList';
 export { UserProfilingEndpoint } from './rest/UserProfilingEndpoint';
+export { UserProfileModel } from './models/UserProfileModel';
 export { ResultsFilter } from './components/ResultsFilter/ResultsFilter';

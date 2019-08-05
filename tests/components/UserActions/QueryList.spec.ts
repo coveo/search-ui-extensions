@@ -1,9 +1,8 @@
 import { createSandbox, SinonSandbox } from 'sinon';
 import { Mock } from 'coveo-search-ui-tests';
 import { QueryList } from '../../../src/components/UserActions/QueryList';
-import { InitializationUtils } from '../../../src/utils/initialization';
-import { UserProfileModel, UserAction } from '../../../src/models/UserProfileModel';
-import { delay, generate } from '../../utils';
+import { UserAction } from '../../../src/models/UserProfileModel';
+import { delay, generate, fakeUserProfileModel } from '../../utils';
 import { Logger, Omnibox } from 'coveo-search-ui';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 
@@ -31,12 +30,13 @@ describe('QueryList', () => {
     });
 
     it('should show "No queries made by this user" when no query were made', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve([]));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-        const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
+        const mock = Mock.advancedComponentSetup<QueryList>(
+            QueryList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([]));
+                return env;
+            })
+        );
 
         return delay(() => {
             const emptyElement = mock.cmp.element.querySelector<HTMLLIElement>('.coveo-empty');
@@ -47,12 +47,13 @@ describe('QueryList', () => {
     });
 
     it('should show "Recent Queries" as title', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(TEST_QUERIES));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-        const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
+        const mock = Mock.advancedComponentSetup<QueryList>(
+            QueryList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
+                return env;
+            })
+        );
 
         return delay(() => {
             expect(mock.cmp.element.querySelector('.coveo-title').innerHTML).toMatch('Recent Queries');
@@ -60,12 +61,13 @@ describe('QueryList', () => {
     });
 
     it('should show 4 queries by default', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(TEST_QUERIES));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-        const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
+        const mock = Mock.advancedComponentSetup<QueryList>(
+            QueryList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
+                return env;
+            })
+        );
 
         return delay(() => {
             const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
@@ -75,12 +77,13 @@ describe('QueryList', () => {
     });
 
     it('should show a number of queries equal to the "numberOfItems" option', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(TEST_QUERIES));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-        const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId', numberOfItems: 10 });
+        const mock = Mock.advancedComponentSetup<QueryList>(
+            QueryList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
+                return env;
+            })
+        );
 
         return delay(() => {
             const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
@@ -90,12 +93,13 @@ describe('QueryList', () => {
     });
 
     it('should show all queries when expanded', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(TEST_QUERIES));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-        const mock = Mock.basicComponentSetup<QueryList>(QueryList);
+        const mock = Mock.advancedComponentSetup<QueryList>(
+            QueryList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
+                return env;
+            })
+        );
 
         return delay(() => {
             mock.env.element.querySelector<HTMLButtonElement>('.coveo-more-less').click();
@@ -107,11 +111,13 @@ describe('QueryList', () => {
     });
 
     it('should render a list of queries made by a user as a list and put the most recent queries on top', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(TEST_QUERIES));
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-        const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
+        const mock = Mock.advancedComponentSetup<QueryList>(
+            QueryList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
+                return env;
+            })
+        );
 
         const queries = TEST_QUERIES.reverse();
 
@@ -125,23 +131,31 @@ describe('QueryList', () => {
     });
 
     it('should fetch the list of query made by a user from the model', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.reject());
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
+        let model;
 
-        Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
+        Mock.advancedComponentSetup<QueryList>(
+            QueryList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+                model = fakeUserProfileModel(env.root, sandbox);
+                model.getActions.returns(Promise.reject());
+                return env;
+            })
+        );
 
+        // @ts-ignore
         expect(model.getActions.called).toBe(true);
     });
 
     it("should log an error message when the component can't fetch the a list of query made by a user from the model", () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.reject());
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
         const errorLoggerStub = sandbox.stub(Logger.prototype, 'error');
 
-        const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
+        const mock = Mock.advancedComponentSetup<QueryList>(
+            QueryList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                return env;
+            })
+        );
 
         return delay(() => {
             expect(mock.cmp.element.childElementCount).toBe(0);
@@ -151,11 +165,13 @@ describe('QueryList', () => {
 
     describe('when a user click on a query', () => {
         it('should do a query in the omnibox if the search interface has an omnibox', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve(TEST_QUERIES));
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<QueryList>(
+                QueryList,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
+                    return env;
+                })
+            );
 
             const omnibox = new Omnibox(document.createElement('div'), {}, { ...mock.env });
             mock.env.root.appendChild(omnibox.element);
@@ -175,11 +191,13 @@ describe('QueryList', () => {
         });
 
         it('should not do a query if the search interface does not have an omnibox', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve(TEST_QUERIES));
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<QueryList>(
+                QueryList,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
+                    return env;
+                })
+            );
 
             const executeQueryStub = sandbox.stub(mock.env.queryController, 'executeQuery');
 
@@ -192,11 +210,13 @@ describe('QueryList', () => {
         });
 
         it('should log a search event with "userActionsSubmit" as search cause', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve(TEST_QUERIES));
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<QueryList>(QueryList, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<QueryList>(
+                QueryList,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
+                    return env;
+                })
+            );
 
             const omnibox = new Omnibox(document.createElement('div'), {}, { ...mock.env });
             mock.env.root.appendChild(omnibox.element);

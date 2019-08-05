@@ -1,6 +1,7 @@
 import { IActionHistory } from '../src/rest/UserProfilingEndpoint';
-import { SearchEndpoint, IQueryResults } from 'coveo-search-ui';
-import { Fake, Mock } from 'coveo-search-ui-tests';
+import { SearchEndpoint } from 'coveo-search-ui';
+import { SinonSandbox } from 'sinon';
+import { UserProfileModel } from '../src/Index';
 
 /**
  * Create an access token from a SearchEndpoint.
@@ -36,25 +37,6 @@ export function buildActionHistoryResponse(actions: IActionHistory[]) {
 }
 
 /**
- * Initialize a SearchInterface with some results.
- * @param results Results that the searchEndpoint will respond with.
- */
-export function buildSearchInterfaceWithResults(results: Promise<IQueryResults> = Promise.resolve(Fake.createFakeResults(0))) {
-    const searchInterface = Mock.mockSearchInterface();
-    searchInterface.queryController = Mock.mockQueryController();
-
-    const searchEndpoint = Mock.mockSearchEndpoint();
-    searchEndpoint.accessToken = buildAccessToken('testAccessToken');
-    (searchEndpoint.search as any).and.returnValue(results);
-
-    searchInterface.options.endpoint = searchEndpoint;
-
-    searchInterface.queryController.getEndpoint = () => searchEndpoint;
-
-    return searchInterface;
-}
-
-/**
  * Feed a generator with value from 0 to time.
  * @param time Number of time to call the generator.
  * @param generator A generator function.
@@ -78,4 +60,9 @@ export function delay(callback: () => any, timemout = 0) {
             resolve(callback());
         }, timemout);
     });
+}
+
+export function fakeUserProfileModel(root: HTMLElement, sandbox: SinonSandbox) {
+    (root as any)[`Coveo${UserProfileModel.ID}`] = sandbox.createStubInstance(UserProfileModel);
+    return (root as any)[`Coveo${UserProfileModel.ID}`];
 }

@@ -1,6 +1,5 @@
 import { Component, IComponentBindings, Initialization, ComponentOptions, get, Omnibox, l } from 'coveo-search-ui';
 import { UserProfileModel } from '../../models/UserProfileModel';
-import { InitializationUtils } from '../../utils/initialization';
 import { ExpandableList } from './ExpandableList';
 import './Strings';
 
@@ -92,7 +91,7 @@ export class QueryList extends Component {
         super(element, QueryList.ID, bindings);
 
         this.options = ComponentOptions.initComponentOptions(element, QueryList, options);
-        this.userProfileModel = InitializationUtils.getUserProfileModel(this.root, this.bindings);
+        this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
         this.userProfileModel.getActions(this.options.userId).then(actions => {
             this.sortedQueryList = [...actions]
                 .filter(action => action.query)
