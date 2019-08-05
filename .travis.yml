@@ -11,7 +11,7 @@ script:
   - npm run lint
   - npm run build
   - npm run testCoverage
-before_deploy: 
+before_deploy:
   - node ./scripts/before.deploy.js
 deploy:
   - provider: npm

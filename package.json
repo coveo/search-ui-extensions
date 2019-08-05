@@ -5,7 +5,7 @@
     "version": "0.0.5",
     "description": "Small generic components to extend the functionality of Coveo's Search UI framework.",
     "main": "./bin/commonjs/CoveoJsSearchExtensions.js",
-    "module": "./bin/es6/index.js",
+    "module": "./bin/es6/Index.js",
     "types": "./bin/typings",
     "sideEffects": [
         "./bin/es6/components/UserActions/Strings.js"
@@ -30,7 +30,12 @@
         "lint-fix"
     ],
     "files": [
-        "bin/**/*"
+        "bin/commonjs/**/*",
+        "bin/es6/**/*",
+        "bin/css/**/*",
+        "bin/img/**/*",
+        "bin/typings/**/*",
+        "src/**/*.scss"
     ],
     "keywords": [
         "coveo",

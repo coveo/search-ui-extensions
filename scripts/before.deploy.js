@@ -1,12 +1,12 @@
 const { readFileSync, writeFileSync } = require('fs');
 const { resolve } = require('path');
 
-const BRANCH = process.env.TRAVIS_BRANCH;
-if (!BRANCH) {
-    throw new Error('TRAVIS_BRANCH is not define in the current environment');
+const TAG = process.env.TRAVIS_TAG;
+if (!TAG) {
+    throw new Error('TRAVIS_TAG is not defined in the current environment');
 }
 
-const VERSION = BRANCH.slice(BRANCH.indexOf('v') + 1, BRANCH.length);
+const VERSION = TAG.slice(TAG.indexOf('v') + 1, TAG.length);
 const PACKAGE_JSON_LOCATION = resolve('package.json');
 
 const PACKAGE = JSON.parse(readFileSync(PACKAGE_JSON_LOCATION, { encoding: 'utf8' }));
