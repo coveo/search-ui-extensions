@@ -48,7 +48,7 @@
         "@types/jasmine": "^3.3.9",
         "@types/node": "^11.11.3",
         "@types/sinon": "^7.0.13",
-        "coveo-search-ui": "^2.6459.0",
+        "coveo-search-ui": "2.0.342",
         "coveo-search-ui-tests": "0.0.5",
         "coveralls": "^3.0.3",
         "istanbul-instrumenter-loader": "^3.0.1",
