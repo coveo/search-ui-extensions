@@ -39,7 +39,7 @@ export class ViewedByCustomer extends Component {
      * @param bindings Bindings of the Search-UI environment.
      */
     public constructor(public element: HTMLElement, public options: IViewedByCustomerOptions, public bindings: IComponentBindings) {
-        super(element, ViewedByCustomer.ID, bindings);
+        super(element, ViewedByCustomer.ID, bindings)/* istanbul ignore next Issue with Istanbul and super calls*/;
         this.options = ComponentOptions.initComponentOptions(element, ViewedByCustomer, options);
 
         if (this.resolveResult().isUserActionView) {
