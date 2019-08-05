@@ -38,8 +38,7 @@ export class ViewedByCustomer extends Component {
      * @param options Initialization options of the component.
      * @param bindings Bindings of the Search-UI environment.
      */
-    public constructor(public element: HTMLElement, public options: IViewedByCustomerOptions, public bindings?: IComponentBindings) {
-        /* istanbul ignore next */
+    public constructor(public element: HTMLElement, public options: IViewedByCustomerOptions, public bindings: IComponentBindings) {
         super(element, ViewedByCustomer.ID, bindings);
         this.options = ComponentOptions.initComponentOptions(element, ViewedByCustomer, options);
 
