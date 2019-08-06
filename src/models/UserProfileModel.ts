@@ -70,7 +70,7 @@ export class UserProfileModel extends Model {
      * @param options A set of options necessary for the component creation.
      */
     constructor(element: HTMLElement, public options: IUserProfileModelOptions) {
-        super(element, UserProfileModel.ID, {});
+        super(element, UserProfileModel.ID, {}) /* istanbul ignore next Istanbul issue with next */;
         Assert.isNotUndefined(this.options.restUri);
         Assert.isNotUndefined(this.options.organizationId);
         Assert.isNotUndefined(this.options.searchEndpoint);
@@ -165,6 +165,4 @@ export class UserProfileModel extends Model {
 /**
  * Expose the UserProfileModel so a user action implementation can use it.
  */
-if ((window as any)['Coveo']) {
-    (window as any)['Coveo']['UserProfileModel'] = UserProfileModel;
-}
+(window as any)['Coveo'] && ((window as any)['Coveo']['UserProfileModel'] = UserProfileModel);

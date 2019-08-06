@@ -100,6 +100,26 @@ describe('UserProfilingModel', () => {
         Logger.enable();
     });
 
+    it('should initialize use the Search Endpoint accessToken when no access token is given', async () => {
+        let wasAccessed = false;
+
+        const endpoint = sandbox.createStubInstance(SearchEndpoint);
+        Object.defineProperty(endpoint, 'accessToken', {
+            get: () => {
+                wasAccessed = true;
+                return buildAccessToken('toto');
+            }
+        });
+
+        new UserProfileModel(document.createElement('div'), {
+            organizationId: TEST_ORGANIZATION,
+            restUri: TEST_REST_URI,
+            searchEndpoint: endpoint
+        });
+
+        expect(wasAccessed).toBe(true);
+    });
+
     describe('getActions', () => {
         it('should attach available documents on click actions', async () => {
             const documentResults = Fake.createFakeResults(1);
