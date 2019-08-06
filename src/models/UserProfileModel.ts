@@ -1,4 +1,4 @@
-import { Model, QueryBuilder, IQueryResult, IComponentBindings } from 'coveo-search-ui';
+import { Model, QueryBuilder, IQueryResult, AccessToken, Assert, ISearchEndpoint, SearchEndpoint } from 'coveo-search-ui';
 import { UserProfilingEndpoint, IActionHistory, UserActionType } from '../rest/UserProfilingEndpoint';
 
 /**
@@ -28,15 +28,22 @@ export class UserAction {
  * Initialization options of the **UserProfileModel** class.
  */
 export interface IUserProfileModelOptions {
+    searchEndpoint: ISearchEndpoint;
+
+    /**
+     * Search token to access the organization.
+     */
+    accessToken?: AccessToken;
+
     /**
      * Organization id of the organizatrion.
      */
-    organization?: string;
+    organizationId: string;
 
     /**
      * Uri of the User Profiling Endpoint.
      */
-    restUri?: string;
+    restUri: string;
 }
 
 /**
@@ -62,20 +69,18 @@ export class UserProfileModel extends Model {
      * @param element An element on which the model will be bound on.
      * @param options A set of options necessary for the component creation.
      */
-    constructor(element: HTMLElement, public options: IUserProfileModelOptions, public bindings: IComponentBindings) {
-        super(element, UserProfileModel.ID, {});
-
-        const SEARCH_INTERFACE_ENDPOINT = this.bindings.searchInterface.options.endpoint;
-
-        this.options.restUri = this.options.restUri || this.parseEndpointUri(SEARCH_INTERFACE_ENDPOINT.options.restUri);
-        this.options.organization = this.options.organization || SEARCH_INTERFACE_ENDPOINT.options.queryStringArguments.organizationId;
+    constructor(element: HTMLElement, public options: IUserProfileModelOptions) {
+        super(element, UserProfileModel.ID, {}) /* istanbul ignore next Istanbul issue with next */;
+        Assert.isNotUndefined(this.options.restUri);
+        Assert.isNotUndefined(this.options.organizationId);
+        Assert.isNotUndefined(this.options.searchEndpoint);
 
         this.getOrFetchCache = {};
 
         this.endpoint = new UserProfilingEndpoint({
             uri: this.options.restUri,
-            accessToken: SEARCH_INTERFACE_ENDPOINT.accessToken,
-            organization: this.options.organization
+            accessToken: this.options.accessToken || (this.options.searchEndpoint as SearchEndpoint).accessToken,
+            organization: this.options.organizationId
         });
     }
 
@@ -116,12 +121,9 @@ export class UserProfileModel extends Model {
         QUERY.advancedExpression.addFieldExpression('@urihash', '==', urihashes.filter(x => x));
 
         // Here we directly use the Search Endpoint to query without side effects.
-        const searchRequest = await this.bindings.queryController.getEndpoint().search(QUERY.build());
+        const searchRequest = await this.options.searchEndpoint.search(QUERY.build());
 
-        const documentsDict = searchRequest.results.reduce(
-            (acc, result) => ({ ...acc, [result.raw.urihash]: { ...result, searchInterface: this.bindings.searchInterface } }),
-            {}
-        );
+        const documentsDict = searchRequest.results.reduce((acc, result) => ({ ...acc, [result.raw.urihash]: result }), {});
 
         return documentsDict;
     }
@@ -158,9 +160,9 @@ export class UserProfileModel extends Model {
     private isSearch(action: IActionHistory) {
         return action.name === UserActionType.Search;
     }
-
-    private parseEndpointUri(url: string) {
-        // Parse the host from the Search Endpoint rest uri.
-        return url ? /^((.*:)\/\/([A-Za-z0-9\-\.]+)(:[0-9]+)?)(.*)$/.exec(url)[1] : '';
-    }
 }
+
+/**
+ * Expose the UserProfileModel so a user action implementation can use it.
+ */
+(window as any)['Coveo'] && ((window as any)['Coveo']['UserProfileModel'] = UserProfileModel);

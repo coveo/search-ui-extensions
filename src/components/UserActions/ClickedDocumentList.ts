@@ -7,13 +7,13 @@ import {
     Template,
     HtmlTemplate,
     QueryUtils,
-    l
+    l,
+    get
 } from 'coveo-search-ui';
 import { UserProfileModel } from '../../models/UserProfileModel';
-import { InitializationUtils } from '../../utils/initialization';
 import { ExpandableList } from './ExpandableList';
-import './Strings';
 import { UserActionType } from '../../rest/UserProfilingEndpoint';
+import './Strings';
 
 /**
  * Initialization options of the **ClickedDocumentList** class.
@@ -87,16 +87,21 @@ export class ClickedDocumentList extends Component {
      * @param bindings Bindings of the Search-UI environment.
      */
     constructor(public element: HTMLElement, public options: IClickedDocumentList, public bindings: IComponentBindings) {
-        super(element, ClickedDocumentList.ID, bindings);
+        super(element, ClickedDocumentList.ID, bindings) /* istanbul ignore next Istanbul issue with next */;
 
         this.options = ComponentOptions.initComponentOptions(element, ClickedDocumentList, options);
-        this.userProfileModel = InitializationUtils.getUserProfileModel(this.root, this.bindings);
+
+        this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
+
         this.userProfileModel.getActions(this.options.userId).then(actions => {
             this.sortedDocumentsList = actions
                 .filter(action => action.document && action.type === UserActionType.Click)
                 .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
                 .reverse()
-                .map(action => action.document);
+                .map(action => {
+                    action.document.searchInterface = this.searchInterface;
+                    return action.document;
+                });
             this.render();
         }, this.logger.error.bind(this.logger));
     }

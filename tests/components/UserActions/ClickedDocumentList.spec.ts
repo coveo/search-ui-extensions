@@ -1,10 +1,9 @@
 import { createSandbox, SinonSandbox } from 'sinon';
 import { Mock, Fake } from 'coveo-search-ui-tests';
 import { ClickedDocumentList } from '../../../src/components/UserActions/ClickedDocumentList';
-import { InitializationUtils } from '../../../src/utils/initialization';
 import { UserProfileModel, UserAction } from '../../../src/models/UserProfileModel';
 import { Logger, Initialization } from 'coveo-search-ui';
-import { delay, generate } from '../../utils';
+import { delay, generate, fakeUserProfileModel } from '../../utils';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 
 describe('ClickedDocumentList', () => {
@@ -31,11 +30,13 @@ describe('ClickedDocumentList', () => {
     });
 
     it('should show a text when there is no document clicked', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve([]));
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-        const mock = Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList, { userId: 'testuserId' });
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([]));
+                return env;
+            })
+        );
 
         return delay(() => {
             const emptyElement = mock.cmp.element.querySelector<HTMLLIElement>('.coveo-empty');
@@ -45,11 +46,13 @@ describe('ClickedDocumentList', () => {
     });
 
     it('should show "Documents Clicked" as title', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(TEST_CLICKS));
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-        const mock = Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList, { userId: 'testuserId' });
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
+                return env;
+            })
+        );
 
         return delay(() => {
             expect(mock.cmp.element.querySelector('.coveo-title').innerHTML).toMatch('Recent Clicked Documents');
@@ -57,13 +60,15 @@ describe('ClickedDocumentList', () => {
     });
 
     it('should show 4 documents by default', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(TEST_CLICKS));
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
-        const mock = Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList, { userId: 'testuserId' });
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
+                return env;
+            })
+        );
 
         return delay(() => {
             const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
@@ -73,13 +78,15 @@ describe('ClickedDocumentList', () => {
     });
 
     it('should show a number of documents equal to the "numberOfItems" option', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(TEST_CLICKS));
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
-        const mock = Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList, { userId: 'testuserId', numberOfItems: 10 });
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
+                return env;
+            })
+        );
 
         return delay(() => {
             const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
@@ -89,13 +96,15 @@ describe('ClickedDocumentList', () => {
     });
 
     it('should show all documents when expanded', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(TEST_CLICKS));
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
-        const mock = Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList);
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
+                return env;
+            })
+        );
 
         return delay(() => {
             const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
@@ -109,13 +118,15 @@ describe('ClickedDocumentList', () => {
     });
 
     it('should render the a list of document clicked by a user as a list of ResultLink and put the most recent document click on top', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(TEST_CLICKS));
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
         const createComponentInside = sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
-        const mock = Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList, { userId: 'testuserId' });
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
+                return env;
+            })
+        );
 
         const sortedClick = TEST_CLICKS.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()).reverse();
 
@@ -130,23 +141,30 @@ describe('ClickedDocumentList', () => {
     });
 
     it('should fetch the list of document clicked by a user from the model', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.reject());
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
+        let model = sandbox.createStubInstance(UserProfileModel);
 
-        Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList, { userId: 'testuserId' });
+        Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                model = fakeUserProfileModel(env.root, sandbox);
+                model.getActions.returns(Promise.resolve(TEST_CLICKS));
+                return env;
+            })
+        );
 
         expect(model.getActions.called).toBe(true);
     });
 
     it("should log an error message when the component can't fetch the list of document clicked by a user from the model", () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.reject());
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
         const errorLoggerStub = sandbox.stub(Logger.prototype, 'error');
 
-        const mock = Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList, { userId: 'testuserId' });
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                return env;
+            })
+        );
 
         return delay(() => {
             expect(mock.cmp.element.childElementCount).toBe(0);
@@ -156,21 +174,27 @@ describe('ClickedDocumentList', () => {
 
     describe('template', () => {
         it('should use the given template in options', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve(TEST_CLICKS));
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
             const instantiateToElementStub = sandbox.stub().returns(Promise.resolve(document.createElement('div')));
 
-            Mock.basicComponentSetup<ClickedDocumentList>(ClickedDocumentList, {
-                userId: 'testuserId',
-                max: TEST_CLICKS.length,
-                show: TEST_CLICKS.length,
-                template: {
-                    instantiateToElement: instantiateToElementStub
-                }
-            });
+            Mock.advancedComponentSetup<ClickedDocumentList>(
+                ClickedDocumentList,
+                new Mock.AdvancedComponentSetupOptions(
+                    null,
+                    {
+                        userId: 'testuserId',
+                        max: TEST_CLICKS.length,
+                        show: TEST_CLICKS.length,
+                        template: {
+                            instantiateToElement: instantiateToElementStub
+                        }
+                    },
+                    env => {
+                        fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
+                        return env;
+                    }
+                )
+            );
 
             const sortedClick = TEST_CLICKS.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()).reverse();
 

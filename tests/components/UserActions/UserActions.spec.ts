@@ -2,9 +2,8 @@ import { Mock } from 'coveo-search-ui-tests';
 import { UserActions } from '../../../src/components/UserActions/UserActions';
 import { Logger, Initialization, QueryEvents } from 'coveo-search-ui';
 import { createSandbox, SinonSandbox } from 'sinon';
-import { UserProfileModel, UserAction } from '../../../src/models/UserProfileModel';
-import { delay } from '../../utils';
-import { InitializationUtils } from '../../../src/utils/initialization';
+import { UserAction } from '../../../src/models/UserProfileModel';
+import { delay, fakeUserProfileModel } from '../../utils';
 import { ClickedDocumentList, QueryList, UserActivity } from '../../../src/Index';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 
@@ -55,13 +54,15 @@ describe('UserActions', () => {
     });
 
     it('should be hidden by defaut', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(ACTIONS));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-        const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+        const mock = Mock.advancedComponentSetup<UserActions>(
+            UserActions,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                return env;
+            })
+        );
 
         return delay(() => {
             expect(mock.cmp.element.classList).not.toContain('coveo-user-actions-opened');
@@ -69,13 +70,15 @@ describe('UserActions', () => {
     });
 
     it('should show a panel that has as title "Session Summary"', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(ACTIONS));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-        const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+        const mock = Mock.advancedComponentSetup<UserActions>(
+            UserActions,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                return env;
+            })
+        );
         mock.cmp.show();
 
         return delay(() => {
@@ -84,14 +87,15 @@ describe('UserActions', () => {
     });
 
     it('should show a summary section that have a ClickedDocumentList and a Queries component', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(ACTIONS));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
         const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-        const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+        const mock = Mock.advancedComponentSetup<UserActions>(
+            UserActions,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                return env;
+            })
+        );
         mock.cmp.show();
 
         return delay(() => {
@@ -104,14 +108,15 @@ describe('UserActions', () => {
     });
 
     it('should show a user activity section that have a UserActivity component', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(ACTIONS));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
         const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-        const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+        const mock = Mock.advancedComponentSetup<UserActions>(
+            UserActions,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                return env;
+            })
+        );
         mock.cmp.show();
 
         return delay(() => {
@@ -126,16 +131,16 @@ describe('UserActions', () => {
     it('should pass the user id option to each of it sub components', () => {
         const FAKE_USER_ID = 'someUserId' + Math.random();
 
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(ACTIONS));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
         const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-        Mock.basicComponentSetup<UserActions>(UserActions, {
-            userId: FAKE_USER_ID
-        }).cmp.show();
+        Mock.advancedComponentSetup<UserActions>(
+            UserActions,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: FAKE_USER_ID }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                return env;
+            })
+        ).cmp.show();
+
         return delay(() => {
             expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
 
@@ -147,13 +152,15 @@ describe('UserActions', () => {
     });
 
     it('should hide itself whenever a query is made', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(ACTIONS));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-        const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+        const mock = Mock.advancedComponentSetup<UserActions>(
+            UserActions,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                return env;
+            })
+        );
         mock.cmp.show();
 
         const hideSpy = sandbox.spy(mock.cmp, 'hide');
@@ -164,13 +171,15 @@ describe('UserActions', () => {
     });
 
     it('should show a message when no actions are available', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve([]));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-        const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+        const mock = Mock.advancedComponentSetup<UserActions>(
+            UserActions,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([]));
+                return env;
+            })
+        );
         mock.cmp.show();
 
         return delay(() => {
@@ -180,13 +189,15 @@ describe('UserActions', () => {
     });
 
     it('should show a message when actions cannot be gathered', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.reject());
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-        const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+        const mock = Mock.advancedComponentSetup<UserActions>(
+            UserActions,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                return env;
+            })
+        );
         mock.cmp.show();
 
         return delay(() => {
@@ -196,14 +207,15 @@ describe('UserActions', () => {
 
     describe('when the accordion header is clicked', () => {
         it('should fold the accordion section when the accordion section is open', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve(ACTIONS));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
             const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-            const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+            const mock = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                    return env;
+                })
+            );
             mock.cmp.show();
 
             return delay(() => {
@@ -219,14 +231,15 @@ describe('UserActions', () => {
         });
 
         it('should unfold the accordion section when the accordion section is closed', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve(ACTIONS));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
             const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-            const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+            const mock = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                    return env;
+                })
+            );
             mock.cmp.show();
 
             return delay(() => {
@@ -245,13 +258,15 @@ describe('UserActions', () => {
 
     describe('toggle', () => {
         it('should show the component if the component is hidden', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(new Promise(() => {}));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-            const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+            const mock = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                    return env;
+                })
+            );
 
             mock.cmp.hide();
 
@@ -263,13 +278,15 @@ describe('UserActions', () => {
         });
 
         it('should hide the component if the component is shown', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(new Promise(() => {}));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-            const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+            const mock = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                    return env;
+                })
+            );
 
             mock.cmp.show();
 
@@ -283,13 +300,15 @@ describe('UserActions', () => {
 
     describe('show', () => {
         it('should show the component if the component is hidden', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(new Promise(() => {}));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-            const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+            const mock = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                    return env;
+                })
+            );
 
             mock.cmp.hide();
 
@@ -301,13 +320,15 @@ describe('UserActions', () => {
         });
 
         it('should do nothing if the component is shown', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(new Promise(() => {}));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-            const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+            const mock = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                    return env;
+                })
+            );
 
             mock.cmp.show();
 
@@ -328,13 +349,15 @@ describe('UserActions', () => {
 
     describe('hide', () => {
         it('should hide the component if the component is shown', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(new Promise(() => {}));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-            const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+            const mock = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                    return env;
+                })
+            );
 
             mock.cmp.show();
 
@@ -346,13 +369,15 @@ describe('UserActions', () => {
         });
 
         it('should do nothing if the component is hidden', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(new Promise(() => {}));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-            const mock = Mock.basicComponentSetup<UserActions>(UserActions);
+            const mock = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                    return env;
+                })
+            );
 
             mock.cmp.hide();
 

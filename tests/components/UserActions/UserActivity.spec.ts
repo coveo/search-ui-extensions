@@ -1,10 +1,9 @@
 import { SinonSandbox, createSandbox } from 'sinon';
-import { UserProfileModel, UserAction } from '../../../src/models/UserProfileModel';
+import { UserAction } from '../../../src/models/UserProfileModel';
 import { Mock, Fake } from 'coveo-search-ui-tests';
-import { InitializationUtils } from '../../../src/utils/initialization';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 import { UserActivity } from '../../../src/Index';
-import { delay } from '../../utils';
+import { delay, fakeUserProfileModel } from '../../utils';
 import { formatDate, formatTime, formatTimeInterval } from '../../../src/utils/time';
 
 describe('UserActivity', () => {
@@ -97,12 +96,13 @@ describe('UserActivity', () => {
     });
 
     it('should show the starting date and time of the user action session', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(FAKE_USER_ACTIONS));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-        const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+        const mock = Mock.advancedComponentSetup<UserActivity>(
+            UserActivity,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(FAKE_USER_ACTIONS));
+                return env;
+            })
+        );
 
         const timestamps = FAKE_USER_ACTIONS.map(action => action.timestamp).sort();
 
@@ -115,12 +115,13 @@ describe('UserActivity', () => {
     });
 
     it('should duration of the user action session', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(FAKE_USER_ACTIONS));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-        const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+        const mock = Mock.advancedComponentSetup<UserActivity>(
+            UserActivity,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(FAKE_USER_ACTIONS));
+                return env;
+            })
+        );
 
         const timestamps = FAKE_USER_ACTIONS.map(action => action.timestamp).sort();
 
@@ -130,12 +131,13 @@ describe('UserActivity', () => {
     });
 
     it('should fold each actions that are tagged as not meaningful', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-        const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+        const mock = Mock.advancedComponentSetup<UserActivity>(
+            UserActivity,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]));
+                return env;
+            })
+        );
 
         return delay(() => {
             IRRELEVANT_ACTIONS.forEach(action => {
@@ -145,12 +147,13 @@ describe('UserActivity', () => {
     });
 
     it('should show each actions that are tagged as meaningful', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-        const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+        const mock = Mock.advancedComponentSetup<UserActivity>(
+            UserActivity,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]));
+                return env;
+            })
+        );
 
         return delay(() => {
             FAKE_USER_ACTIONS.forEach(action => {
@@ -160,12 +163,13 @@ describe('UserActivity', () => {
     });
 
     it('should show all actions when no action are tagged as meaningful', () => {
-        const model = sandbox.createStubInstance(UserProfileModel);
-        model.getActions.returns(Promise.resolve(IRRELEVANT_ACTIONS));
-
-        sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-        const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+        const mock = Mock.advancedComponentSetup<UserActivity>(
+            UserActivity,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(IRRELEVANT_ACTIONS));
+                return env;
+            })
+        );
 
         return delay(() => {
             IRRELEVANT_ACTIONS.forEach(action => {
@@ -176,12 +180,13 @@ describe('UserActivity', () => {
 
     describe('folded events', () => {
         it('should unfold on click', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const folded = mock.cmp.element.querySelector<HTMLElement>('.coveo-folded');
@@ -197,12 +202,13 @@ describe('UserActivity', () => {
 
     describe('search event', () => {
         it('should display the "User Query" as event title when there is a query expression', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_USER_SEARCH_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_USER_SEARCH_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-search');
@@ -213,12 +219,13 @@ describe('UserActivity', () => {
         });
 
         it('should display the "Query" as event title', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-search');
@@ -229,12 +236,13 @@ describe('UserActivity', () => {
         });
 
         it('should display the query made by the user as event data', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_USER_SEARCH_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_USER_SEARCH_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-search');
@@ -245,12 +253,13 @@ describe('UserActivity', () => {
         });
 
         it('should display the time of the event as event footer', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const searchElement = mock.cmp.element.querySelector('.coveo-search');
@@ -261,12 +270,13 @@ describe('UserActivity', () => {
         });
 
         it('should display the originLevel1 as event footer', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-search');
@@ -279,12 +289,13 @@ describe('UserActivity', () => {
 
     describe('click event', () => {
         it('should display the "Clicked Document" as event title', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_CLICK_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CLICK_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-click');
@@ -295,12 +306,13 @@ describe('UserActivity', () => {
         });
 
         it('should display a link to the clicked document as event data', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_CLICK_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CLICK_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-click');
@@ -312,12 +324,13 @@ describe('UserActivity', () => {
             });
         });
         it('should display the time of the event as event footer', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_CLICK_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CLICK_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-click');
@@ -328,12 +341,13 @@ describe('UserActivity', () => {
         });
 
         it('should display the originLevel1 as event footer', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_CLICK_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CLICK_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-click');
@@ -346,12 +360,13 @@ describe('UserActivity', () => {
 
     describe('page view event', () => {
         it('should display the "Page View" as event title', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_VIEW_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_VIEW_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const viewElement = mock.cmp.element.querySelector('.coveo-view');
@@ -362,12 +377,13 @@ describe('UserActivity', () => {
         });
 
         it('should display the content id key and value as event data', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_VIEW_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_VIEW_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const viewElement = mock.cmp.element.querySelector('.coveo-view');
@@ -379,12 +395,13 @@ describe('UserActivity', () => {
         });
 
         it('should display the time of the event as event footer', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_VIEW_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_VIEW_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const viewElement = mock.cmp.element.querySelector('.coveo-view');
@@ -395,12 +412,13 @@ describe('UserActivity', () => {
         });
 
         it('should display the originLevel1 as event footer', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_VIEW_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_VIEW_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const viewElement = mock.cmp.element.querySelector('.coveo-view');
@@ -413,12 +431,13 @@ describe('UserActivity', () => {
 
     describe('custom event', () => {
         it('should display the event type as event title', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_CUSTOM_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CUSTOM_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-custom');
@@ -429,12 +448,13 @@ describe('UserActivity', () => {
         });
 
         it('should display "Custom Action" as event title when the event type is unavailable', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_CUSTOM_EVENT_WITHOUT_TYPE]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CUSTOM_EVENT_WITHOUT_TYPE]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-custom');
@@ -445,12 +465,13 @@ describe('UserActivity', () => {
         });
 
         it('should display the event value as event data', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_CUSTOM_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CUSTOM_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-custom');
@@ -461,12 +482,13 @@ describe('UserActivity', () => {
         });
 
         it('should display the time of the event as event footer', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_CUSTOM_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CUSTOM_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-custom');
@@ -477,12 +499,13 @@ describe('UserActivity', () => {
         });
 
         it('should display the originLevel1 as event footer', () => {
-            const model = sandbox.createStubInstance(UserProfileModel);
-            model.getActions.returns(Promise.resolve([FAKE_CUSTOM_EVENT]));
-
-            sandbox.stub(InitializationUtils, 'getUserProfileModel').returns((model as any) as UserProfileModel);
-
-            const mock = Mock.basicComponentSetup<UserActivity>(UserActivity, { userId: 'testuserId' });
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CUSTOM_EVENT]));
+                    return env;
+                })
+            );
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-custom');
