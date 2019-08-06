@@ -73,7 +73,7 @@ export class UserProfileModel extends Model {
         super(element, UserProfileModel.ID, {});
         Assert.isNotUndefined(this.options.restUri);
         Assert.isNotUndefined(this.options.organizationId);
-        Assert.isNotUndefined(this.options.accessToken);
+        Assert.isNotUndefined(this.options.searchEndpoint);
 
         this.getOrFetchCache = {};
 
@@ -160,4 +160,11 @@ export class UserProfileModel extends Model {
     private isSearch(action: IActionHistory) {
         return action.name === UserActionType.Search;
     }
+}
+
+/**
+ * Expose the UserProfileModel so a user action implementation can use it.
+ */
+if ((window as any)['Coveo']) {
+    (window as any)['Coveo']['UserProfileModel'] = UserProfileModel;
 }
