@@ -62,6 +62,11 @@ export function delay(callback: () => any, timemout = 0) {
     });
 }
 
+/**
+ * Create a fake user profile model instance.
+ * @param root The root of the Search interface.
+ * @param sandbox A sinon Sandbox.
+ */
 export function fakeUserProfileModel(root: HTMLElement, sandbox: SinonSandbox) {
     (root as any)[`Coveo${UserProfileModel.ID}`] = sandbox.createStubInstance(UserProfileModel);
     return (root as any)[`Coveo${UserProfileModel.ID}`];
