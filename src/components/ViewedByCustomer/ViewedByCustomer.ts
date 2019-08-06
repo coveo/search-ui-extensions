@@ -1,11 +1,18 @@
-import { Component, ComponentOptions, IComponentBindings, $$, Initialization } from 'coveo-search-ui';
+import { Component, ComponentOptions, IComponentBindings, Initialization, l } from 'coveo-search-ui';
 import { user } from '../../utils/icons';
+import './Strings';
 
 /**
  * The options for the ViewedByCustomerComponent
  */
 export interface IViewedByCustomerOptions {
+    /**
+     * If true, will display an icon when the component is displayed itself.
+     */
     showIcon?: boolean;
+    /**
+     * The label that should be displayed when the component is displayed.
+     */
     label?: string;
 }
 
@@ -22,15 +29,13 @@ export class ViewedByCustomer extends Component {
      * Default options used by the component.
      */
     public static readonly options: IViewedByCustomerOptions = {
-        /**
-         * If true, will display an icon when the component is displayed itself.
-         */
         showIcon: ComponentOptions.buildBooleanOption({ defaultValue: true }),
-        /**
-         * The label that should be displayed when the component is displayed.
-         */
-        label: ComponentOptions.buildStringOption({ defaultValue: 'Viewed by Customer' })
+        label: ComponentOptions.buildStringOption({ defaultValue: l(`${ViewedByCustomer.ID}_DefaultLabel`) })
     };
+
+    // Internal CSS selectors.
+    private static readonly ICON_CLASS = 'viewed-by-customer-icon';
+    private static readonly LABEL_CLASS = 'viewed-by-customer-label';
 
     /**
      * Create an instance of {@link ViewedByCustomer}.
@@ -39,7 +44,7 @@ export class ViewedByCustomer extends Component {
      * @param bindings Bindings of the Search-UI environment.
      */
     public constructor(public element: HTMLElement, public options: IViewedByCustomerOptions, public bindings: IComponentBindings) {
-        super(element, ViewedByCustomer.ID, bindings)/* istanbul ignore next Issue with Istanbul and super calls*/;
+        super(element, ViewedByCustomer.ID, bindings) /* istanbul ignore next Issue with Istanbul and super calls*/;
         this.options = ComponentOptions.initComponentOptions(element, ViewedByCustomer, options);
 
         if (this.resolveResult().isUserActionView) {
@@ -50,15 +55,15 @@ export class ViewedByCustomer extends Component {
     private render() {
         if (this.options.showIcon) {
             const iconElement = document.createElement('span');
-            iconElement.className = 'viewed-by-customer-icon';
+            iconElement.classList.add(ViewedByCustomer.ICON_CLASS);
             iconElement.innerHTML = user;
-            $$(this.element).append(iconElement);
+            this.element.appendChild(iconElement);
         }
 
         const labelElement = document.createElement('span');
-        labelElement.className = 'viewed-by-customer-label';
+        labelElement.classList.add(ViewedByCustomer.LABEL_CLASS);
         labelElement.innerText = this.options.label;
-        $$(this.element).append(labelElement);
+        this.element.appendChild(labelElement);
     }
 }
 
