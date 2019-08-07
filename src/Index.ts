@@ -8,3 +8,4 @@ export { QueryList } from './components/UserActions/QueryList';
 export { UserProfilingEndpoint } from './rest/UserProfilingEndpoint';
 export { UserProfileModel } from './models/UserProfileModel';
 export { ResultsFilter } from './components/ResultsFilter/ResultsFilter';
+export { ViewedByCustomer } from './components/ViewedByCustomer/ViewedByCustomer';

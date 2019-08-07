@@ -1,0 +1,18 @@
+@import '../../sass/Variables.scss';
+@import '../../sass/Text.scss';
+
+.CoveoViewedByCustomer {
+    color: black;
+    font-weight: bold;
+    font-size: 14px;
+    .viewed-by-customer-icon {
+        vertical-align: middle;
+        svg {
+            height: 1em;
+            width: 1em;
+        }
+    }
+    .viewed-by-customer-label {
+        vertical-align: baseline;
+    }
+}
