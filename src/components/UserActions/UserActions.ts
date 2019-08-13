@@ -81,16 +81,20 @@ export class UserActions extends Component {
 
         this.options = ComponentOptions.initComponentOptions(element, UserActions, options);
 
-        (get(this.root, UserProfileModel) as UserProfileModel)
-            .getActions(this.options.userId)
-            .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
-            .catch(() => this.renderNoActions());
+        if (!this.options.userId) {
+            this.disable();
+        } else {
+            (get(this.root, UserProfileModel) as UserProfileModel)
+                .getActions(this.options.userId)
+                .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
+                .catch(() => this.renderNoActions());
 
-        ResponsiveUserActions.init(this.root, this);
+            ResponsiveUserActions.init(this.root, this);
 
-        this.bind.onRootElement(QueryEvents.newQuery, () => this.hide());
+            this.bind.onRootElement(QueryEvents.newQuery, () => this.hide());
 
-        this.hide();
+            this.hide();
+        }
     }
 
     /**
