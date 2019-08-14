@@ -201,21 +201,27 @@ describe('UserActivity', () => {
     });
 
     describe('search event', () => {
-        it('should display the "User Query" as event title when there is a query expression', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_USER_SEARCH_EVENT]));
-                    return env;
+        it('should display the "User Query" as event title when there is a query expression and the cause is manual search cause', () => {
+            return Promise.all(
+                ['omniboxAnalytics', 'omniboxField', 'omniboxFromLink', 'searchboxAsYouType', 'searchboxSubmit', 'searchFromLink'].map(cause => {
+                    const mock = Mock.advancedComponentSetup<UserActivity>(
+                        UserActivity,
+                        new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                            fakeUserProfileModel(env.root, sandbox).getActions.returns(
+                                Promise.resolve([{ ...FAKE_USER_SEARCH_EVENT, cause: cause }])
+                            );
+                            return env;
+                        })
+                    );
+
+                    return delay(() => {
+                        const clickElement = mock.cmp.element.querySelector('.coveo-search');
+
+                        expect(clickElement).not.toBeNull();
+                        expect(clickElement.querySelector<HTMLElement>('.coveo-title').innerText).toBe('User Query');
+                    });
                 })
             );
-
-            return delay(() => {
-                const clickElement = mock.cmp.element.querySelector('.coveo-search');
-
-                expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>('.coveo-title').innerText).toBe('User Query');
-            });
         });
 
         it('should display the "Query" as event title', () => {
