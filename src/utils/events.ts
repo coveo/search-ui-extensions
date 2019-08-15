@@ -1,6 +1,6 @@
 export const MANUAL_SEARCH_EVENT_CAUSE = Object.freeze([
     'omniboxAnalytics',
-    'omniboxField',
+    'userActionsSubmit',
     'omniboxFromLink',
     'searchboxAsYouType',
     'searchboxSubmit',
