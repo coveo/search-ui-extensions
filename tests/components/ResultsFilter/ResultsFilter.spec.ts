@@ -1,6 +1,7 @@
 import { ResultsFilter, IResultsFilterOptions } from '../../../src/components/ResultsFilter/ResultsFilter';
 import { Mock, Simulate } from 'coveo-search-ui-tests';
-import { QueryStateModel } from 'coveo-search-ui';
+import { QueryStateModel, Assert } from 'coveo-search-ui';
+import { ResultsFilterEvents, IResultsFilterEventArgs } from '../../../src/components/ResultsFilter/Events';
 
 describe('ResultsFilter', () => {
     let filter: Mock.IBasicComponentSetup<ResultsFilter>;
@@ -40,6 +41,23 @@ describe('ResultsFilter', () => {
         expect(filter.cmp.isSelected()).toBeTruthy();
         filter.env.queryStateModel.set(QueryStateModel.getFacetId(ResultsFilter.ID), false);
         expect(filter.cmp.isSelected()).toBeFalsy();
+    });
+
+    it('should trigger events on toggling', done => {
+        let cpt = 0;
+        Coveo.$$(filter.env.root).on(ResultsFilterEvents.Click, (evt: Event, args: IResultsFilterEventArgs) => {
+            expect(evt.type).toBe(ResultsFilterEvents.Click);
+            if (args.checked) {
+                cpt++;
+            } else {
+                cpt++;
+            }
+            if (cpt == 2) {
+                done();
+            }
+        });
+        filter.cmp.toggle();
+        filter.cmp.toggle();
     });
 
     describe('when setting options', () => {

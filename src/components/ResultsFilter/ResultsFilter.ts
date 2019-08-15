@@ -9,8 +9,11 @@ import {
     IBuildingQueryEventArgs,
     QueryStateModel,
     load,
-    IAttributesChangedEventArg
+    IAttributesChangedEventArg,
+    l
 } from 'coveo-search-ui';
+import { ResultsFilterEvents, IResultsFilterEventArgs } from './Events';
+import './Strings';
 
 export interface IAnalyticsFilteredResultsMeta {
     filteredResults: boolean;
@@ -36,7 +39,7 @@ export class ResultsFilter extends Component {
 
     static options: IResultsFilterOptions = {
         text: ComponentOptions.buildStringOption({
-            defaultValue: 'Filter Results'
+            defaultValue: l(`${ResultsFilter.ID}_DefaultText`)
         }),
         field: ComponentOptions.buildStringOption({
             defaultValue: 'urihash'
@@ -97,6 +100,7 @@ export class ResultsFilter extends Component {
     private handleCheckboxChange(checkbox: Checkbox) {
         this.queryStateModel.set(QueryStateModel.getFacetId(ResultsFilter.ID), this.checkbox.isSelected());
         this.triggerQuery();
+        Coveo.$$(this.root).trigger(ResultsFilterEvents.Click, { checked: this.checkbox.isSelected() } as IResultsFilterEventArgs);
     }
 
     private triggerQuery() {
