@@ -24,10 +24,10 @@ export class Translation {
      */
     public static register(language: Language, translationDictionary: ILanguageDictionary) {
         Object.keys(translationDictionary).forEach(key => {
-            String['locales'] = String['locales'] || {};
-            String['locales'][language] = String['locales'][language] || {};
-            String['locales'][language][key] = translationDictionary[key];
+            (String as any)['locales'] = (String as any)['locales'] || {};
+            (String as any)['locales'][language] = (String as any)['locales'][language] || {};
+            (String as any)['locales'][language][key] = translationDictionary[key];
         });
-        String['toLocaleString'].call(this, { [language]: String['locales'][language] });
+        String['toLocaleString'].call(this, { [language]: (String as any)['locales'][language] });
     }
 }
