@@ -351,6 +351,17 @@ export class UserActivity extends Component {
         return cell;
     }
 
+    /**
+     * Dertermine if an action is a manual search submit.
+     * A manual search submit is a Search event that has a query expression and that the cause is one of the above:
+     * + **omniboxAnalytics**
+     * + **userActionsSubmit**
+     * + **omniboxFromLink**
+     * + **searchboxAsYouType**
+     * + **searchboxSubmit**
+     * + **searchFromLink**
+     * @param action Action that will be tested.
+     */
     private isManualSubmitAction(action: UserAction) {
         return action.type === UserActionType.Search && action.raw.query_expression && MANUAL_SEARCH_EVENT_CAUSE.indexOf(action.raw.cause) !== -1;
     }
