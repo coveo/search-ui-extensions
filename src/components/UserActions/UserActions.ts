@@ -81,6 +81,11 @@ export class UserActions extends Component {
 
         this.options = ComponentOptions.initComponentOptions(element, UserActions, options);
 
+        if (!this.options.userId) {
+            this.disable();
+            return;
+        }
+
         (get(this.root, UserProfileModel) as UserProfileModel)
             .getActions(this.options.userId)
             .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
