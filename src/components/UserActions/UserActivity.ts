@@ -3,6 +3,7 @@ import { formatTime, formatDate, formatTimeInterval } from '../../utils/time';
 import { UserAction, UserProfileModel } from '../../models/UserProfileModel';
 import { duplicate, search, view, dot } from '../../utils/icons';
 import { UserActionType } from '../../rest/UserProfilingEndpoint';
+import { MANUAL_SEARCH_EVENT_CAUSE } from '../../utils/events';
 import './Strings';
 
 /**
@@ -305,7 +306,7 @@ export class UserActivity extends Component {
     }
 
     private buildTitleElement(action: UserAction) {
-        const title = action.type === UserActionType.Search && !action.raw.query_expression ? 'query' : action.type.toLowerCase();
+        const title = this.isManualSubmitAction(action) ? 'query' : action.type.toLowerCase();
 
         const el = document.createElement('div');
         el.classList.add(TITLE_CLASS);
@@ -348,6 +349,21 @@ export class UserActivity extends Component {
         cell.appendChild(dataElement);
 
         return cell;
+    }
+
+    /**
+     * Dertermine if an action is a manual search submit.
+     * A manual search submit is a Search event that has a query expression and that the cause is one of the above:
+     * + **omniboxAnalytics**
+     * + **userActionsSubmit**
+     * + **omniboxFromLink**
+     * + **searchboxAsYouType**
+     * + **searchboxSubmit**
+     * + **searchFromLink**
+     * @param action Action that will be tested.
+     */
+    private isManualSubmitAction(action: UserAction) {
+        return action.type === UserActionType.Search && action.raw.query_expression && MANUAL_SEARCH_EVENT_CAUSE.indexOf(action.raw.cause) !== -1;
     }
 }
 
