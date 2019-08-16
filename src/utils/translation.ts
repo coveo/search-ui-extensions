@@ -23,9 +23,11 @@ export class Translation {
      * @param translationDictionary Key-Value dictionary that contain all traslation for a language.
      */
     public static register(language: Language, translationDictionary: ILanguageDictionary) {
-        // @ts-ignore
-        String.toLocaleString({
-            [language]: translationDictionary
+        Object.keys(translationDictionary).forEach(key => {
+            (String as any)['locales'] = (String as any)['locales'] || {};
+            (String as any)['locales'][language] = (String as any)['locales'][language] || {};
+            (String as any)['locales'][language][key] = translationDictionary[key];
         });
+        String['toLocaleString'].call(this, { [language]: (String as any)['locales'][language] });
     }
 }
