@@ -97,7 +97,8 @@ export class QueryList extends Component {
                 .filter(action => action.query)
                 .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
                 .reverse()
-                .map(action => action.query);
+                .map(action => action.query)
+                .reduce((acc, query) => (acc.indexOf(query) === -1 ? [...acc, query] : acc), []);
             this.render();
         }, this.logger.error.bind(this.logger));
     }
