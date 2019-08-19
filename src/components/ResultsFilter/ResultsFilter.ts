@@ -39,7 +39,7 @@ export class ResultsFilter extends Component {
 
     static options: IResultsFilterOptions = {
         text: ComponentOptions.buildStringOption({
-            defaultValue: l(`${ResultsFilter.ID}_DefaultText`)
+            defaultValue: l(`${ResultsFilter.ID}_Label`)
         }),
         field: ComponentOptions.buildStringOption({
             defaultValue: 'urihash'

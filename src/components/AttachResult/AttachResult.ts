@@ -42,10 +42,10 @@ export class AttachResult extends Component {
 
     public static readonly options: IAttachResultOptions = {
         attachCaption: ComponentOptions.buildStringOption({
-            defaultValue: l(`${AttachResult.ID}_DefaultAttachCaption`)
+            defaultValue: l(`${AttachResult.ID}_Attach`)
         }),
         detachCaption: ComponentOptions.buildStringOption({
-            defaultValue: l(`${AttachResult.ID}_DefaultDetachCaption`)
+            defaultValue: l(`${AttachResult.ID}_Detach`)
         }),
         attach: ComponentOptions.buildCustomOption(
             name => (result: IQueryResult) =>

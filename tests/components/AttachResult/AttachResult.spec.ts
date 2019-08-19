@@ -56,6 +56,13 @@ describe('AttachResult', () => {
             }, 50);
         });
 
+        it('tooltip should contain the default localized string', async () => {
+            await attachResult.cmp.attach();
+            expect(attachResult.cmp.element.querySelector('.coveo-caption-for-icon').textContent).toBe('Detach Result');
+            await attachResult.cmp.detach();
+            expect(attachResult.cmp.element.querySelector('.coveo-caption-for-icon').textContent).toBe('Attach Result');
+        });
+
         it('should be detached when isAttached returns false', done => {
             isAttachedSpy.and.returnValue(Promise.resolve(false));
             attachResult = Mock.optionsResultComponentSetup(AttachResult, { isAttached: faker.isAttached }, fakeResult);
