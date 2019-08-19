@@ -98,6 +98,7 @@ export class ClickedDocumentList extends Component {
                 .filter(action => action.document && action.type === UserActionType.Click)
                 .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
                 .reverse()
+                .reduce((acc, action) => (!acc.find(existing => existing.raw.uri_hash === action.raw.uri_hash) ? [...acc, action] : acc), [])
                 .map(action => {
                     action.document.searchInterface = this.searchInterface;
                     return action.document;

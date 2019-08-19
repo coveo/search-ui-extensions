@@ -9,6 +9,7 @@ import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 describe('ClickedDocumentList', () => {
     const TEST_CLICKS = generate(20, i => {
         const document = Fake.createFakeResult();
+        document.uri = `document${Math.random()}`;
         return new UserAction(UserActionType.Click, new Date(i), { origin_level_1: 'foo', uri_hash: document.uri }, document);
     });
     let sandbox: SinonSandbox;
@@ -113,6 +114,54 @@ describe('ClickedDocumentList', () => {
 
             return delay(() => {
                 expect(list.childElementCount).toBe(TEST_CLICKS.length);
+            });
+        });
+    });
+
+    it('should not show the same query twice', () => {
+        const createComponentInside = sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
+
+        const buildAction = (hash: string, i: number) => {
+            const document = Fake.createFakeResult();
+            document.uri = hash;
+            return new UserAction(UserActionType.Click, new Date(i), { origin_level_1: 'foo', uri_hash: document.uri }, document);
+        };
+
+        const TEST_DUPLICATE = [
+            buildAction('someQuery', 0),
+            buildAction('someQuery2', 1),
+            buildAction('someQuery2', 2),
+            buildAction('someQuery2', 3),
+            buildAction('someQuery', 4)
+        ];
+
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_DUPLICATE));
+                return env;
+            })
+        );
+
+        return delay(() => {
+            // Expand the whole list of query.
+            const button = mock.cmp.element.querySelector<HTMLElement>('.coveo-more-less');
+            if (button) {
+                button.click();
+            }
+
+            const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
+            expect(list.childElementCount).toBe(new Set(TEST_DUPLICATE.map(action => action.raw.uri_hash)).size);
+
+            // Check that the order is respected.
+            const sortedActions = TEST_DUPLICATE.reverse().reduce(
+                (acc, action) => (!acc.find(existing => existing.raw.uri_hash === action.raw.uri_hash) ? [...acc, action] : acc),
+                []
+            );
+
+            list.childNodes.forEach((node: HTMLElement, i) => {
+                expect(node.innerHTML).toMatch('CoveoResultLink');
+                expect(createComponentInside.calledWith(node.firstChild as HTMLElement, sortedActions[i].document)).toBe(true);
             });
         });
     });
