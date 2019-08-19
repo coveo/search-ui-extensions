@@ -8,7 +8,8 @@
     "module": "./bin/es6/Index.js",
     "types": "./bin/typings",
     "sideEffects": [
-        "./bin/es6/components/UserActions/Strings.js"
+        "./bin/es6/components/UserActions/Strings.js",
+        "./bin/es6/components/ViewedByCustomer/Strings.js"
     ],
     "scripts": {
         "test": "karma start ./config/karma.config.js --single-run",
