@@ -1,6 +1,8 @@
 import { ResultsFilter, IResultsFilterOptions } from '../../../src/components/ResultsFilter/ResultsFilter';
 import { Mock, Simulate } from 'coveo-search-ui-tests';
 import { QueryStateModel } from 'coveo-search-ui';
+import { ResultsFilterEvents, IResultsFilterEventArgs } from '../../../src/components/ResultsFilter/Events';
+import { Translation, Language } from '../../../src/utils/translation';
 
 describe('ResultsFilter', () => {
     let filter: Mock.IBasicComponentSetup<ResultsFilter>;
@@ -40,6 +42,31 @@ describe('ResultsFilter', () => {
         expect(filter.cmp.isSelected()).toBeTruthy();
         filter.env.queryStateModel.set(QueryStateModel.getFacetId(ResultsFilter.ID), false);
         expect(filter.cmp.isSelected()).toBeFalsy();
+    });
+
+    it('should trigger event with checked true when first toggling', () => {
+        return new Promise(resolve => {
+            Coveo.$$(filter.env.root).on(ResultsFilterEvents.Click, (evt: Event, args: IResultsFilterEventArgs) => {
+                expect(args.checked).toBeTruthy();
+                resolve();
+            });
+            filter.cmp.toggle();
+        });
+    });
+
+    it('should trigger event with checked false when toggling twice', () => {
+        return new Promise(resolve => {
+            filter.cmp.toggle();
+            Coveo.$$(filter.env.root).on(ResultsFilterEvents.Click, (evt: Event, args: IResultsFilterEventArgs) => {
+                expect(args.checked).toBeFalsy();
+                resolve();
+            });
+            filter.cmp.toggle();
+        });
+    });
+
+    it('should contain the default label string', () => {
+        expect(filter.cmp.element.querySelector('span').innerText).toBe('Filter Results');
     });
 
     describe('when setting options', () => {
