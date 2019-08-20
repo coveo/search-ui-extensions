@@ -1,6 +1,7 @@
 import { AttachResult, IAttachResultOptions } from '../../../src/components/AttachResult/AttachResult';
 import { Mock, Fake } from 'coveo-search-ui-tests';
 import { IQueryResult, Logger } from 'coveo-search-ui';
+import { AttachResultEvents, IAttachResultEventArgs } from '../../../src/components/AttachResult/Events';
 
 describe('AttachResult', () => {
     let attachResult: Mock.IBasicComponentSetup<AttachResult>;
@@ -53,6 +54,13 @@ describe('AttachResult', () => {
                 expect(attachResult.cmp.isAttached()).toBeTruthy();
                 done();
             }, 50);
+        });
+
+        it('tooltip should contain the default localized string', async () => {
+            await attachResult.cmp.attach();
+            expect(attachResult.cmp.element.querySelector('.coveo-caption-for-icon').textContent).toBe('Detach Result');
+            await attachResult.cmp.detach();
+            expect(attachResult.cmp.element.querySelector('.coveo-caption-for-icon').textContent).toBe('Attach Result');
         });
 
         it('should be detached when isAttached returns false', done => {
@@ -129,6 +137,14 @@ describe('AttachResult', () => {
             await attachResult.cmp.attach();
             expect(attachResult.cmp.element.querySelector('.coveo-caption-for-icon').innerHTML).toBe('detach me');
         });
+
+        it('should trigger the attach event', done => {
+            Coveo.$$(attachResult.env.root).on(AttachResultEvents.Attach, (evt: Event, args: IAttachResultEventArgs) => {
+                expect(args.queryResult).not.toBeNull();
+                done();
+            });
+            attachResult.cmp.attach();
+        });
     });
 
     describe('detach', () => {
@@ -185,6 +201,14 @@ describe('AttachResult', () => {
             expect(attachResult.cmp.element.querySelector('.coveo-caption-for-icon').innerHTML).toBe('detach me');
             await attachResult.cmp.detach();
             expect(attachResult.cmp.element.querySelector('.coveo-caption-for-icon').innerHTML).toBe('attach me');
+        });
+
+        it('should trigger the detach event', done => {
+            Coveo.$$(attachResult.env.root).on(AttachResultEvents.Detach, (evt: Event, args: IAttachResultEventArgs) => {
+                expect(args.queryResult).not.toBeNull();
+                done();
+            });
+            attachResult.cmp.detach();
         });
     });
 

@@ -8,10 +8,16 @@ import {
     IAnalyticsCaseAttachMeta,
     IAnalyticsCaseDetachMeta,
     analyticsActionCauseList,
-    IAnalyticsActionCause
+    IAnalyticsActionCause,
+    l
 } from 'coveo-search-ui';
 import { paperclipIcon } from '../../utils/icons';
+import { AttachResultEvents, IAttachResultEventArgs } from './Events';
+import './Strings';
 
+/**
+ * Possible options to configure the **AttachResult** component.
+ */
 export interface IAttachResultOptions {
     /** Specifies the tooltip displayed when the result is not attached. */
     attachCaption?: string;
@@ -37,12 +43,12 @@ export class AttachResult extends Component {
     private buttonElement: HTMLElement;
     private tooltipElement: HTMLElement;
 
-    static options: IAttachResultOptions = {
+    public static readonly options: IAttachResultOptions = {
         attachCaption: ComponentOptions.buildStringOption({
-            defaultValue: 'Attach Result'
+            defaultValue: l(`${AttachResult.ID}_Attach`)
         }),
         detachCaption: ComponentOptions.buildStringOption({
-            defaultValue: 'Detach Result'
+            defaultValue: l(`${AttachResult.ID}_Detach`)
         }),
         attach: ComponentOptions.buildCustomOption(
             name => (result: IQueryResult) =>
@@ -111,6 +117,7 @@ export class AttachResult extends Component {
             .then(() => {
                 this.attached = true;
                 this.logAnalyticsCaseEvent(analyticsActionCauseList.caseAttach);
+                Coveo.$$(this.root).trigger(AttachResultEvents.Attach, { queryResult: this.queryResult } as IAttachResultEventArgs);
             })
             .finally(() => {
                 this.setLoading(false);
@@ -131,6 +138,7 @@ export class AttachResult extends Component {
             .then(() => {
                 this.attached = false;
                 this.logAnalyticsCaseEvent(analyticsActionCauseList.caseDetach);
+                Coveo.$$(this.root).trigger(AttachResultEvents.Detach, { queryResult: this.queryResult } as IAttachResultEventArgs);
             })
             .finally(() => {
                 this.setLoading(false);

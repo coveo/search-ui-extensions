@@ -9,13 +9,22 @@ import {
     IBuildingQueryEventArgs,
     QueryStateModel,
     load,
-    IAttributesChangedEventArg
+    IAttributesChangedEventArg,
+    l
 } from 'coveo-search-ui';
+import { ResultsFilterEvents, IResultsFilterEventArgs } from './Events';
+import './Strings';
 
+/**
+ * Metadata sent when an analytics event is sent.
+ */
 export interface IAnalyticsFilteredResultsMeta {
     filteredResults: boolean;
 }
 
+/**
+ * Possible options to configure the **ResultsFilter** component.
+ */
 export interface IResultsFilterOptions {
     /** Specifies the text displayed next to the checkbox. */
     text?: string;
@@ -36,7 +45,7 @@ export class ResultsFilter extends Component {
 
     static options: IResultsFilterOptions = {
         text: ComponentOptions.buildStringOption({
-            defaultValue: 'Filter Results'
+            defaultValue: l(`${ResultsFilter.ID}_Label`)
         }),
         field: ComponentOptions.buildStringOption({
             defaultValue: 'urihash'
@@ -97,6 +106,7 @@ export class ResultsFilter extends Component {
     private handleCheckboxChange(checkbox: Checkbox) {
         this.queryStateModel.set(QueryStateModel.getFacetId(ResultsFilter.ID), this.checkbox.isSelected());
         this.triggerQuery();
+        Coveo.$$(this.root).trigger(ResultsFilterEvents.Click, { checked: this.checkbox.isSelected() } as IResultsFilterEventArgs);
     }
 
     private triggerQuery() {
