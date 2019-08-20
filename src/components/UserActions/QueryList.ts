@@ -98,9 +98,13 @@ export class QueryList extends Component {
                 .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
                 .reverse()
                 .map(action => action.query)
-                .reduce((acc, query) => (acc.indexOf(query) === -1 ? [...acc, query] : acc), []);
+                .reduce(this.removeDuplicateQueries, []);
             this.render();
         }, this.logger.error.bind(this.logger));
+    }
+
+    private removeDuplicateQueries(acc: string[], query: string): string[] {
+        return acc.indexOf(query) === -1 ? [...acc, query] : acc;
     }
 
     private render() {

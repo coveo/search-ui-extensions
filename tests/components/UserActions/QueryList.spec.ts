@@ -113,7 +113,8 @@ describe('QueryList', () => {
     });
 
     it('should not show the same query twice', () => {
-        const TEST_DUPLICATE = [
+        // Setup.
+        const SEARCH_EVENTS = [
             new UserAction(UserActionType.Search, new Date(0), { query_expression: 'someQuery', origin_level_1: 'foo' }, null, 'someQuery'),
             new UserAction(UserActionType.Search, new Date(1), { query_expression: 'someQuery2', origin_level_1: 'foo' }, null, 'someQuery2'),
             new UserAction(UserActionType.Search, new Date(2), { query_expression: 'someQuery2', origin_level_1: 'foo' }, null, 'someQuery2'),
@@ -121,14 +122,17 @@ describe('QueryList', () => {
             new UserAction(UserActionType.Search, new Date(4), { query_expression: 'someQuery', origin_level_1: 'foo' }, null, 'someQuery')
         ];
 
+        const SORTED_AND_TRIMMED_SEARCH_EVENT = ['someQuery', 'someQuery2'];
+
         const mock = Mock.advancedComponentSetup<QueryList>(
             QueryList,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_DUPLICATE));
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(SEARCH_EVENTS));
                 return env;
             })
         );
 
+        // Validation.
         return delay(() => {
             // Expand the whole list of query.
             const button = mock.cmp.element.querySelector<HTMLElement>('.coveo-more-less');
@@ -137,14 +141,12 @@ describe('QueryList', () => {
             }
 
             const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
-            expect(list.childElementCount).toBe(new Set(TEST_DUPLICATE.map(action => action.query)).size);
+            expect(list.childElementCount).toBe(SORTED_AND_TRIMMED_SEARCH_EVENT.length);
 
             // Check that the order is respected.
-            TEST_DUPLICATE.reverse()
-                .reduce((acc, action) => (acc.indexOf(action.query) === -1 ? [...acc, action.query] : acc), [])
-                .forEach((query, i) => {
-                    expect(list.children.item(i).textContent).toBe(query);
-                });
+            SORTED_AND_TRIMMED_SEARCH_EVENT.forEach((query, i) => {
+                expect(list.children.item(i).textContent).toBe(query);
+            });
         });
     });
 

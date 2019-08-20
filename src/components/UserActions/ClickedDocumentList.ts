@@ -10,7 +10,7 @@ import {
     l,
     get
 } from 'coveo-search-ui';
-import { UserProfileModel } from '../../models/UserProfileModel';
+import { UserProfileModel, UserAction } from '../../models/UserProfileModel';
 import { ExpandableList } from './ExpandableList';
 import { UserActionType } from '../../rest/UserProfilingEndpoint';
 import './Strings';
@@ -98,13 +98,17 @@ export class ClickedDocumentList extends Component {
                 .filter(action => action.document && action.type === UserActionType.Click)
                 .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
                 .reverse()
-                .reduce((acc, action) => (!acc.find(existing => existing.raw.uri_hash === action.raw.uri_hash) ? [...acc, action] : acc), [])
+                .reduce(this.filterDuplicatesClickAction, [])
                 .map(action => {
                     action.document.searchInterface = this.searchInterface;
                     return action.document;
                 });
             this.render();
         }, this.logger.error.bind(this.logger));
+    }
+
+    private filterDuplicatesClickAction(accumulator: UserAction[], action: UserAction): UserAction[] {
+        return !accumulator.find(existing => existing.raw.uri_hash === action.raw.uri_hash) ? [...accumulator, action] : accumulator;
     }
 
     private render() {
