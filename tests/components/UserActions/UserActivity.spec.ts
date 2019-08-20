@@ -201,20 +201,33 @@ describe('UserActivity', () => {
     });
 
     describe('search event', () => {
-        it('should display the "User Query" as event title when there is a query expression', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_USER_SEARCH_EVENT]));
-                    return env;
-                })
-            );
+        ['omniboxAnalytics', 'userActionsSubmit', 'omniboxFromLink', 'searchboxAsYouType', 'searchboxSubmit', 'searchFromLink'].map(cause => {
+            it(`should display the "User Query" as event title when there is a query expression and the cause is ${cause}`, () => {
+                const mock = Mock.advancedComponentSetup<UserActivity>(
+                    UserActivity,
+                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                        fakeUserProfileModel(env.root, sandbox).getActions.returns(
+                            Promise.resolve([
+                                new UserAction(UserActionType.Search, new Date('1:00:00 AM'), {
+                                    origin_level_1: 'relevant' + Math.random(),
+                                    query_expression: 'someSearch' + Math.random(),
+                                    cause: cause
+                                })
+                            ])
+                        );
+                        return env;
+                    })
+                );
 
-            return delay(() => {
-                const clickElement = mock.cmp.element.querySelector('.coveo-search');
+                return delay(async () => {
+                    const clickElement = mock.cmp.element.querySelector('.coveo-search');
 
-                expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>('.coveo-title').innerText).toBe('User Query');
+                    const action = await mock.cmp['userProfileModel'].getActions('');
+
+                    expect(action[0].raw.cause).toBe(cause);
+                    expect(clickElement).not.toBeNull();
+                    expect(clickElement.querySelector<HTMLElement>('.coveo-title').innerText).toBe('User Query');
+                });
             });
         });
 

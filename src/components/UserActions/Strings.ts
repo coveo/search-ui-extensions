@@ -17,8 +17,8 @@ Translation.register(Language.English, {
     UserActivity_other_event: 'Other Event',
     UserActivity_other_events: 'Other Events',
 
-    UserActivity_search: 'User Query',
-    UserActivity_query: 'Query',
+    UserActivity_search: 'Query',
+    UserActivity_query: 'User Query',
     UserActivity_click: 'Clicked Document',
     UserActivity_view: 'Page View',
     UserActivity_custom: 'Custom Action'

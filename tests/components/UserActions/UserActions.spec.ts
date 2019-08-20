@@ -1,11 +1,12 @@
 import { Mock } from 'coveo-search-ui-tests';
 import { UserActions } from '../../../src/components/UserActions/UserActions';
 import { Logger, Initialization, QueryEvents } from 'coveo-search-ui';
-import { createSandbox, SinonSandbox } from 'sinon';
+import { createSandbox, SinonSandbox, SinonStub } from 'sinon';
 import { UserAction } from '../../../src/models/UserProfileModel';
 import { delay, fakeUserProfileModel } from '../../utils';
 import { ClickedDocumentList, QueryList, UserActivity } from '../../../src/Index';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
+import { ResponsiveUserActions } from '../../../src/components/UserActions/ResponsiveUserActions';
 
 describe('UserActions', () => {
     let sandbox: SinonSandbox;
@@ -51,6 +52,25 @@ describe('UserActions', () => {
 
     afterAll(() => {
         Logger.enable();
+    });
+
+    it('should disable itself when the userId is falsy', () => {
+        const responsiveComponentStub = sandbox.stub(ResponsiveUserActions, 'init');
+        let getActionStub: SinonStub<[HTMLElement, UserActions], void>;
+
+        const mock = Mock.advancedComponentSetup<UserActions>(
+            UserActions,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: '' }, env => {
+                getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
+                return env;
+            })
+        );
+
+        return delay(() => {
+            expect(getActionStub.called).toBe(false);
+            expect(responsiveComponentStub.called).toBe(false);
+            expect(mock.cmp.disabled).toBe(true);
+        });
     });
 
     it('should be hidden by defaut', () => {
