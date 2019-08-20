@@ -47,7 +47,6 @@ describe('ResultsFilter', () => {
     it('should trigger event with checked true when first toggling', () => {
         return new Promise(resolve => {
             Coveo.$$(filter.env.root).on(ResultsFilterEvents.Click, (evt: Event, args: IResultsFilterEventArgs) => {
-                expect(evt.type).toBe(ResultsFilterEvents.Click);
                 expect(args.checked).toBeTruthy();
                 resolve();
             });
@@ -59,7 +58,6 @@ describe('ResultsFilter', () => {
         return new Promise(resolve => {
             filter.cmp.toggle();
             Coveo.$$(filter.env.root).on(ResultsFilterEvents.Click, (evt: Event, args: IResultsFilterEventArgs) => {
-                expect(evt.type).toBe(ResultsFilterEvents.Click);
                 expect(args.checked).toBeFalsy();
                 resolve();
             });

@@ -15,6 +15,9 @@ import { paperclipIcon } from '../../utils/icons';
 import { AttachResultEvents, IAttachResultEventArgs } from './Events';
 import './Strings';
 
+/**
+ * Possible options to configure the **AttachResult** component.
+ */
 export interface IAttachResultOptions {
     /** Specifies the tooltip displayed when the result is not attached. */
     attachCaption?: string;

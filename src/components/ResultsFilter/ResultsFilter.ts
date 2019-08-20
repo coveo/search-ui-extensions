@@ -15,10 +15,16 @@ import {
 import { ResultsFilterEvents, IResultsFilterEventArgs } from './Events';
 import './Strings';
 
+/**
+ * Metadata sent when an analytics event is sent.
+ */
 export interface IAnalyticsFilteredResultsMeta {
     filteredResults: boolean;
 }
 
+/**
+ * Possible options to configure the **ResultsFilter** component.
+ */
 export interface IResultsFilterOptions {
     /** Specifies the text displayed next to the checkbox. */
     text?: string;
