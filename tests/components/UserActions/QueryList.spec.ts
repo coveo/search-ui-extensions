@@ -7,6 +7,8 @@ import { Logger, Omnibox } from 'coveo-search-ui';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 
 describe('QueryList', () => {
+    const sortUserActions = (a: UserAction, b: UserAction) => a.timestamp.getTime() - b.timestamp.getTime();
+
     const TEST_QUERIES = generate(20, i => {
         const query = `${Math.random()}`;
         return new UserAction(UserActionType.Search, new Date(i), { query_expression: query, origin_level_1: 'foo' }, null, query);
@@ -110,6 +112,44 @@ describe('QueryList', () => {
         });
     });
 
+    it('should not show the same query twice', () => {
+        // Setup.
+        const SEARCH_EVENTS = [
+            new UserAction(UserActionType.Search, new Date(0), { query_expression: 'someQuery', origin_level_1: 'foo' }, null, 'someQuery'),
+            new UserAction(UserActionType.Search, new Date(1), { query_expression: 'someQuery2', origin_level_1: 'foo' }, null, 'someQuery2'),
+            new UserAction(UserActionType.Search, new Date(2), { query_expression: 'someQuery2', origin_level_1: 'foo' }, null, 'someQuery2'),
+            new UserAction(UserActionType.Search, new Date(3), { query_expression: 'someQuery2', origin_level_1: 'foo' }, null, 'someQuery2'),
+            new UserAction(UserActionType.Search, new Date(4), { query_expression: 'someQuery', origin_level_1: 'foo' }, null, 'someQuery')
+        ];
+
+        const SORTED_AND_TRIMMED_SEARCH_EVENT = ['someQuery', 'someQuery2'];
+
+        const mock = Mock.advancedComponentSetup<QueryList>(
+            QueryList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(SEARCH_EVENTS));
+                return env;
+            })
+        );
+
+        // Validation.
+        return delay(() => {
+            // Expand the whole list of query.
+            const button = mock.cmp.element.querySelector<HTMLElement>('.coveo-more-less');
+            if (button) {
+                button.click();
+            }
+
+            const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
+            expect(list.childElementCount).toBe(SORTED_AND_TRIMMED_SEARCH_EVENT.length);
+
+            // Check that the order is respected.
+            SORTED_AND_TRIMMED_SEARCH_EVENT.forEach((query, i) => {
+                expect(list.children.item(i).textContent).toBe(query);
+            });
+        });
+    });
+
     it('should render a list of queries made by a user as a list and put the most recent queries on top', () => {
         const mock = Mock.advancedComponentSetup<QueryList>(
             QueryList,
@@ -119,7 +159,7 @@ describe('QueryList', () => {
             })
         );
 
-        const queries = TEST_QUERIES.reverse();
+        const queries = TEST_QUERIES.sort(sortUserActions).reverse();
 
         return delay(() => {
             const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');

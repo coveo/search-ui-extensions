@@ -7,10 +7,16 @@ import { delay, generate, fakeUserProfileModel } from '../../utils';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 
 describe('ClickedDocumentList', () => {
-    const TEST_CLICKS = generate(20, i => {
+    const BUILD_ACTION = (hash: string, i: number) => {
         const document = Fake.createFakeResult();
+        document.uri = hash;
         return new UserAction(UserActionType.Click, new Date(i), { origin_level_1: 'foo', uri_hash: document.uri }, document);
+    };
+
+    const TEST_CLICKS = generate(20, i => {
+        return BUILD_ACTION(`document${i}`, i);
     });
+
     let sandbox: SinonSandbox;
 
     beforeAll(() => {
@@ -113,6 +119,41 @@ describe('ClickedDocumentList', () => {
 
             return delay(() => {
                 expect(list.childElementCount).toBe(TEST_CLICKS.length);
+            });
+        });
+    });
+
+    it('should not show the same query twice', () => {
+        // Setup.
+        const createComponentInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
+
+        const CLICK_EVENTS = [
+            BUILD_ACTION('someQuery', 4),
+            BUILD_ACTION('someQuery2', 3),
+            BUILD_ACTION('someQuery2', 2),
+            BUILD_ACTION('someQuery2', 1),
+            BUILD_ACTION('someQuery', 0)
+        ];
+
+        const SORTED_AND_TRIMMED_CLICK_EVENTS = [CLICK_EVENTS[0], CLICK_EVENTS[1]];
+
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(CLICK_EVENTS));
+                return env;
+            })
+        );
+
+        // Validation.
+        return delay(() => {
+            const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
+            expect(list.childElementCount).toBe(SORTED_AND_TRIMMED_CLICK_EVENTS.length);
+
+            // Check that the order is respected.
+            list.childNodes.forEach((node: HTMLElement, i) => {
+                expect(node.innerHTML).toMatch('CoveoResultLink');
+                expect(createComponentInsideStub.calledWith(node.firstChild as HTMLElement, SORTED_AND_TRIMMED_CLICK_EVENTS[i].document)).toBe(true);
             });
         });
     });

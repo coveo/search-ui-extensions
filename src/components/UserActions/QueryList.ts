@@ -88,7 +88,7 @@ export class QueryList extends Component {
      * @param bindings Bindings of the Search-UI environment.
      */
     constructor(public element: HTMLElement, public options: IQueryListOptions, public bindings: IComponentBindings) {
-        super(element, QueryList.ID, bindings);
+        super(element, QueryList.ID, bindings) /* istanbul ignore next Istanbul issue with next */;
 
         this.options = ComponentOptions.initComponentOptions(element, QueryList, options);
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
@@ -97,9 +97,14 @@ export class QueryList extends Component {
                 .filter(action => action.query)
                 .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
                 .reverse()
-                .map(action => action.query);
+                .map(action => action.query)
+                .reduce(this.removeDuplicateQueries, []);
             this.render();
         }, this.logger.error.bind(this.logger));
+    }
+
+    private removeDuplicateQueries(acc: string[], query: string): string[] {
+        return acc.indexOf(query) === -1 ? [...acc, query] : acc;
     }
 
     private render() {
