@@ -1,12 +1,22 @@
 import { ViewedByCustomer } from '../../../src/Index';
 import { Mock, Fake } from 'coveo-search-ui-tests';
 import { IViewedByCustomerOptions } from '../../../src/components/ViewedByCustomer/ViewedByCustomer';
-import { IQueryResult } from 'coveo-search-ui';
-import { AdvancedComponentSetupOptions } from 'coveo-search-ui-tests/MockEnvironment';
+import { IQueryResult, Component } from 'coveo-search-ui';
+import { AdvancedComponentSetupOptions, MockEnvironmentBuilder } from 'coveo-search-ui-tests/MockEnvironment';
+import { createSandbox, SinonSandbox } from 'sinon';
 
 describe('ViewedByCustomer', () => {
     const LABEL_CSS_CLASS = 'viewed-by-customer-label';
     const ICON_CSS_CLASS = 'viewed-by-customer-icon';
+    let sandbox: SinonSandbox;
+
+    beforeAll(() => {
+        sandbox = createSandbox();
+    });
+
+    afterEach(() => {
+        sandbox.restore();
+    });
 
     describe('when the field isUserActionView of the result true', () => {
         const fakeResult: IQueryResult = { ...Fake.createFakeResult(), isUserActionView: true };
@@ -44,6 +54,38 @@ describe('ViewedByCustomer', () => {
                 const testComponent = Mock.advancedResultComponentSetup<ViewedByCustomer>(ViewedByCustomer, fakeResult, option).cmp;
                 expect(testComponent.element.children.length).toBe(0);
             });
+        });
+    });
+
+    it('should resolve its result using Component.resolveResult when no result is provided to the constructor', () => {
+        // We don't care about the result, it's just to have some stuff at the very least.
+        const fakeResult: IQueryResult = { ...Fake.createFakeResult(), isUserActionView: true };
+        const testEnvironment = Mock.advancedResultComponentSetup<ViewedByCustomer>(ViewedByCustomer, fakeResult).env;
+        const resolveResultStub = sandbox.stub(ViewedByCustomer.prototype, 'resolveResult').returns(fakeResult);
+        new ViewedByCustomer(testEnvironment.element, null, testEnvironment);
+        expect(resolveResultStub.called).toBe(true);
+    });
+
+    it('should use the result provided to the constructor in priority', () => {
+        const fakeResult: IQueryResult = { ...Fake.createFakeResult(), isUserActionView: true };
+        const testEnvironment = Mock.advancedResultComponentSetup<ViewedByCustomer>(ViewedByCustomer, fakeResult).env;
+        const resolveResultSpy = sandbox.spy(ViewedByCustomer.prototype, 'resolveResult');
+        new ViewedByCustomer(testEnvironment.element, null, testEnvironment, fakeResult);
+        expect(resolveResultSpy.called).toBe(false);
+    });
+
+    it('should throw if no result is provided to the constructor and none can be resolved', () => {
+        const fakeResult: IQueryResult = { ...Fake.createFakeResult(), isUserActionView: true };
+        const testEnvironment = Mock.advancedResultComponentSetup<ViewedByCustomer>(ViewedByCustomer, fakeResult).env;
+        sandbox.stub(ViewedByCustomer.prototype, 'resolveResult').returns(undefined);
+        return new Promise((resolve, reject) => {
+            try {
+                new ViewedByCustomer(testEnvironment.element, null, testEnvironment);
+            } catch (error) {
+                expect(error.message).toBe('No result found on result component ViewedByCustomer.');
+                resolve();
+            }
+            reject();
         });
     });
 });
