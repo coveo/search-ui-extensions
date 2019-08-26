@@ -88,7 +88,7 @@ export class QueryList extends Component {
      * @param bindings Bindings of the Search-UI environment.
      */
     constructor(public element: HTMLElement, public options: IQueryListOptions, public bindings: IComponentBindings) {
-        super(element, QueryList.ID, bindings) /* istanbul ignore next Istanbul issue with next */;
+        super(element, QueryList.ID, bindings);
 
         this.options = ComponentOptions.initComponentOptions(element, QueryList, options);
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
