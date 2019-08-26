@@ -49,7 +49,7 @@ export class ViewedByCustomer extends Component {
         public bindings: IComponentBindings,
         result?: IQueryResult
     ) {
-        super(element, ViewedByCustomer.ID, bindings) /* istanbul ignore next Issue with Istanbul and super calls*/;
+        super(element, ViewedByCustomer.ID, bindings);
         this.options = ComponentOptions.initComponentOptions(element, ViewedByCustomer, options);
         result = result ? result : this.resolveResult();
         if (!result) {

@@ -70,7 +70,7 @@ export class UserProfileModel extends Model {
      * @param options A set of options necessary for the component creation.
      */
     constructor(element: HTMLElement, public options: IUserProfileModelOptions) {
-        super(element, UserProfileModel.ID, {}) /* istanbul ignore next Istanbul issue with next */;
+        super(element, UserProfileModel.ID, {});
         Assert.isNotUndefined(this.options.restUri);
         Assert.isNotUndefined(this.options.organizationId);
         Assert.isNotUndefined(this.options.searchEndpoint);
