@@ -1,4 +1,4 @@
-import { Component, ComponentOptions, IComponentBindings, Initialization, l } from 'coveo-search-ui';
+import { Component, ComponentOptions, IComponentBindings, Initialization, l, IQueryResult } from 'coveo-search-ui';
 import { user } from '../../utils/icons';
 import './Strings';
 
@@ -43,11 +43,19 @@ export class ViewedByCustomer extends Component {
      * @param options Initialization options of the component.
      * @param bindings Bindings of the Search-UI environment.
      */
-    public constructor(public element: HTMLElement, public options: IViewedByCustomerOptions, public bindings: IComponentBindings) {
+    public constructor(
+        public element: HTMLElement,
+        public options: IViewedByCustomerOptions,
+        public bindings: IComponentBindings,
+        result?: IQueryResult
+    ) {
         super(element, ViewedByCustomer.ID, bindings);
         this.options = ComponentOptions.initComponentOptions(element, ViewedByCustomer, options);
-
-        if (this.resolveResult().isUserActionView) {
+        result = result ? result : this.resolveResult();
+        if (!result) {
+            throw new Error('No result found on result component ViewedByCustomer.');
+        }
+        if (result.isUserActionView) {
             this.render();
         }
     }
