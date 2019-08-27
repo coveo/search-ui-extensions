@@ -6,13 +6,16 @@
     font-weight: bold;
     font-size: 14px;
     .viewed-by-customer-icon {
-        vertical-align: middle;
+        vertical-align: baseline;
+        margin-right: 0.5em;
         svg {
             height: 1em;
             width: 1em;
+            vertical-align: middle;
         }
     }
     .viewed-by-customer-label {
-        vertical-align: baseline;
+        vertical-align: middle;
+        line-height: 1em;
     }
 }
