@@ -120,6 +120,9 @@ export class UserProfileModel extends Model {
         const QUERY = new QueryBuilder();
         QUERY.advancedExpression.addFieldExpression('@urihash', '==', urihashes.filter(x => x));
 
+        // Ensure we fetch the good amouth of document.
+        QUERY.numberOfResults = urihashes.length;
+
         // Here we directly use the Search Endpoint to query without side effects.
         const searchRequest = await this.options.searchEndpoint.search(QUERY.build());
 
@@ -130,7 +133,12 @@ export class UserProfileModel extends Model {
 
     private async buildUserActions(actions: IActionHistory[]): Promise<UserAction[]> {
         let documents = {} as { [urihash: string]: IQueryResult };
-        const urihashes = actions.filter(this.isClick).map(action => action.value.uri_hash);
+
+        const urihashes = actions
+            .filter(this.isClick)
+            .map(action => action.value.uri_hash)
+            // Remove duplicate magic.
+            .reduce((acc, x) => (acc.indexOf(x) === 1 ? acc : [...acc, x]), []);
 
         try {
             documents = await this.fetchDocuments(urihashes);

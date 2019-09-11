@@ -3,7 +3,7 @@ import { Fake } from 'coveo-search-ui-tests';
 import { UserProfileModel, UserAction } from '../../src/models/UserProfileModel';
 import { UserActionType } from '../../src/rest/UserProfilingEndpoint';
 import { buildActionHistoryResponse, buildAccessToken } from '../utils';
-import { Logger, SearchEndpoint } from 'coveo-search-ui';
+import { Logger, SearchEndpoint, QueryBuilder } from 'coveo-search-ui';
 
 describe('UserProfilingModel', () => {
     const TEST_URI_HASH = 'testUriHash';
@@ -144,6 +144,10 @@ describe('UserProfilingModel', () => {
 
             const actions = await actionsPromise;
             const actionsWithDocument = actions.filter(action => action.document);
+
+            expect(((endpoint.search.args[0][0] as unknown) as QueryBuilder).numberOfResults).toEqual(
+                FAKE_ACTIONS_WITH_URI_HASH.filter(x => x.value.uri_hash).length
+            );
             expect(actionsWithDocument.length).toEqual(documentResults.results.length);
             actionsWithDocument.forEach((action, i) => {
                 expect(action.document.title).toEqual(documentResults.results[i].title);
