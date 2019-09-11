@@ -87,7 +87,7 @@ export class ClickedDocumentList extends Component {
      * @param bindings Bindings of the Search-UI environment.
      */
     constructor(public element: HTMLElement, public options: IClickedDocumentList, public bindings: IComponentBindings) {
-        super(element, ClickedDocumentList.ID, bindings) /* istanbul ignore next Istanbul issue with next */;
+        super(element, ClickedDocumentList.ID, bindings);
 
         this.options = ComponentOptions.initComponentOptions(element, ClickedDocumentList, options);
 
