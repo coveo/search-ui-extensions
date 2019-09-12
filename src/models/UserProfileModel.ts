@@ -117,11 +117,14 @@ export class UserProfileModel extends Model {
             return Promise.resolve({});
         }
 
-        const QUERY = new QueryBuilder();
-        QUERY.advancedExpression.addFieldExpression('@urihash', '==', urihashes.filter(x => x));
+        const query = new QueryBuilder();
+        query.advancedExpression.addFieldExpression('@urihash', '==', urihashes.filter(x => x));
+
+        // Ensure we fetch the good amount of document.
+        query.numberOfResults = urihashes.length;
 
         // Here we directly use the Search Endpoint to query without side effects.
-        const searchRequest = await this.options.searchEndpoint.search(QUERY.build());
+        const searchRequest = await this.options.searchEndpoint.search(query.build());
 
         const documentsDict = searchRequest.results.reduce((acc, result) => ({ ...acc, [result.raw.urihash]: result }), {});
 
@@ -130,7 +133,12 @@ export class UserProfileModel extends Model {
 
     private async buildUserActions(actions: IActionHistory[]): Promise<UserAction[]> {
         let documents = {} as { [urihash: string]: IQueryResult };
-        const urihashes = actions.filter(this.isClick).map(action => action.value.uri_hash);
+
+        const urihashes = actions
+            .filter(this.isClick)
+            .map(action => action.value.uri_hash)
+            // Remove duplicates.
+            .filter((value, index, list) => list.indexOf(value) === index);
 
         try {
             documents = await this.fetchDocuments(urihashes);
