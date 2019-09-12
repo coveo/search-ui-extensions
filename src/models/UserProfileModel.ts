@@ -120,7 +120,7 @@ export class UserProfileModel extends Model {
         const query = new QueryBuilder();
         query.advancedExpression.addFieldExpression('@urihash', '==', urihashes.filter(x => x));
 
-        // Ensure we fetch the good amouth of document.
+        // Ensure we fetch the good amount of document.
         query.numberOfResults = urihashes.length;
 
         // Here we directly use the Search Endpoint to query without side effects.
