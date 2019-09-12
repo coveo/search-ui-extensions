@@ -71,6 +71,16 @@ describe('UserProfilingModel', () => {
                 c_contentidvalue: 'product1',
                 origin_level_1: 'originLevel1'
             }
+        },
+        {
+            name: UserActionType.Click,
+            time: 1547571607604,
+            value: {
+                uri_hash: TEST_URI_HASH,
+                c_contentidkey: '@sysurihash',
+                c_contentidvalue: 'product1',
+                origin_level_1: 'originLevel1'
+            }
         }
     ];
 
@@ -144,14 +154,15 @@ describe('UserProfilingModel', () => {
 
             const actions = await actionsPromise;
             const actionsWithDocument = actions.filter(action => action.document);
+            const uniqueUriHashes = FAKE_ACTIONS_WITH_URI_HASH.map(x => x.value.uri_hash).filter((x, i, l) => l.indexOf(x) === i);
 
-            expect(((endpoint.search.args[0][0] as unknown) as QueryBuilder).numberOfResults).toEqual(
-                FAKE_ACTIONS_WITH_URI_HASH.filter(x => x.value.uri_hash).length
-            );
-            expect(actionsWithDocument.length).toEqual(documentResults.results.length);
+            expect(((endpoint.search.args[0][0] as unknown) as QueryBuilder).numberOfResults).toEqual(uniqueUriHashes.length);
+            expect(actionsWithDocument.length).toBeGreaterThanOrEqual(documentResults.results.length);
             actionsWithDocument.forEach((action, i) => {
-                expect(action.document.title).toEqual(documentResults.results[i].title);
-                expect(action.document.raw.uri_hash).toEqual(documentResults.results[i].raw.uri_hash);
+                const matchingDocument = documentResults.results.find(document => document.raw.urihash === action.document.raw.urihash);
+
+                expect(matchingDocument).toBeDefined();
+                expect(action.document.title).toEqual(matchingDocument.title);
             });
         });
 
