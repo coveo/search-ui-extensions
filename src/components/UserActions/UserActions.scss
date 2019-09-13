@@ -85,8 +85,10 @@ $search-ui-dropdown-header-color: #1d4f76;
         li {
             margin: 0.25em 0;
 
-            .coveo-inline-item {
+            .coveo-list-row > * {
                 display: inline;
+                text-overflow: ellipsis;
+                overflow: hidden;
             }
         }
     }

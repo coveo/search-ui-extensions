@@ -6,14 +6,13 @@ import './Strings';
 
 const DEFAULT_TRANSFORMATION = () => (query: string) => {
     const container = document.createElement('div');
+    container.classList.add('coveo-list-row');
 
     const icon = document.createElement('div');
-    icon.classList.add('coveo-inline-item');
     icon.innerHTML = search;
     
     const span = document.createElement('span');
     span.classList.add('coveo-content');
-    span.classList.add('coveo-inline-item');
     span.innerHTML = query;
 
     container.appendChild(icon);
