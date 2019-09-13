@@ -94,6 +94,25 @@ describe('QueryList', () => {
         });
     });
 
+    it('should display a search icon on every list item', () => {
+        const mock = Mock.advancedComponentSetup<QueryList>(
+            QueryList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
+                return env;
+            })
+        );
+
+        return delay(() => {
+            const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
+
+            for(let i=0; i<4; i++){
+                const icon = list.children.item(i).querySelector<HTMLElement>('svg');
+                expect(icon).toBeDefined;
+            };
+        })
+    })
+
     it('should show all queries when expanded', () => {
         const mock = Mock.advancedComponentSetup<QueryList>(
             QueryList,
@@ -145,7 +164,8 @@ describe('QueryList', () => {
 
             // Check that the order is respected.
             SORTED_AND_TRIMMED_SEARCH_EVENT.forEach((query, i) => {
-                expect(list.children.item(i).textContent).toBe(query);
+                const span = list.children.item(i).querySelector<HTMLElement>('.coveo-content');
+                expect(span.innerText).toBe(query);
             });
         });
     });

@@ -101,6 +101,27 @@ describe('ClickedDocumentList', () => {
         });
     });
 
+    it('should display an icon beside every list item', () => {
+        sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
+
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
+                return env;
+            })
+        );
+
+        return delay(() => {
+            const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
+
+            for(let i=0; i<4; i++){
+                const icon = list.children.item(i).querySelector<HTMLElement>('svg');
+                expect(icon).toBeDefined;
+            };
+        });
+    });
+
     it('should show all documents when expanded', () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
