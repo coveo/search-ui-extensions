@@ -95,13 +95,12 @@ $search-ui-dropdown-header-color: #1d4f76;
 
                 .coveo-row-icon {
                     margin-left: -2px;
-                }
-
-                .coveo-row-icon > {
-
-                    svg {
-                        height: 1em;
-                        width: 1em;
+                    
+                    & > {
+                        svg {
+                            height: 1em;
+                            width: 1em;
+                        }
                     }
                 }
             }
