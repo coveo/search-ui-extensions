@@ -84,9 +84,26 @@ $search-ui-dropdown-header-color: #1d4f76;
 
         li {
             margin: 0.25em 0;
+            text-indent: -1em;
+            padding-left: 1em;
 
             .coveo-list-row > * {
                 display: inline;
+            }
+            
+            .coveo-list-row {
+
+                .coveo-row-icon {
+                    margin-left: -2px;
+                }
+
+                .coveo-row-icon > {
+
+                    svg {
+                        height: 1em;
+                        width: 1em;
+                    }
+                }
             }
         }
     }

@@ -9,6 +9,7 @@ const DEFAULT_TRANSFORMATION = () => (query: string) => {
     container.classList.add('coveo-list-row');
 
     const icon = document.createElement('div');
+    icon.classList.add('coveo-row-icon')
     icon.innerHTML = search;
     
     const span = document.createElement('span');
