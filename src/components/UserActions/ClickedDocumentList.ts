@@ -13,6 +13,7 @@ import {
 import { UserProfileModel, UserAction } from '../../models/UserProfileModel';
 import { ExpandableList } from './ExpandableList';
 import { UserActionType } from '../../rest/UserProfilingEndpoint';
+import { duplicate } from '../../utils/icons';
 import './Strings';
 
 /**
@@ -70,7 +71,11 @@ export class ClickedDocumentList extends Component {
         }),
         userId: ComponentOptions.buildStringOption({ required: true }),
         template: ComponentOptions.buildTemplateOption({
-            defaultValue: HtmlTemplate.fromString('<a class="CoveoResultLink"></a>', {
+            defaultValue: HtmlTemplate.fromString(
+                `<div class="coveo-list-row">
+                    <div>${duplicate}</div>
+                    <a class="CoveoResultLink" /a>
+                </div>`, {
                 layout: 'list'
             })
         })

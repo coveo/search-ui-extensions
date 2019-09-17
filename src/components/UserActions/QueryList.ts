@@ -1,14 +1,24 @@
 import { Component, IComponentBindings, Initialization, ComponentOptions, get, Omnibox, l } from 'coveo-search-ui';
 import { UserProfileModel } from '../../models/UserProfileModel';
 import { ExpandableList } from './ExpandableList';
+import { search } from '../../utils/icons';
 import './Strings';
 
 const DEFAULT_TRANSFORMATION = () => (query: string) => {
+    const container = document.createElement('div');
+    container.classList.add('coveo-list-row');
+
+    const icon = document.createElement('div');
+    icon.innerHTML = search;
+    
     const span = document.createElement('span');
     span.classList.add('coveo-content');
     span.innerHTML = query;
 
-    return Promise.resolve(span);
+    container.appendChild(icon);
+    container.appendChild(span);
+
+    return Promise.resolve(container);
 };
 
 /**
