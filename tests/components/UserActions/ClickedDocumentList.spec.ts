@@ -1,4 +1,4 @@
-import { createSandbox, SinonSandbox } from 'sinon';
+import { createSandbox, SinonSandbox, SinonStub } from 'sinon';
 import { Mock, Fake } from 'coveo-search-ui-tests';
 import { ClickedDocumentList } from '../../../src/components/UserActions/ClickedDocumentList';
 import { UserProfileModel, UserAction } from '../../../src/models/UserProfileModel';
@@ -231,6 +231,21 @@ describe('ClickedDocumentList', () => {
         return delay(() => {
             expect(mock.cmp.element.childElementCount).toBe(0);
             expect(errorLoggerStub.called).toBe(true);
+        });
+    });
+
+    it('Should disable itself when the userId is falsey', () => {
+        let getActionStub: SinonStub<[HTMLElement, ClickedDocumentList], void>;
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, {userId: null}, env => {
+                getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
+                return env;
+            })
+        );
+        return delay(() => {
+            expect(getActionStub.called).toBe(false);
+            expect(mock.cmp.disabled).toBe(true);
         });
     });
 
