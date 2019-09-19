@@ -6,6 +6,7 @@ $path-line-width: 0.05em;
 $headers-gap: 2em;
 $dot-width: $headers-gap / 3;
 $font-size: 1em;
+$icon-size: 1em;
 $search-ui-dropdown-header-color: #1d4f76;
 
 %bold-blue-text {
@@ -83,23 +84,24 @@ $search-ui-dropdown-header-color: #1d4f76;
         list-style-type: none;
 
         li {
-            margin: 0.25em 0;
-            text-indent: -1em;
-            padding-left: 1em;
-
-            .coveo-list-row > * {
-                display: inline;
-            }
             
             .coveo-list-row {
+                display: flex;
+
+                a {
+                    width: 95%;
+                }
 
                 .coveo-row-icon {
-                    margin-left: -2px;
+                    position: relative;
+                    width: 5%;
                     
                     & > {
                         svg {
-                            height: 1em;
-                            width: 1em;
+                            position: absolute;
+                            top: 2px;
+                            height: $icon-size;
+                            width: $icon-size;
                         }
                     }
                 }
@@ -113,7 +115,7 @@ $search-ui-dropdown-header-color: #1d4f76;
         padding: 0;
         color: $coveo-blue-6;
         text-decoration: underline;
-        font-weight: bold;
+        font-weight: normal;
         background-color: transparent;
         cursor: pointer;
         margin-top: 0.5em;
