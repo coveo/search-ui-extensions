@@ -12,12 +12,12 @@ const DEFAULT_TRANSFORMATION = () => (query: string) => {
     icon.classList.add('coveo-row-icon');
     icon.innerHTML = search;
     
-    const span = document.createElement('span');
-    span.classList.add('coveo-content');
-    span.innerHTML = query;
+    const link = document.createElement('a');
+    link.classList.add('coveo-link');
+    link.innerHTML = query;
 
     container.appendChild(icon);
-    container.appendChild(span);
+    container.appendChild(link);
 
     return Promise.resolve(container);
 };

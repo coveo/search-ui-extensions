@@ -89,12 +89,13 @@ $search-ui-dropdown-header-color: #1d4f76;
                 display: flex;
 
                 a {
-                    width: 95%;
+                    width: calc(100% - #{$icon-container-size});
+                    margin-bottom: 7px;
                 }
 
                 .coveo-row-icon {
                     position: relative;
-                    width: 5%;
+                    width: $icon-container-size;
                     
                     & > {
                         svg {
@@ -119,6 +120,7 @@ $search-ui-dropdown-header-color: #1d4f76;
         background-color: transparent;
         cursor: pointer;
         margin-top: 0.5em;
+        margin-left: $icon-container-size;
     }
 }
 
