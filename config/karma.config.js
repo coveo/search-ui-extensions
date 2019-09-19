@@ -1,6 +1,8 @@
 const webpackConfig = require('./webpack.config.karma.js');
 const path = require('path');
 
+process.env.CHROME_BIN = require('puppeteer').executablePath();
+
 var configuration = {
     frameworks: ['jasmine'],
     files: [
