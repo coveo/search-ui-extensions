@@ -249,6 +249,21 @@ describe('ClickedDocumentList', () => {
         });
     });
 
+    it('Should disable itself when the userId is empty string', () => {
+        let getActionStub: SinonStub<[HTMLElement, ClickedDocumentList], void>;
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, {userId: ''}, env => {
+                getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
+                return env;
+            })
+        );
+        return delay(() => {
+            expect(getActionStub.called).toBe(false);
+            expect(mock.cmp.disabled).toBe(true);
+        });
+    });
+
     describe('template', () => {
         it('should use the given template in options', () => {
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');

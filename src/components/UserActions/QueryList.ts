@@ -101,6 +101,12 @@ export class QueryList extends Component {
         super(element, QueryList.ID, bindings);
 
         this.options = ComponentOptions.initComponentOptions(element, QueryList, options);
+
+        if (!this.options.userId) {
+            this.disable();
+            return;
+        }
+
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
         this.userProfileModel.getActions(this.options.userId).then(actions => {
             this.sortedQueryList = [...actions]
