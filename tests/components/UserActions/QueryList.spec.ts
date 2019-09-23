@@ -1,4 +1,4 @@
-import { createSandbox, SinonSandbox } from 'sinon';
+import { createSandbox, SinonSandbox, SinonStub } from 'sinon';
 import { Mock } from 'coveo-search-ui-tests';
 import { QueryList } from '../../../src/components/UserActions/QueryList';
 import { UserAction } from '../../../src/models/UserProfileModel';
@@ -290,6 +290,36 @@ describe('QueryList', () => {
                 expect(logSearchEventStub.callCount).toBe(1);
                 expect(logSearchEventStub.args[0][0].name).toBe('userActionsSubmit');
                 expect(logSearchEventStub.args[0][0].type).toBe('User Actions');
+            });
+        });
+
+        it('Should disable itself when the userId is falsey', () => {
+            let getActionStub: SinonStub<[HTMLElement, QueryList], void>;
+            const mock = Mock.advancedComponentSetup<QueryList>(
+                QueryList,
+                new Mock.AdvancedComponentSetupOptions(null, {userId: null}, env => {
+                    getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
+                    return env;
+                })
+            );
+            return delay(() => {
+                expect(getActionStub.called).toBe(false);
+                expect(mock.cmp.disabled).toBe(true);
+            });
+        });
+    
+        it('Should disable itself when the userId is empty string', () => {
+            let getActionStub: SinonStub<[HTMLElement, QueryList], void>;
+            const mock = Mock.advancedComponentSetup<QueryList>(
+                QueryList,
+                new Mock.AdvancedComponentSetupOptions(null, {userId: ''}, env => {
+                    getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
+                    return env;
+                })
+            );
+            return delay(() => {
+                expect(getActionStub.called).toBe(false);
+                expect(mock.cmp.disabled).toBe(true);
             });
         });
     });
