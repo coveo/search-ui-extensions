@@ -1,4 +1,4 @@
-import { createSandbox, SinonSandbox } from 'sinon';
+import { createSandbox, SinonSandbox, SinonStub } from 'sinon';
 import { Mock } from 'coveo-search-ui-tests';
 import { QueryList } from '../../../src/components/UserActions/QueryList';
 import { UserAction } from '../../../src/models/UserProfileModel';
@@ -94,6 +94,25 @@ describe('QueryList', () => {
         });
     });
 
+    it('should display a search icon on every list item', () => {
+        const mock = Mock.advancedComponentSetup<QueryList>(
+            QueryList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
+                return env;
+            })
+        );
+
+        return delay(() => {
+            const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
+
+            for(let i=0; i<4; i++){
+                const icon = list.children.item(i).querySelector<HTMLElement>('svg');
+                expect(icon).toBeDefined;
+            };
+        })
+    })
+
     it('should show all queries when expanded', () => {
         const mock = Mock.advancedComponentSetup<QueryList>(
             QueryList,
@@ -145,7 +164,8 @@ describe('QueryList', () => {
 
             // Check that the order is respected.
             SORTED_AND_TRIMMED_SEARCH_EVENT.forEach((query, i) => {
-                expect(list.children.item(i).textContent).toBe(query);
+                const span = list.children.item(i).querySelector<HTMLElement>('.coveo-content');
+                expect(span.innerText).toBe(query);
             });
         });
     });
@@ -270,6 +290,36 @@ describe('QueryList', () => {
                 expect(logSearchEventStub.callCount).toBe(1);
                 expect(logSearchEventStub.args[0][0].name).toBe('userActionsSubmit');
                 expect(logSearchEventStub.args[0][0].type).toBe('User Actions');
+            });
+        });
+
+        it('Should disable itself when the userId is falsey', () => {
+            let getActionStub: SinonStub<[HTMLElement, QueryList], void>;
+            const mock = Mock.advancedComponentSetup<QueryList>(
+                QueryList,
+                new Mock.AdvancedComponentSetupOptions(null, {userId: null}, env => {
+                    getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
+                    return env;
+                })
+            );
+            return delay(() => {
+                expect(getActionStub.called).toBe(false);
+                expect(mock.cmp.disabled).toBe(true);
+            });
+        });
+    
+        it('Should disable itself when the userId is empty string', () => {
+            let getActionStub: SinonStub<[HTMLElement, QueryList], void>;
+            const mock = Mock.advancedComponentSetup<QueryList>(
+                QueryList,
+                new Mock.AdvancedComponentSetupOptions(null, {userId: ''}, env => {
+                    getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
+                    return env;
+                })
+            );
+            return delay(() => {
+                expect(getActionStub.called).toBe(false);
+                expect(mock.cmp.disabled).toBe(true);
             });
         });
     });
