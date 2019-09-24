@@ -105,7 +105,7 @@ export class UserProfileModel extends Model {
 
     /**
      * Delete all actions related to a user from the model.
-     * 
+     *
      * @param userId The identifier of a user.
      */
     public deleteActions(userId: string) {

@@ -10,7 +10,7 @@ const DEFAULT_TRANSFORMATION = () => (query: string) => {
 
     const icon = document.createElement('div');
     icon.innerHTML = search;
-    
+
     const span = document.createElement('span');
     span.classList.add('coveo-content');
     span.innerHTML = query;
