@@ -1,4 +1,4 @@
-import { SinonSandbox, createSandbox } from 'sinon';
+import { SinonSandbox, createSandbox, SinonStub } from 'sinon';
 import { UserAction } from '../../../src/models/UserProfileModel';
 import { Mock, Fake } from 'coveo-search-ui-tests';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
@@ -525,6 +525,36 @@ describe('UserActivity', () => {
 
                 expect(clickElement).not.toBeNull();
                 expect(clickElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(FAKE_CUSTOM_EVENT.raw.origin_level_1);
+            });
+        });
+
+        it('Should disable itself when the userId is falsey', () => {
+            let getActionStub: SinonStub<[HTMLElement, UserActivity], void>;
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, {userId: null}, env => {
+                    getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
+                    return env;
+                })
+            );
+            return delay(() => {
+                expect(getActionStub.called).toBe(false);
+                expect(mock.cmp.disabled).toBe(true);
+            });
+        });
+    
+        it('Should disable itself when the userId is empty string', () => {
+            let getActionStub: SinonStub<[HTMLElement, UserActivity], void>;
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, {userId: ''}, env => {
+                    getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
+                    return env;
+                })
+            );
+            return delay(() => {
+                expect(getActionStub.called).toBe(false);
+                expect(mock.cmp.disabled).toBe(true);
             });
         });
     });

@@ -96,6 +96,11 @@ export class ClickedDocumentList extends Component {
 
         this.options = ComponentOptions.initComponentOptions(element, ClickedDocumentList, options);
 
+        if (!this.options.userId) {
+            this.disable();
+            return;
+        }
+
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
 
         this.userProfileModel.getActions(this.options.userId).then(actions => {
