@@ -86,11 +86,6 @@ export class UserActions extends Component {
             return;
         }
 
-        (get(this.root, UserProfileModel) as UserProfileModel)
-            .getActions(this.options.userId)
-            .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
-            .catch(() => this.renderNoActions());
-
         ResponsiveUserActions.init(this.root, this);
 
         this.bind.onRootElement(QueryEvents.newQuery, () => this.hide());
@@ -103,6 +98,7 @@ export class UserActions extends Component {
      */
     public hide() {
         if (this.isVisible) {
+            (get(this.root, UserProfileModel) as UserProfileModel).deleteActions(this.options.userId)
             this.root.classList.remove(UserActions.USER_ACTION_OPENED);
             this.isVisible = false;
         }
@@ -113,6 +109,11 @@ export class UserActions extends Component {
      */
     public show() {
         if (!this.isVisible) {
+            (get(this.root, UserProfileModel) as UserProfileModel)
+                .getActions(this.options.userId)
+                .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
+                .catch(() => this.renderNoActions());
+                
             this.bindings.usageAnalytics.logCustomEvent({ name: 'openUserActions', type: 'User Actions' }, {}, this.element);
             this.root.classList.add(UserActions.USER_ACTION_OPENED);
             this.isVisible = true;
