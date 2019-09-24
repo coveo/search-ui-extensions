@@ -11,7 +11,7 @@ const DEFAULT_TRANSFORMATION = () => (query: string) => {
     const icon = document.createElement('div');
     icon.classList.add('coveo-row-icon');
     icon.innerHTML = search;
-
+    
     const link = document.createElement('a');
     link.classList.add('coveo-link');
     link.innerHTML = query;

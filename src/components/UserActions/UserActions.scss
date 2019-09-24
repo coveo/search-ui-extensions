@@ -84,6 +84,7 @@ $search-ui-dropdown-header-color: #1d4f76;
         list-style-type: none;
 
         li {
+            
             .coveo-list-row {
                 display: flex;
 
@@ -95,7 +96,7 @@ $search-ui-dropdown-header-color: #1d4f76;
                 .coveo-row-icon {
                     position: relative;
                     width: $icon-container-size;
-
+                    
                     & > {
                         svg {
                             position: absolute;
