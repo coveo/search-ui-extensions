@@ -73,13 +73,11 @@ export class ClickedDocumentList extends Component {
         template: ComponentOptions.buildTemplateOption({
             defaultValue: HtmlTemplate.fromString(
                 `<div class="coveo-list-row">
-                    <div>${duplicate}</div>
-                    <a class="CoveoResultLink" /a>
-                </div>`,
-                {
-                    layout: 'list'
-                }
-            )
+                    <div class="coveo-row-icon">${duplicate}</div>
+                    <a class="CoveoResultLink"/a>
+                </div>`, {
+                layout: 'list'
+            })
         })
     };
 
