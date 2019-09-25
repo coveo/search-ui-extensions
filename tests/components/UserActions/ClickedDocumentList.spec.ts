@@ -115,10 +115,10 @@ describe('ClickedDocumentList', () => {
         return delay(() => {
             const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
 
-            for(let i=0; i<4; i++){
+            for (let i = 0; i < 4; i++) {
                 const icon = list.children.item(i).querySelector<HTMLElement>('svg');
                 expect(icon).toBeDefined;
-            };
+            }
         });
     });
 
@@ -238,7 +238,7 @@ describe('ClickedDocumentList', () => {
         let getActionStub: SinonStub<[HTMLElement, ClickedDocumentList], void>;
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
-            new Mock.AdvancedComponentSetupOptions(null, {userId: null}, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: null }, env => {
                 getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
                 return env;
             })
@@ -253,7 +253,7 @@ describe('ClickedDocumentList', () => {
         let getActionStub: SinonStub<[HTMLElement, ClickedDocumentList], void>;
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
-            new Mock.AdvancedComponentSetupOptions(null, {userId: ''}, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: '' }, env => {
                 getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
                 return env;
             })

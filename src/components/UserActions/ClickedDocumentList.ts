@@ -75,9 +75,11 @@ export class ClickedDocumentList extends Component {
                 `<div class="coveo-list-row">
                     <div class="coveo-row-icon">${duplicate}</div>
                     <a class="CoveoResultLink"/a>
-                </div>`, {
-                layout: 'list'
-            })
+                </div>`,
+                {
+                    layout: 'list'
+                }
+            )
         })
     };
 
