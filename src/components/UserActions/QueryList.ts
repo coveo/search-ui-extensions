@@ -9,14 +9,15 @@ const DEFAULT_TRANSFORMATION = () => (query: string) => {
     container.classList.add('coveo-list-row');
 
     const icon = document.createElement('div');
+    icon.classList.add('coveo-row-icon');
     icon.innerHTML = search;
     
-    const span = document.createElement('span');
-    span.classList.add('coveo-content');
-    span.innerHTML = query;
+    const link = document.createElement('a');
+    link.classList.add('coveo-link');
+    link.innerHTML = query;
 
     container.appendChild(icon);
-    container.appendChild(span);
+    container.appendChild(link);
 
     return Promise.resolve(container);
 };
@@ -101,6 +102,12 @@ export class QueryList extends Component {
         super(element, QueryList.ID, bindings);
 
         this.options = ComponentOptions.initComponentOptions(element, QueryList, options);
+
+        if (!this.options.userId) {
+            this.disable();
+            return;
+        }
+
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
         this.userProfileModel.getActions(this.options.userId).then(actions => {
             this.sortedQueryList = [...actions]

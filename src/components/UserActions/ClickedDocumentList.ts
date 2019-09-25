@@ -73,8 +73,8 @@ export class ClickedDocumentList extends Component {
         template: ComponentOptions.buildTemplateOption({
             defaultValue: HtmlTemplate.fromString(
                 `<div class="coveo-list-row">
-                    <div>${duplicate}</div>
-                    <a class="CoveoResultLink" /a>
+                    <div class="coveo-row-icon">${duplicate}</div>
+                    <a class="CoveoResultLink"/a>
                 </div>`, {
                 layout: 'list'
             })
@@ -95,6 +95,11 @@ export class ClickedDocumentList extends Component {
         super(element, ClickedDocumentList.ID, bindings);
 
         this.options = ComponentOptions.initComponentOptions(element, ClickedDocumentList, options);
+
+        if (!this.options.userId) {
+            this.disable();
+            return;
+        }
 
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
 

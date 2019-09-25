@@ -1,4 +1,4 @@
-import { createSandbox, SinonSandbox } from 'sinon';
+import { createSandbox, SinonSandbox, SinonStub } from 'sinon';
 import { Mock } from 'coveo-search-ui-tests';
 import { QueryList } from '../../../src/components/UserActions/QueryList';
 import { UserAction } from '../../../src/models/UserProfileModel';
@@ -164,7 +164,7 @@ describe('QueryList', () => {
 
             // Check that the order is respected.
             SORTED_AND_TRIMMED_SEARCH_EVENT.forEach((query, i) => {
-                const span = list.children.item(i).querySelector<HTMLElement>('.coveo-content');
+                const span = list.children.item(i).querySelector<HTMLElement>('.coveo-link');
                 expect(span.innerText).toBe(query);
             });
         });
@@ -241,7 +241,7 @@ describe('QueryList', () => {
             const executeQueryStub = sandbox.stub(mock.env.queryController, 'executeQuery');
 
             return delay(() => {
-                const item = mock.env.element.querySelector<HTMLSpanElement>('.coveo-list .coveo-content');
+                const item = mock.env.element.querySelector<HTMLSpanElement>('.coveo-list .coveo-link');
                 item.click();
 
                 expect(setTextStub.calledWith(item.innerText)).toBe(true);
@@ -262,7 +262,7 @@ describe('QueryList', () => {
             const executeQueryStub = sandbox.stub(mock.env.queryController, 'executeQuery');
 
             return delay(() => {
-                const item = mock.env.element.querySelector<HTMLElement>('.coveo-list .coveo-content');
+                const item = mock.env.element.querySelector<HTMLElement>('.coveo-list .coveo-link');
                 item.click();
 
                 expect(executeQueryStub.called).toBe(false);
@@ -284,12 +284,42 @@ describe('QueryList', () => {
             const logSearchEventStub = sandbox.stub(mock.env.usageAnalytics, 'logSearchEvent');
 
             return delay(() => {
-                const item = mock.env.element.querySelector<HTMLSpanElement>('.coveo-list .coveo-content');
+                const item = mock.env.element.querySelector<HTMLSpanElement>('.coveo-list .coveo-link');
                 item.click();
 
                 expect(logSearchEventStub.callCount).toBe(1);
                 expect(logSearchEventStub.args[0][0].name).toBe('userActionsSubmit');
                 expect(logSearchEventStub.args[0][0].type).toBe('User Actions');
+            });
+        });
+
+        it('Should disable itself when the userId is falsey', () => {
+            let getActionStub: SinonStub<[HTMLElement, QueryList], void>;
+            const mock = Mock.advancedComponentSetup<QueryList>(
+                QueryList,
+                new Mock.AdvancedComponentSetupOptions(null, {userId: null}, env => {
+                    getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
+                    return env;
+                })
+            );
+            return delay(() => {
+                expect(getActionStub.called).toBe(false);
+                expect(mock.cmp.disabled).toBe(true);
+            });
+        });
+    
+        it('Should disable itself when the userId is empty string', () => {
+            let getActionStub: SinonStub<[HTMLElement, QueryList], void>;
+            const mock = Mock.advancedComponentSetup<QueryList>(
+                QueryList,
+                new Mock.AdvancedComponentSetupOptions(null, {userId: ''}, env => {
+                    getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
+                    return env;
+                })
+            );
+            return delay(() => {
+                expect(getActionStub.called).toBe(false);
+                expect(mock.cmp.disabled).toBe(true);
             });
         });
     });
