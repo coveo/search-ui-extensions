@@ -98,7 +98,7 @@ export class UserActions extends Component {
      */
     public hide() {
         if (this.isVisible) {
-            (get(this.root, UserProfileModel) as UserProfileModel).deleteActions(this.options.userId);
+            (get(this.root, UserProfileModel) as UserProfileModel).deleteActions(this.options.userId)
             this.root.classList.remove(UserActions.USER_ACTION_OPENED);
             this.isVisible = false;
         }
@@ -113,7 +113,7 @@ export class UserActions extends Component {
                 .getActions(this.options.userId)
                 .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
                 .catch(() => this.renderNoActions());
-
+                
             this.bindings.usageAnalytics.logCustomEvent({ name: 'openUserActions', type: 'User Actions' }, {}, this.element);
             this.root.classList.add(UserActions.USER_ACTION_OPENED);
             this.isVisible = true;

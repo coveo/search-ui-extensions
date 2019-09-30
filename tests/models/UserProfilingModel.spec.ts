@@ -488,5 +488,5 @@ describe('UserProfilingModel', () => {
                 expect(requests.length).toBeGreaterThan(nbOfRequestBeforeDelete);
             });
         });
-    });
+    })
 });

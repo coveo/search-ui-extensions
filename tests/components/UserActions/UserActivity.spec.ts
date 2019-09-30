@@ -532,7 +532,7 @@ describe('UserActivity', () => {
             let getActionStub: SinonStub<[HTMLElement, UserActivity], void>;
             const mock = Mock.advancedComponentSetup<UserActivity>(
                 UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: null }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, {userId: null}, env => {
                     getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
                     return env;
                 })
@@ -542,12 +542,12 @@ describe('UserActivity', () => {
                 expect(mock.cmp.disabled).toBe(true);
             });
         });
-
+    
         it('Should disable itself when the userId is empty string', () => {
             let getActionStub: SinonStub<[HTMLElement, UserActivity], void>;
             const mock = Mock.advancedComponentSetup<UserActivity>(
                 UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: '' }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, {userId: ''}, env => {
                     getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
                     return env;
                 })

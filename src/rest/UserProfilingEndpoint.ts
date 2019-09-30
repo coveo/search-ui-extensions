@@ -119,7 +119,7 @@ export class UserProfilingEndpoint {
         if (this.isResponseEmpty(response)) {
             throw new Error(`Response has no values: ${JSON.stringify(response)}`);
         }
-
+        
         return this.parseResponse(response.data);
     }
 

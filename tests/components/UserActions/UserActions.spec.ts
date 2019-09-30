@@ -329,12 +329,12 @@ describe('UserActions', () => {
             mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: someUserId }, env => {
-                    modelMock = fakeUserProfileModel(env.root, sandbox);
+                    modelMock = fakeUserProfileModel(env.root, sandbox)
                     modelMock.getActions.returns(new Promise(() => {}));
                     return env;
                 })
             );
-
+            
             sandbox.resetHistory();
         });
 
@@ -384,12 +384,12 @@ describe('UserActions', () => {
             mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: someUserId }, env => {
-                    modelMock = fakeUserProfileModel(env.root, sandbox);
+                    modelMock = fakeUserProfileModel(env.root, sandbox)
                     modelMock.getActions.returns(new Promise(() => {}));
                     return env;
                 })
             );
-
+            
             sandbox.resetHistory();
         });
 
