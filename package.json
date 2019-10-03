@@ -81,7 +81,8 @@
         "typescript": "^3.3.0",
         "webpack": "^4.29.6",
         "webpack-cli": "^3.2.3",
-        "webpack-dev-server": "^3.2.1"
+        "webpack-dev-server": "^3.2.1",
+        "webpack-karma-die-hard": "^1.0.4"
     },
     "dependencies": {
         "snyk": "^1.203.0"

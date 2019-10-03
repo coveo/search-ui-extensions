@@ -1,8 +1,8 @@
 import { ViewedByCustomer } from '../../../src/Index';
 import { Mock, Fake } from 'coveo-search-ui-tests';
 import { IViewedByCustomerOptions } from '../../../src/components/ViewedByCustomer/ViewedByCustomer';
-import { IQueryResult, Component } from 'coveo-search-ui';
-import { AdvancedComponentSetupOptions, MockEnvironmentBuilder } from 'coveo-search-ui-tests/MockEnvironment';
+import { IQueryResult } from 'coveo-search-ui';
+import { AdvancedComponentSetupOptions } from 'coveo-search-ui-tests/MockEnvironment';
 import { createSandbox, SinonSandbox } from 'sinon';
 
 describe('ViewedByCustomer', () => {
