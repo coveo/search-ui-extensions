@@ -1,4 +1,4 @@
-import { Component, IComponentBindings, Initialization, ComponentOptions, QueryEvents, l, get } from 'coveo-search-ui';
+import { Component, IComponentBindings, Initialization, ComponentOptions, QueryEvents, l, get, IDisplayedNewResultEventArgs, ResultListEvents } from 'coveo-search-ui';
 
 import { ResponsiveUserActions } from './ResponsiveUserActions';
 import { arrowDown } from '../../utils/icons';
@@ -7,6 +7,7 @@ import { QueryList } from './QueryList';
 import { UserActivity } from './UserActivity';
 import { UserProfileModel } from '../../Index';
 import './Strings';
+import { ViewedByCustomer } from '../ViewedByCustomer/ViewedByCustomer';
 
 /**
  * Initialization options of the **UserActions** class.
@@ -39,6 +40,13 @@ export interface IUserActionsOptions {
      * Default: `User Recent Activity`
      */
     activityLabel: string;
+
+    /**
+     * Weather or not to add the ViewedByCustomer component
+     * 
+     * Default: `True`
+     */
+    viewedByCustomer: Boolean;
 }
 
 /**
@@ -63,6 +71,9 @@ export class UserActions extends Component {
         }),
         activityLabel: ComponentOptions.buildStringOption({
             defaultValue: "User's Recent Activity"
+        }),
+        viewedByCustomer: ComponentOptions.buildBooleanOption({
+            defaultValue: true
         })
     };
 
@@ -90,6 +101,11 @@ export class UserActions extends Component {
             .getActions(this.options.userId)
             .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
             .catch(() => this.renderNoActions());
+        if (this.options.viewedByCustomer) {
+            this.bind.onRootElement(ResultListEvents.newResultDisplayed, (args: IDisplayedNewResultEventArgs) => {
+                new ViewedByCustomer(element, {}, args.result);
+            });
+        }
 
         ResponsiveUserActions.init(this.root, this);
 
