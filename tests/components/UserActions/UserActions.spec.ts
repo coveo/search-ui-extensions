@@ -417,4 +417,16 @@ describe('UserActions', () => {
             });
         });
     });
+
+    describe('ViewedByCustomer', () => {
+        it('If the viewedByCustomer option is true, it should add a viewedByCustomer component', () => {
+            const mock = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                    return env;
+                })
+            );
+        });
+    });
 });

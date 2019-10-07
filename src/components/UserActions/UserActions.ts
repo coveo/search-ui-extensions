@@ -1,4 +1,14 @@
-import { Component, IComponentBindings, Initialization, ComponentOptions, QueryEvents, l, get, IDisplayedNewResultEventArgs, ResultListEvents } from 'coveo-search-ui';
+import {
+    Component,
+    IComponentBindings,
+    Initialization,
+    ComponentOptions,
+    QueryEvents,
+    l,
+    get,
+    ResultListEvents,
+    IDisplayedNewResultEventArgs
+} from 'coveo-search-ui';
 
 import { ResponsiveUserActions } from './ResponsiveUserActions';
 import { arrowDown } from '../../utils/icons';
@@ -8,6 +18,7 @@ import { UserActivity } from './UserActivity';
 import { UserProfileModel } from '../../Index';
 import './Strings';
 import { ViewedByCustomer } from '../ViewedByCustomer/ViewedByCustomer';
+// import { ViewedByCustomer } from '../ViewedByCustomer/ViewedByCustomer';
 
 /**
  * Initialization options of the **UserActions** class.
@@ -43,7 +54,7 @@ export interface IUserActionsOptions {
 
     /**
      * Weather or not to add the ViewedByCustomer component
-     * 
+     *
      * Default: `True`
      */
     viewedByCustomer: Boolean;
@@ -101,10 +112,9 @@ export class UserActions extends Component {
             .getActions(this.options.userId)
             .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
             .catch(() => this.renderNoActions());
+
         if (this.options.viewedByCustomer) {
-            this.bind.onRootElement(ResultListEvents.newResultDisplayed, (args: IDisplayedNewResultEventArgs) => {
-                new ViewedByCustomer(element, {}, args.result);
-            });
+            this.showViewedByCustomer();
         }
 
         ResponsiveUserActions.init(this.root, this);
@@ -246,6 +256,16 @@ export class UserActions extends Component {
 
         this.element.innerHTML = '';
         this.element.appendChild(element);
+    }
+
+    private showViewedByCustomer() {
+        this.bind.onRootElement(ResultListEvents.newResultDisplayed, (args: IDisplayedNewResultEventArgs) => {
+            if (!Boolean(args.item.getElementsByClassName('CoveoViewedByCustomer').length)) {
+                const viewedByCustomerElement = document.createElement('span');
+                new ViewedByCustomer(viewedByCustomerElement, {}, this.bindings, args.result);
+                args.item.querySelector('.coveo-result-row:last-child .coveo-result-cell').appendChild(viewedByCustomerElement);
+            }
+        });
     }
 }
 
