@@ -18,7 +18,6 @@ import { UserActivity } from './UserActivity';
 import { UserProfileModel } from '../../Index';
 import './Strings';
 import { ViewedByCustomer } from '../ViewedByCustomer/ViewedByCustomer';
-// import { ViewedByCustomer } from '../ViewedByCustomer/ViewedByCustomer';
 
 /**
  * Initialization options of the **UserActions** class.
