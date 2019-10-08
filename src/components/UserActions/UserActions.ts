@@ -261,8 +261,10 @@ export class UserActions extends Component {
     private showViewedByCustomer() {
         this.bind.onRootElement(ResultListEvents.newResultDisplayed, (args: IDisplayedNewResultEventArgs) => {
             if (!Boolean(args.item.getElementsByClassName('CoveoViewedByCustomer').length)) {
+                console.log('Entered here');
                 const viewedByCustomerElement = document.createElement('span');
                 new ViewedByCustomer(viewedByCustomerElement, {}, this.bindings, args.result);
+                console.log(viewedByCustomerElement);
                 args.item.querySelector('.coveo-result-row:last-child .coveo-result-cell').appendChild(viewedByCustomerElement);
             }
         });
