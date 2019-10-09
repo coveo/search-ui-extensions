@@ -440,7 +440,7 @@ describe('UserActions', () => {
             beforeEach(() => {
                 viewedByCustomerOption = true;
             });
-            
+
             it('should add a ViewedByCustomer Component', () => {
                 const mock = Mock.advancedComponentSetup<UserActions>(
                     UserActions,
@@ -449,17 +449,17 @@ describe('UserActions', () => {
                         return env;
                     })
                 );
-    
+
                 const resultArgs = { result: result, item: resultElementRow };
                 Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
-    
+
                 return delay(() => {
                     expect(mock.cmp.options.viewedByCustomer).toBe(true);
                     expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
                 });
             });
 
-            it('If the div already has ViewedByCustomer component it should not add another', () => {
+            it('It should not add a viewedByCustomer if one is already there', () => {
                 const mock = Mock.advancedComponentSetup<UserActions>(
                     UserActions,
                     new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, env => {
@@ -467,12 +467,12 @@ describe('UserActions', () => {
                         return env;
                     })
                 );
-    
+
                 resultElementRow.querySelector('.coveo-result-cell').classList.add('CoveoViewedByCustomer');
-        
+
                 const resultArgs = { result: result, item: resultElementRow };
                 Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
-    
+
                 return delay(() => {
                     expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
                 });
@@ -483,7 +483,7 @@ describe('UserActions', () => {
             beforeEach(() => {
                 viewedByCustomerOption = false;
             });
-            it('If the viewedByCustomer option is false, it should not add a ViewedByCustomer Component', () => {
+            it('should not add a ViewedByCustomer Component', () => {
                 const mock = Mock.advancedComponentSetup<UserActions>(
                     UserActions,
                     new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, env => {
@@ -491,17 +491,17 @@ describe('UserActions', () => {
                         return env;
                     })
                 );
-    
+
                 const resultArgs = { result: result, item: resultElementRow };
                 Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
-    
+
                 return delay(() => {
                     expect(mock.cmp.options.viewedByCustomer).toBe(false);
                     expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(0);
                 });
             });
 
-            it('If the div already has ViewedByCustomer component it should not add another', () => {
+            it('It should not add a viewedByCustomer if one is already there', () => {
                 const mock = Mock.advancedComponentSetup<UserActions>(
                     UserActions,
                     new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, env => {
@@ -509,14 +509,14 @@ describe('UserActions', () => {
                         return env;
                     })
                 );
-    
+
                 resultElementRow.querySelector('.coveo-result-cell').classList.add('CoveoViewedByCustomer');
-    
+
                 expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
-    
+
                 const resultArgs = { result: result, item: resultElementRow };
                 Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
-    
+
                 return delay(() => {
                     expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
                 });
