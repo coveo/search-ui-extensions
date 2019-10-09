@@ -1,4 +1,4 @@
-import { Mock, Fake } from 'coveo-search-ui-tests';
+import { Mock, Fake, Simulate } from 'coveo-search-ui-tests';
 import { UserActions } from '../../../src/components/UserActions/UserActions';
 import { Logger, Initialization, QueryEvents, ResultListEvents, IQueryResult } from 'coveo-search-ui';
 import { createSandbox, SinonSandbox, SinonStub } from 'sinon';
@@ -414,6 +414,60 @@ describe('UserActions', () => {
                 expect(mock.cmp.root.className).not.toMatch('coveo-user-actions-opened');
             }).finally(() => {
                 observer.disconnect();
+            });
+        });
+    });
+
+    describe('tagViewsOfUser', () => {
+        it('should add email to query', () => {
+
+            const fakeRecord = {
+                fields: {
+                    CreatedBy: {
+                        value: {
+                            fields: {
+                                Email: {
+                                    value: 'test@email.com'
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            const mock = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', record: fakeRecord }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                    return env;
+                })
+            );
+    
+            let queryData = Simulate.query(mock.env);
+    
+            const queryArgs = { e: 'error', args: queryData };
+            Coveo.$$(mock.env.root).trigger('buildingQuery',  queryArgs);
+    
+            return delay(() => {
+                expect(queryData.queryBuilder.userActions.tagViewsOfUser).toBe('test@email.com');
+            });
+        });
+
+        it('should catch error', () => {
+            const mock = Mock.advancedComponentSetup<UserActions>(
+                UserActions,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', record: undefined }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                    return env;
+                })
+            );
+            const loggerSpy = sandbox.spy(Logger.prototype, 'warn');
+            let queryData = Simulate.query(mock.env);
+    
+            const queryArgs = { e: 'error', args: queryData };
+            Coveo.$$(mock.env.root).trigger('buildingQuery',  queryArgs);
+    
+            return delay(() => {
+                expect(loggerSpy.called).toBe(true);
             });
         });
     });

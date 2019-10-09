@@ -268,7 +268,7 @@ export class UserActions extends Component {
                 return;
             }
             const viewedByCustomerElement = document.createElement('span');
-            new ViewedByCustomer(viewedByCustomerElement, undefined ,this.bindings, args.result);
+            new ViewedByCustomer(viewedByCustomerElement, undefined, this.bindings, args.result);
             args.item.querySelector('.coveo-result-row:last-child .coveo-result-cell').appendChild(viewedByCustomerElement);
         });
     }
@@ -281,7 +281,7 @@ export class UserActions extends Component {
                 args.queryBuilder.userActions = {
                     tagViewsOfUser: createdBy
                 };
-            } catch(e) {
+            } catch (e) {
                 this.logger.warn("CreatedBy Email wasn't found", e);
             }
         });
