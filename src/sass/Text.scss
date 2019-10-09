@@ -9,12 +9,10 @@
 .coveo-content {
     color: black;
     font-size: 1em;
-    font-weight: bold;
 }
 
 .coveo-link {
-    color: $dodger-blue;
-    font-weight: bold;
+    color: $coveo-blue;
     text-decoration: none;
 
     &:hover {
