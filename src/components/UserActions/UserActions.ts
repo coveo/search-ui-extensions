@@ -7,9 +7,9 @@ import {
     l,
     get,
     ResultListEvents,
-    IDisplayedNewResultEventArgs
+    IDisplayedNewResultEventArgs,
+    IQueryResult
 } from 'coveo-search-ui';
-
 import { ResponsiveUserActions } from './ResponsiveUserActions';
 import { arrowDown } from '../../utils/icons';
 import { ClickedDocumentList } from './ClickedDocumentList';
@@ -52,11 +52,13 @@ export interface IUserActionsOptions {
     activityLabel: string;
 
     /**
-     * Weather or not to add the ViewedByCustomer component
+     * Whether or not to add the ViewedByCustomer component
      *
      * Default: `True`
      */
     viewedByCustomer: Boolean;
+
+    record: IQueryResult;
 }
 
 /**
@@ -84,7 +86,8 @@ export class UserActions extends Component {
         }),
         viewedByCustomer: ComponentOptions.buildBooleanOption({
             defaultValue: true
-        })
+        }),
+        record: ComponentOptions.buildCustomOption(s => null)
     };
 
     private static readonly USER_ACTION_OPENED = 'coveo-user-actions-opened';
@@ -117,6 +120,8 @@ export class UserActions extends Component {
         }
 
         ResponsiveUserActions.init(this.root, this);
+
+        this.tagViewsOfUser();
 
         this.bind.onRootElement(QueryEvents.newQuery, () => this.hide());
 
@@ -259,11 +264,25 @@ export class UserActions extends Component {
 
     private showViewedByCustomer() {
         this.bind.onRootElement(ResultListEvents.newResultDisplayed, (args: IDisplayedNewResultEventArgs) => {
-            if (!Boolean(args.item.getElementsByClassName('CoveoViewedByCustomer').length)) {
-                const viewedByCustomerElement = document.createElement('span');
-                new ViewedByCustomer(viewedByCustomerElement, {}, this.bindings, args.result);
-                console.log(viewedByCustomerElement);
-                args.item.querySelector('.coveo-result-row:last-child .coveo-result-cell').appendChild(viewedByCustomerElement);
+            if (Boolean(args.item.getElementsByClassName('CoveoViewedByCustomer').length)) {
+                return;
+            }
+            const viewedByCustomerElement = document.createElement('span');
+            new ViewedByCustomer(viewedByCustomerElement, undefined ,this.bindings, args.result);
+            args.item.querySelector('.coveo-result-row:last-child .coveo-result-cell').appendChild(viewedByCustomerElement);
+        });
+    }
+
+    private tagViewsOfUser() {
+        Coveo.$$(this.root).on('buildingQuery', (e, args) => {
+            try {
+                const createdBy = this.options.record.fields.CreatedBy.value.fields.Email.value;
+
+                args.queryBuilder.userActions = {
+                    tagViewsOfUser: createdBy
+                };
+            } catch(e) {
+                this.logger.warn("CreatedBy Email wasn't found", e);
             }
         });
     }

@@ -1,6 +1,6 @@
 import { Mock, Fake } from 'coveo-search-ui-tests';
 import { UserActions } from '../../../src/components/UserActions/UserActions';
-import { Logger, Initialization, QueryEvents, ResultListEvents } from 'coveo-search-ui';
+import { Logger, Initialization, QueryEvents, ResultListEvents, IQueryResult } from 'coveo-search-ui';
 import { createSandbox, SinonSandbox, SinonStub } from 'sinon';
 import { UserAction } from '../../../src/models/UserProfileModel';
 import { delay, fakeUserProfileModel } from '../../utils';
@@ -419,9 +419,10 @@ describe('UserActions', () => {
     });
 
     describe('ViewedByCustomer', () => {
-        let result;
-        let resultElementRow;
-        let resultElementCol;
+        let result: IQueryResult;
+        let resultElementRow: HTMLElement;
+        let resultElementCol: HTMLElement;
+        let viewedByCustomerOption: Boolean;
 
         beforeEach(() => {
             result = Fake.createFakeResult();
@@ -435,61 +436,90 @@ describe('UserActions', () => {
             resultElementRow.appendChild(resultElementCol);
         });
 
-        it('If the viewedByCustomer option is true, it should add a CiewedByCustomer Component', () => {
-            const mock = Mock.advancedComponentSetup<UserActions>(
-                UserActions,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
-                    return env;
-                })
-            );
+        describe('if the viewedByCustomer option is true', () => {
+            beforeEach(() => {
+                viewedByCustomerOption = true;
+            });
+            
+            it('should add a ViewedByCustomer Component', () => {
+                const mock = Mock.advancedComponentSetup<UserActions>(
+                    UserActions,
+                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, env => {
+                        fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                        return env;
+                    })
+                );
+    
+                const resultArgs = { result: result, item: resultElementRow };
+                Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
+    
+                return delay(() => {
+                    expect(mock.cmp.options.viewedByCustomer).toBe(true);
+                    expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
+                });
+            });
 
-            const resultArgs = { result: result, item: resultElementRow };
-            Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
-
-            return delay(() => {
-                expect(mock.cmp.options.viewedByCustomer).toBe(true);
-                expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
+            it('If the div already has ViewedByCustomer component it should not add another', () => {
+                const mock = Mock.advancedComponentSetup<UserActions>(
+                    UserActions,
+                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, env => {
+                        fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                        return env;
+                    })
+                );
+    
+                resultElementRow.querySelector('.coveo-result-cell').classList.add('CoveoViewedByCustomer');
+        
+                const resultArgs = { result: result, item: resultElementRow };
+                Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
+    
+                return delay(() => {
+                    expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
+                });
             });
         });
 
-        it('If the viewedByCustomer option is false, it should not add a ViewedByCustomer Component', () => {
-            const mock = Mock.advancedComponentSetup<UserActions>(
-                UserActions,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: false }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
-                    return env;
-                })
-            );
-
-            const resultArgs = { result: result, item: resultElementRow };
-            Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
-
-            return delay(() => {
-                expect(mock.cmp.options.viewedByCustomer).toBe(false);
-                expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(0);
+        describe('if the viewedByCustomer option is false', () => {
+            beforeEach(() => {
+                viewedByCustomerOption = false;
             });
-        });
+            it('If the viewedByCustomer option is false, it should not add a ViewedByCustomer Component', () => {
+                const mock = Mock.advancedComponentSetup<UserActions>(
+                    UserActions,
+                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, env => {
+                        fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                        return env;
+                    })
+                );
+    
+                const resultArgs = { result: result, item: resultElementRow };
+                Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
+    
+                return delay(() => {
+                    expect(mock.cmp.options.viewedByCustomer).toBe(false);
+                    expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(0);
+                });
+            });
 
-        it('If the div already has ViewedByCustomer component it should not add another', () => {
-            const mock = Mock.advancedComponentSetup<UserActions>(
-                UserActions,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
-                    return env;
-                })
-            );
-
-            resultElementRow.querySelector('.coveo-result-cell').classList.add('CoveoViewedByCustomer');
-
-            expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
-
-            const resultArgs = { result: result, item: resultElementRow };
-            Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
-
-            return delay(() => {
-                // It shouldn't add a second element
+            it('If the div already has ViewedByCustomer component it should not add another', () => {
+                const mock = Mock.advancedComponentSetup<UserActions>(
+                    UserActions,
+                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, env => {
+                        fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                        return env;
+                    })
+                );
+    
+                resultElementRow.querySelector('.coveo-result-cell').classList.add('CoveoViewedByCustomer');
+    
                 expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
+    
+                const resultArgs = { result: result, item: resultElementRow };
+                Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
+    
+                return delay(() => {
+                    expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
+                });
             });
         });
     });
