@@ -420,33 +420,19 @@ describe('UserActions', () => {
 
     describe('tagViewsOfUser', () => {
         it('should add email to query', () => {
-
-            const fakeRecord = {
-                fields: {
-                    CreatedBy: {
-                        value: {
-                            fields: {
-                                Email: {
-                                    value: 'test@email.com'
-                                }
-                            }
-                        }
-                    }
-                }
-            };
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', record: fakeRecord }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', createdBy: 'test@email.com' }, env => {
                     fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
                     return env;
                 })
             );
-    
+
             let queryData = Simulate.query(mock.env);
-    
+
             const queryArgs = { e: 'error', args: queryData };
-            Coveo.$$(mock.env.root).trigger('buildingQuery',  queryArgs);
-    
+            Coveo.$$(mock.env.root).trigger('buildingQuery', queryArgs);
+
             return delay(() => {
                 expect(queryData.queryBuilder.userActions.tagViewsOfUser).toBe('test@email.com');
             });
@@ -462,10 +448,10 @@ describe('UserActions', () => {
             );
             const loggerSpy = sandbox.spy(Logger.prototype, 'warn');
             let queryData = Simulate.query(mock.env);
-    
+
             const queryArgs = { e: 'error', args: queryData };
-            Coveo.$$(mock.env.root).trigger('buildingQuery',  queryArgs);
-    
+            Coveo.$$(mock.env.root).trigger('buildingQuery', queryArgs);
+
             return delay(() => {
                 expect(loggerSpy.called).toBe(true);
             });
@@ -537,6 +523,7 @@ describe('UserActions', () => {
             beforeEach(() => {
                 viewedByCustomerOption = false;
             });
+
             it('should not add a ViewedByCustomer Component', () => {
                 const mock = Mock.advancedComponentSetup<UserActions>(
                     UserActions,

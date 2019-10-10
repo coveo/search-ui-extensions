@@ -7,8 +7,7 @@ import {
     l,
     get,
     ResultListEvents,
-    IDisplayedNewResultEventArgs,
-    IQueryResult
+    IDisplayedNewResultEventArgs
 } from 'coveo-search-ui';
 import { ResponsiveUserActions } from './ResponsiveUserActions';
 import { arrowDown } from '../../utils/icons';
@@ -58,7 +57,7 @@ export interface IUserActionsOptions {
      */
     viewedByCustomer: Boolean;
 
-    record: IQueryResult;
+    createdBy: string;
 }
 
 /**
@@ -87,7 +86,7 @@ export class UserActions extends Component {
         viewedByCustomer: ComponentOptions.buildBooleanOption({
             defaultValue: true
         }),
-        record: ComponentOptions.buildCustomOption(s => null)
+        createdBy: ComponentOptions.buildStringOption()
     };
 
     private static readonly USER_ACTION_OPENED = 'coveo-user-actions-opened';
@@ -269,17 +268,16 @@ export class UserActions extends Component {
             }
             const viewedByCustomerElement = document.createElement('span');
             new ViewedByCustomer(viewedByCustomerElement, undefined, this.bindings, args.result);
-            args.item.querySelector('.coveo-result-row:last-child .coveo-result-cell').appendChild(viewedByCustomerElement);
+            const resultLawRow = args.item.querySelector('.coveo-result-row:last-child .coveo-result-cell');
+            resultLawRow.appendChild(viewedByCustomerElement);
         });
     }
 
     private tagViewsOfUser() {
         Coveo.$$(this.root).on('buildingQuery', (e, args) => {
             try {
-                const createdBy = this.options.record.fields.CreatedBy.value.fields.Email.value;
-
                 args.queryBuilder.userActions = {
-                    tagViewsOfUser: createdBy
+                    tagViewsOfUser: this.options.createdBy
                 };
             } catch (e) {
                 this.logger.warn("CreatedBy Email wasn't found", e);
