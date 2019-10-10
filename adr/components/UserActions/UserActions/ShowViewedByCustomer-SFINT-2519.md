@@ -2,6 +2,7 @@
 
 ## Admin
 
+-   **Author:** Neil Wadden
 -   **Deciders:** Louis Bompart, Nathan Lafrance-Berger, Andre Theriault, Jeremie Robert
 -   **Date:** 10/10/2019
 -   **JIRA:** SFINT-2519
