@@ -268,8 +268,8 @@ export class UserActions extends Component {
             }
             const viewedByCustomerElement = document.createElement('span');
             new ViewedByCustomer(viewedByCustomerElement, undefined, this.bindings, args.result);
-            const resultLawRow = args.item.querySelector('.coveo-result-row:last-child .coveo-result-cell');
-            resultLawRow.appendChild(viewedByCustomerElement);
+            const resultLastRow = '.coveo-result-row:last-child .coveo-result-cell';
+            args.item.querySelector(resultLastRow).appendChild(viewedByCustomerElement);
         });
     }
 
