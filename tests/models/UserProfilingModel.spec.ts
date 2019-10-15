@@ -319,7 +319,7 @@ describe('UserProfilingModel', () => {
                 lastRequest.respond(200, { 'Content-Type': 'application/json' }, responseBody);
 
                 const firstDataset = await firstGetActionsPromise;
-                
+
                 // Do a second call, it should not do a callout.
                 const secondGetActionsPromise = model.getActions(TEST_USER);
 
@@ -493,5 +493,5 @@ describe('UserProfilingModel', () => {
                 expect(requests.length).toBeGreaterThan(nbOfRequestBeforeDelete);
             });
         });
-    })
+    });
 });
