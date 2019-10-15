@@ -78,9 +78,6 @@ export class UserProfilingEndpoint {
     public static readonly DEFAULT_URI = 'https://platform.cloud.coveo.com';
 
     private caller: EndpointCaller;
-    private pendingGetActions: {
-        [userId: string]: Promise<IActionHistory[]>;
-    };
 
     /**
      * Create a `UserProfilingEndpoint` instance.
@@ -91,8 +88,6 @@ export class UserProfilingEndpoint {
     constructor(public options: IUserProfilingEndpointOptions) {
         Assert.exists(this.options.accessToken);
         Assert.exists(this.options.organization);
-
-        this.pendingGetActions = {};
 
         this.options.uri = this.options.uri ? this.options.uri : UserProfilingEndpoint.DEFAULT_URI;
 
@@ -109,20 +104,8 @@ export class UserProfilingEndpoint {
      *
      * @param userId Id from which action history will be retrieve. (either visitId or user email).
      */
-    public getActions(userId: string): Promise<IActionHistory[]> {
+    public async getActions(userId: string): Promise<IActionHistory[]> {
         Assert.exists(userId);
-
-        let request = this.pendingGetActions[userId];
-
-        if (!request) {
-            request = this.buildGetActionRequest(userId);
-            this.pendingGetActions[userId] = request;
-        }
-
-        return request;
-    }
-
-    private async buildGetActionRequest(userId: string) {
         const response = await this.caller.call<IActionsHistoryResponse>({
             method: 'POST',
             url: `${this.options.uri}/rest/organizations/${this.options.organization}/machinelearning/user/actions`,
@@ -132,9 +115,11 @@ export class UserProfilingEndpoint {
             requestData: { objectId: userId },
             errorsAsSuccess: false
         });
+
         if (this.isResponseEmpty(response)) {
             throw new Error(`Response has no values: ${JSON.stringify(response)}`);
         }
+
         return this.parseResponse(response.data);
     }
 

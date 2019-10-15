@@ -59,6 +59,11 @@ export class UserProfileModel extends Model {
         FETCH_CLICKED_DOCUMENT_FAIL: 'Fetching clicked documents details failed'
     });
 
+    private static readonly MODEL_CONFIG = {
+        customAttribute: true,
+        silent: true
+    };
+
     private endpoint: UserProfilingEndpoint;
     private getOrFetchCache: { [userId: string]: Promise<UserAction[]> };
 
@@ -90,16 +95,29 @@ export class UserProfileModel extends Model {
      * @param userId The identifier of a user.
      */
     public async getActions(userId: string): Promise<UserAction[]> {
-        const actions = <UserAction[]>this.get(userId);
-        return (Array.isArray(actions) && actions) || this.fetchActions(userId);
+        let actions = <UserAction[]>this.get(userId);
+        actions = Array.isArray(actions) ? actions : await this.fetchActions(userId);
+
+        this.set(userId, actions, UserProfileModel.MODEL_CONFIG);
+
+        return actions;
+    }
+
+    /**
+     * Delete all actions related to a user from the model.
+     *
+     * @param userId The identifier of a user.
+     */
+    public deleteActions(userId: string) {
+        this.set(userId, undefined, UserProfileModel.MODEL_CONFIG);
+        this.getOrFetchCache[userId] = undefined;
     }
 
     private fetchActions(userId: string) {
         const pendingFetch = this.getOrFetchCache[userId];
         const doFetch = () => {
-            const pendingFetch = this.endpoint.getActions(userId).then(actions => this.parseGetActionsResponse(userId, actions));
-            this.getOrFetchCache[userId] = pendingFetch;
-            return pendingFetch;
+            this.getOrFetchCache[userId] = this.endpoint.getActions(userId).then(actions => this.parseGetActionsResponse(userId, actions));
+            return this.getOrFetchCache[userId];
         };
         return pendingFetch || doFetch();
     }
@@ -117,11 +135,14 @@ export class UserProfileModel extends Model {
             return Promise.resolve({});
         }
 
-        const QUERY = new QueryBuilder();
-        QUERY.advancedExpression.addFieldExpression('@urihash', '==', urihashes.filter(x => x));
+        const query = new QueryBuilder();
+        query.advancedExpression.addFieldExpression('@urihash', '==', urihashes.filter(x => x));
+
+        // Ensure we fetch the good amount of document.
+        query.numberOfResults = urihashes.length;
 
         // Here we directly use the Search Endpoint to query without side effects.
-        const searchRequest = await this.options.searchEndpoint.search(QUERY.build());
+        const searchRequest = await this.options.searchEndpoint.search(query.build());
 
         const documentsDict = searchRequest.results.reduce((acc, result) => ({ ...acc, [result.raw.urihash]: result }), {});
 
@@ -130,7 +151,12 @@ export class UserProfileModel extends Model {
 
     private async buildUserActions(actions: IActionHistory[]): Promise<UserAction[]> {
         let documents = {} as { [urihash: string]: IQueryResult };
-        const urihashes = actions.filter(this.isClick).map(action => action.value.uri_hash);
+
+        const urihashes = actions
+            .filter(this.isClick)
+            .map(action => action.value.uri_hash)
+            // Remove duplicates.
+            .filter((value, index, list) => list.indexOf(value) === index);
 
         try {
             documents = await this.fetchDocuments(urihashes);

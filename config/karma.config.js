@@ -1,6 +1,9 @@
 const webpackConfig = require('./webpack.config.karma.js');
 const path = require('path');
 
+// Allow crossplatform use of karma-chrome-launcher. See: https://github.com/karma-runner/karma-chrome-launcher#headless-chromium-with-puppeteer
+process.env.CHROME_BIN = require('puppeteer').executablePath();
+
 var configuration = {
     frameworks: ['jasmine'],
     files: [

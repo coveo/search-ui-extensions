@@ -1,14 +1,25 @@
 import { Component, IComponentBindings, Initialization, ComponentOptions, get, Omnibox, l } from 'coveo-search-ui';
 import { UserProfileModel } from '../../models/UserProfileModel';
 import { ExpandableList } from './ExpandableList';
+import { search } from '../../utils/icons';
 import './Strings';
 
 const DEFAULT_TRANSFORMATION = () => (query: string) => {
-    const span = document.createElement('span');
-    span.classList.add('coveo-content');
-    span.innerHTML = query;
+    const container = document.createElement('div');
+    container.classList.add('coveo-list-row');
 
-    return Promise.resolve(span);
+    const icon = document.createElement('div');
+    icon.classList.add('coveo-row-icon');
+    icon.innerHTML = search;
+
+    const link = document.createElement('a');
+    link.classList.add('coveo-link');
+    link.innerHTML = query;
+
+    container.appendChild(icon);
+    container.appendChild(link);
+
+    return Promise.resolve(container);
 };
 
 /**
@@ -91,6 +102,12 @@ export class QueryList extends Component {
         super(element, QueryList.ID, bindings);
 
         this.options = ComponentOptions.initComponentOptions(element, QueryList, options);
+
+        if (!this.options.userId) {
+            this.disable();
+            return;
+        }
+
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
         this.userProfileModel.getActions(this.options.userId).then(actions => {
             this.sortedQueryList = [...actions]

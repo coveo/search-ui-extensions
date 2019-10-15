@@ -13,6 +13,7 @@ import {
 import { UserProfileModel, UserAction } from '../../models/UserProfileModel';
 import { ExpandableList } from './ExpandableList';
 import { UserActionType } from '../../rest/UserProfilingEndpoint';
+import { duplicate } from '../../utils/icons';
 import './Strings';
 
 /**
@@ -70,9 +71,15 @@ export class ClickedDocumentList extends Component {
         }),
         userId: ComponentOptions.buildStringOption({ required: true }),
         template: ComponentOptions.buildTemplateOption({
-            defaultValue: HtmlTemplate.fromString('<a class="CoveoResultLink"></a>', {
-                layout: 'list'
-            })
+            defaultValue: HtmlTemplate.fromString(
+                `<div class="coveo-list-row">
+                    <div class="coveo-row-icon">${duplicate}</div>
+                    <a class="CoveoResultLink"/a>
+                </div>`,
+                {
+                    layout: 'list'
+                }
+            )
         })
     };
 
@@ -90,6 +97,11 @@ export class ClickedDocumentList extends Component {
         super(element, ClickedDocumentList.ID, bindings);
 
         this.options = ComponentOptions.initComponentOptions(element, ClickedDocumentList, options);
+
+        if (!this.options.userId) {
+            this.disable();
+            return;
+        }
 
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
 
