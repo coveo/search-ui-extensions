@@ -17,7 +17,10 @@ export interface IViewedByCustomerOptions {
 }
 
 /**
- * Result component indicating if a search result have been viewed by the targeted user.
+ * The _ViewedByCustomer_  component allows your agents to see, within the Salesforce Lightning console, every result which the user clicked. It displays an icon and a label on each result, if already viewed by the customer who created the case (see [Coveo Component ViewedByCustomer](https://docs.coveo.com/en/3073/coveoforsalesforce/viewedbycustomercomponent)).
+ * ```html
+ * <div class="CoveoViewedByCustomer"></div>
+ * ```
  */
 export class ViewedByCustomer extends Component {
     /**
