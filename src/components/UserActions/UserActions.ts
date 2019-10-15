@@ -1,5 +1,14 @@
-import { Component, IComponentBindings, Initialization, ComponentOptions, QueryEvents, l, get } from 'coveo-search-ui';
-
+import {
+    Component,
+    IComponentBindings,
+    Initialization,
+    ComponentOptions,
+    QueryEvents,
+    l,
+    get,
+    ResultListEvents,
+    IDisplayedNewResultEventArgs
+} from 'coveo-search-ui';
 import { ResponsiveUserActions } from './ResponsiveUserActions';
 import { arrowDown } from '../../utils/icons';
 import { ClickedDocumentList } from './ClickedDocumentList';
@@ -7,6 +16,7 @@ import { QueryList } from './QueryList';
 import { UserActivity } from './UserActivity';
 import { UserProfileModel } from '../../Index';
 import './Strings';
+import { ViewedByCustomer } from '../ViewedByCustomer/ViewedByCustomer';
 
 /**
  * Initialization options of the **UserActions** class.
@@ -39,6 +49,15 @@ export interface IUserActionsOptions {
      * Default: `User Recent Activity`
      */
     activityLabel: string;
+
+    /**
+     * Whether or not to add the ViewedByCustomer component
+     *
+     * Default: `True`
+     */
+    viewedByCustomer: Boolean;
+
+    createdBy: string;
 }
 
 /**
@@ -63,7 +82,11 @@ export class UserActions extends Component {
         }),
         activityLabel: ComponentOptions.buildStringOption({
             defaultValue: "User's Recent Activity"
-        })
+        }),
+        viewedByCustomer: ComponentOptions.buildBooleanOption({
+            defaultValue: true
+        }),
+        createdBy: ComponentOptions.buildStringOption()
     };
 
     private static readonly USER_ACTION_OPENED = 'coveo-user-actions-opened';
@@ -86,7 +109,18 @@ export class UserActions extends Component {
             return;
         }
 
+        (get(this.root, UserProfileModel) as UserProfileModel)
+            .getActions(this.options.userId)
+            .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
+            .catch(() => this.renderNoActions());
+
+        if (this.options.viewedByCustomer) {
+            this.showViewedByCustomer();
+        }
+
         ResponsiveUserActions.init(this.root, this);
+
+        this.tagViewsOfUser();
 
         this.bind.onRootElement(QueryEvents.newQuery, () => this.hide());
 
@@ -231,6 +265,30 @@ export class UserActions extends Component {
 
         this.element.innerHTML = '';
         this.element.appendChild(element);
+    }
+
+    private showViewedByCustomer() {
+        this.bind.onRootElement(ResultListEvents.newResultDisplayed, (args: IDisplayedNewResultEventArgs) => {
+            if (Boolean(args.item.getElementsByClassName('CoveoViewedByCustomer').length)) {
+                return;
+            }
+            const viewedByCustomerElement = document.createElement('span');
+            new ViewedByCustomer(viewedByCustomerElement, undefined, this.bindings, args.result);
+            const resultLastRow = '.coveo-result-row:last-child .coveo-result-cell';
+            args.item.querySelector(resultLastRow).appendChild(viewedByCustomerElement);
+        });
+    }
+
+    private tagViewsOfUser() {
+        Coveo.$$(this.root).on('buildingQuery', (e, args) => {
+            try {
+                args.queryBuilder.userActions = {
+                    tagViewsOfUser: this.options.createdBy
+                };
+            } catch (e) {
+                this.logger.warn("CreatedBy Email wasn't found", e);
+            }
+        });
     }
 }
 
