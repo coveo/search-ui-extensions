@@ -299,6 +299,44 @@ describe('UserProfilingModel', () => {
                 });
             });
 
+            it('should fetch all actions of a user from the backend only once', async () => {
+                const endpoint = sandbox.createStubInstance(SearchEndpoint);
+                endpoint.search.returns(Promise.resolve(Fake.createFakeResults(10)));
+
+                const model = new UserProfileModel(document.createElement('div'), {
+                    organizationId: TEST_ORGANIZATION,
+                    restUri: TEST_REST_URI,
+                    accessToken: TEST_TOKEN,
+                    searchEndpoint: endpoint
+                });
+
+                // Do a first call, it should do a callout.
+                const firstGetActionsPromise = model.getActions(TEST_USER);
+                const originalNbRequest = requests.length;
+                const lastRequest = requests[requests.length - 1];
+
+                const responseBody = JSON.stringify(buildActionHistoryResponse(FAKE_HISTORY_ACTIONS), null, 0);
+                lastRequest.respond(200, { 'Content-Type': 'application/json' }, responseBody);
+
+                const firstDataset = await firstGetActionsPromise;
+
+                // Do a second call, it should not do a callout.
+                const secondGetActionsPromise = model.getActions(TEST_USER);
+
+                expect(requests.length).toBe(originalNbRequest);
+
+                const secondDataset = await secondGetActionsPromise;
+
+                expect(JSON.stringify(firstDataset)).toBe(JSON.stringify(secondDataset));
+
+                expect(secondDataset.length).toEqual(FAKE_HISTORY_ACTIONS.length);
+                secondDataset.forEach((action, i) => {
+                    expect(action.type).toEqual(FAKE_HISTORY_ACTIONS[i].name);
+                    expect(action.timestamp.valueOf()).toEqual(FAKE_HISTORY_ACTIONS[i].time);
+                    expect(JSON.stringify(action.raw)).toEqual(JSON.stringify(FAKE_HISTORY_ACTIONS[i].value));
+                });
+            });
+
             it('should fetch all actions of a user from the backend even when the search call for document details fails', async () => {
                 const endpoint = sandbox.createStubInstance(SearchEndpoint);
                 endpoint.search.returns(Promise.reject());
@@ -332,6 +370,127 @@ describe('UserProfilingModel', () => {
                     expect(action.timestamp.valueOf()).toEqual(FAKE_HISTORY_ACTIONS[i].time);
                     expect(JSON.stringify(action.raw)).toEqual(JSON.stringify(FAKE_HISTORY_ACTIONS[i].value));
                 });
+            });
+        });
+
+        describe('when actions are present in the model', () => {
+            it('should not fetch all actions of a user from the backend', async () => {
+                const endpoint = sandbox.createStubInstance(SearchEndpoint);
+                endpoint.search.returns(Promise.resolve(Fake.createFakeResults(10)));
+
+                const model = new UserProfileModel(document.createElement('div'), {
+                    organizationId: TEST_ORGANIZATION,
+                    restUri: TEST_REST_URI,
+                    accessToken: TEST_TOKEN,
+                    searchEndpoint: endpoint
+                });
+
+                // Store some actions beforehand.
+                model.set(TEST_USER, FAKE_HISTORY_ACTIONS.map(x => new UserAction(x.name, new Date(x.time), x.value)), {
+                    silent: true,
+                    customAttribute: true
+                });
+
+                const actionsPromise = model.getActions(TEST_USER);
+
+                // Should not do any request.
+                expect(requests.length).toBe(0);
+
+                const data = await actionsPromise;
+
+                expect(data.length).toEqual(FAKE_HISTORY_ACTIONS.length);
+                data.forEach((action, i) => {
+                    expect(action.type).toEqual(FAKE_HISTORY_ACTIONS[i].name);
+                    expect(action.timestamp.valueOf()).toEqual(FAKE_HISTORY_ACTIONS[i].time);
+                    expect(JSON.stringify(action.raw)).toEqual(JSON.stringify(FAKE_HISTORY_ACTIONS[i].value));
+                });
+            });
+        });
+    });
+
+    describe('deleteActions', () => {
+        describe('when no actions are present in the model', () => {
+            it('should have no impact', () => {
+                const endpoint = sandbox.createStubInstance(SearchEndpoint);
+                endpoint.search.returns(Promise.resolve(Fake.createFakeResults(10)));
+
+                const model = new UserProfileModel(document.createElement('div'), {
+                    organizationId: TEST_ORGANIZATION,
+                    restUri: TEST_REST_URI,
+                    accessToken: TEST_TOKEN,
+                    searchEndpoint: endpoint
+                });
+
+                model.deleteActions(TEST_USER);
+
+                expect(model.get(TEST_USER)).toBeUndefined();
+            });
+
+            it('should remove pending fetch operation related to a user even when there is a pending fetch operation', () => {
+                const endpoint = sandbox.createStubInstance(SearchEndpoint);
+                endpoint.search.returns(Promise.resolve(Fake.createFakeResults(10)));
+
+                const model = new UserProfileModel(document.createElement('div'), {
+                    organizationId: TEST_ORGANIZATION,
+                    restUri: TEST_REST_URI,
+                    accessToken: TEST_TOKEN,
+                    searchEndpoint: endpoint
+                });
+
+                model.getActions(TEST_USER);
+
+                model.deleteActions(TEST_USER);
+
+                expect(model.get(TEST_USER)).toBeUndefined();
+            });
+        });
+        describe('when actions are present in the model', () => {
+            it('should remove actions related to a user', () => {
+                const endpoint = sandbox.createStubInstance(SearchEndpoint);
+                endpoint.search.returns(Promise.resolve(Fake.createFakeResults(10)));
+
+                const model = new UserProfileModel(document.createElement('div'), {
+                    organizationId: TEST_ORGANIZATION,
+                    restUri: TEST_REST_URI,
+                    accessToken: TEST_TOKEN,
+                    searchEndpoint: endpoint
+                });
+
+                model.set(TEST_USER, FAKE_HISTORY_ACTIONS.map(x => new UserAction(x.name, new Date(x.time), x.value)), {
+                    silent: true,
+                    customAttribute: true
+                });
+
+                model.deleteActions(TEST_USER);
+
+                expect(model.get(TEST_USER)).toBeUndefined();
+            });
+
+            it('should remove actions related to a user even when there is a pending fetch operation', async () => {
+                const responseBody = JSON.stringify(buildActionHistoryResponse(FAKE_HISTORY_ACTIONS), null, 0);
+                const endpoint = sandbox.createStubInstance(SearchEndpoint);
+                endpoint.search.returns(Promise.resolve(Fake.createFakeResults(10)));
+
+                const model = new UserProfileModel(document.createElement('div'), {
+                    organizationId: TEST_ORGANIZATION,
+                    restUri: TEST_REST_URI,
+                    accessToken: TEST_TOKEN,
+                    searchEndpoint: endpoint
+                });
+
+                const actions1 = model.getActions(TEST_USER);
+                requests[requests.length - 1].respond(200, { 'Content-Type': 'application/json' }, responseBody);
+                await actions1;
+
+                const nbOfRequestBeforeDelete = requests.length;
+
+                model.deleteActions(TEST_USER);
+
+                expect(model.get(TEST_USER)).toBeUndefined();
+
+                model.getActions(TEST_USER);
+
+                expect(requests.length).toBeGreaterThan(nbOfRequestBeforeDelete);
             });
         });
     });
