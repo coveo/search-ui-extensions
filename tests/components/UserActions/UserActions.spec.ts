@@ -435,7 +435,7 @@ describe('UserActions', () => {
         it('should add email to query', () => {
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', createdBy: 'test@email.com' }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId' }, env => {
                     fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
                     return env;
                 })
@@ -447,7 +447,7 @@ describe('UserActions', () => {
             Coveo.$$(mock.env.root).trigger('buildingQuery', queryArgs);
 
             return delay(() => {
-                expect(queryData.queryBuilder.userActions.tagViewsOfUser).toBe('test@email.com');
+                expect(queryData.queryBuilder.userActions.tagViewsOfUser).toBe('testUserId');
             });
         });
 
