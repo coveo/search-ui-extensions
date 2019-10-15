@@ -56,8 +56,6 @@ export interface IUserActionsOptions {
      * Default: `True`
      */
     viewedByCustomer: Boolean;
-
-    createdBy: string;
 }
 
 /**
@@ -85,8 +83,7 @@ export class UserActions extends Component {
         }),
         viewedByCustomer: ComponentOptions.buildBooleanOption({
             defaultValue: true
-        }),
-        createdBy: ComponentOptions.buildStringOption()
+        })
     };
 
     private static readonly USER_ACTION_OPENED = 'coveo-user-actions-opened';
@@ -277,7 +274,7 @@ export class UserActions extends Component {
         Coveo.$$(this.root).on('buildingQuery', (e, args) => {
             try {
                 args.queryBuilder.userActions = {
-                    tagViewsOfUser: this.options.createdBy
+                    tagViewsOfUser: this.options.userId
                 };
             } catch (e) {
                 this.logger.warn("CreatedBy Email wasn't found", e);
