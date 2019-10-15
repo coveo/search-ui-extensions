@@ -106,12 +106,12 @@ describe('QueryList', () => {
         return delay(() => {
             const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
 
-            for(let i=0; i<4; i++){
+            for (let i = 0; i < 4; i++) {
                 const icon = list.children.item(i).querySelector<HTMLElement>('svg');
                 expect(icon).toBeDefined;
-            };
-        })
-    })
+            }
+        });
+    });
 
     it('should show all queries when expanded', () => {
         const mock = Mock.advancedComponentSetup<QueryList>(
@@ -297,7 +297,7 @@ describe('QueryList', () => {
             let getActionStub: SinonStub<[HTMLElement, QueryList], void>;
             const mock = Mock.advancedComponentSetup<QueryList>(
                 QueryList,
-                new Mock.AdvancedComponentSetupOptions(null, {userId: null}, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: null }, env => {
                     getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
                     return env;
                 })
@@ -307,12 +307,12 @@ describe('QueryList', () => {
                 expect(mock.cmp.disabled).toBe(true);
             });
         });
-    
+
         it('Should disable itself when the userId is empty string', () => {
             let getActionStub: SinonStub<[HTMLElement, QueryList], void>;
             const mock = Mock.advancedComponentSetup<QueryList>(
                 QueryList,
-                new Mock.AdvancedComponentSetupOptions(null, {userId: ''}, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: '' }, env => {
                     getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
                     return env;
                 })
