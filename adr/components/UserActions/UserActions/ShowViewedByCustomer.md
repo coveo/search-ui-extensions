@@ -20,7 +20,13 @@ The `ViewedByCustomer` component needs to be added on each result template, and 
 
 ## Decision Drivers <!-- optional -->
 
+### Context
+
+The main decision drivers were to be able to add the ViewedByCustomer component to each result, without adding it a second time, when the option in the UserActions component is true.
+
 <!-- Number these so that they are easier to reference in the following section -->
+
+### Decisions
 
 1. Need to choose when to edit the results (i.e. need an event)
 1. Ensure the `ViewedByCustomer` component is properly added to each result template
@@ -84,6 +90,18 @@ From what I understand it makes sense for this feature to be true by default, as
 ### Cons
 
 -   Having to call the constructor of `ViewedByCustomer` is a little sketchy. From what I can tell it's not being done anywhere else in the code. It means that a change in the ViewedByCustomer component could negatively affect this method
+
+---
+
+## Gotchas
+
+-   The main gotcha for this going forward was that the `newResultsDisplayed` option wasn't passing back the `args.item` with it's event.
+
+---
+
+## Next Steps & Timeline
+
+This was a standalone task and has no additional steps past this.
 
 ---
 
