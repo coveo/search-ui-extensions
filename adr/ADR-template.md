@@ -110,7 +110,7 @@ From what I understand it makes sense for this feature to be true by default, as
 
 ---
 
-## Common Mistakes
+## Common Pitfalls
 
 [ List and common mistakes that you saw during development of your feature ]
 
