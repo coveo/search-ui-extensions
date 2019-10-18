@@ -1,8 +1,8 @@
 # [Title of the ADR ]
 
 <!-- There are two main reason why an ADR is needed for a feature
-     If the feature last more then one sprint
-     Or if a non-obvious design choice was chosen during feature devleopment. -->
+     If the feature lasts more then one sprint
+     Or if a non-obvious design choice was chosen during feature development. -->
 
 ## Admin
 
@@ -28,7 +28,7 @@
 
 ### Decisions
 
-[ A list of the key decision which had to made during development ]
+[ A list of the key decisions which had to made during development ]
 
 1. [ Describe decision 1 ]
 1. [ Describe decision 2 ]
@@ -40,7 +40,7 @@
 
 ## Considered Options
 
-<!-- Give some options regarding the decision drivers mentions in the previous section -->
+<!-- Give some options regarding the decision drivers mentioned in the previous section -->
 
 **Decision 1** - [ Quick option overview decision 1 from the previous section ]
 
@@ -112,7 +112,7 @@ From what I understand it makes sense for this feature to be true by default, as
 
 ## Common Pitfalls
 
-[ List and common mistakes that you saw during development of your feature ]
+[ List any common mistakes that you saw during development of your feature ]
 
 ---
 
