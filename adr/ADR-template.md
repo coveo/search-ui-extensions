@@ -24,7 +24,7 @@
 
 ### Context
 
-[ The main decision drivers were to be able to add the ViewedByCustomer component to each result, without adding it a second time, when the option in the UserActions component is true. ]
+[ Context behind all of the design decision associated with the feature ]
 
 ### Decisions
 
@@ -92,7 +92,7 @@
 
 #### Decision N: [Option X]
 
-From what I understand it makes sense for this feature to be true by default, as it's important for their not to be inconsistencies
+[ Give your reasoning behind choosing the option you did from the previous section ]
 
 ---
 
