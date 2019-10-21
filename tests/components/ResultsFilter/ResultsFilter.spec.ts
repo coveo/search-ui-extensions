@@ -2,7 +2,6 @@ import { ResultsFilter, IResultsFilterOptions } from '../../../src/components/Re
 import { Mock, Simulate } from 'coveo-search-ui-tests';
 import { QueryStateModel } from 'coveo-search-ui';
 import { ResultsFilterEvents, IResultsFilterEventArgs } from '../../../src/components/ResultsFilter/Events';
-import { Translation, Language } from '../../../src/utils/translation';
 
 describe('ResultsFilter', () => {
     let filter: Mock.IBasicComponentSetup<ResultsFilter>;
