@@ -22,9 +22,11 @@
 
 ## Decision Drivers
 
+<!-- Decision drivers are the main design decisions used during the devleopment of a feature -->
+
 ### Context
 
-[ Context behind all of the design decision associated with the feature ]
+[ Context behind all of the design decisions associated with the feature ]
 
 ### Decisions
 
