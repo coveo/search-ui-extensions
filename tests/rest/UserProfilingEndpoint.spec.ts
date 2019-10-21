@@ -95,25 +95,6 @@ describe('UserProfilingEndpoint', () => {
             expect(JSON.stringify(LAST_REQUEST.requestHeaders)).toContain(TEST_ACCESS_TOKEN);
         });
 
-        it('should fire a POST request on the ActionsHistory Endpoint once per userId', () => {
-            const endpoint = new UserProfilingEndpoint({
-                accessToken: buildAccessToken(TEST_ACCESS_TOKEN),
-                organization: TEST_ORGANIZATION,
-                uri: TEST_URI
-            });
-            endpoint.getActions(TEST_USER_ID);
-            endpoint.getActions(TEST_USER_ID);
-
-            expect(request.filter(r => r.method).length).toBe(1);
-
-            const LAST_REQUEST = request[request.length - 1];
-
-            expect(LAST_REQUEST.method).toEqual('POST');
-            expect(LAST_REQUEST.requestBody).toContain(TEST_USER_ID);
-            expect(LAST_REQUEST.url).toContain(`/rest/organizations/${TEST_ORGANIZATION}/machinelearning/user/actions`);
-            expect(JSON.stringify(LAST_REQUEST.requestHeaders)).toContain(TEST_ACCESS_TOKEN);
-        });
-
         describe('when the rest call succeed', () => {
             it('should return a resolved promise that contains all requested actions', async () => {
                 const RESPONSE = new UserProfilingEndpoint({

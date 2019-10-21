@@ -90,6 +90,12 @@ export class UserActivity extends Component {
         super(element, UserActivity.ID, bindings);
 
         this.options = ComponentOptions.initComponentOptions(element, UserActivity, options);
+
+        if (!this.options.userId) {
+            this.disable();
+            return;
+        }
+
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
 
         this.userProfileModel.getActions(this.options.userId).then(actions => {
