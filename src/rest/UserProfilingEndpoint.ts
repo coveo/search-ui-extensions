@@ -114,7 +114,9 @@ export class UserProfilingEndpoint {
             requestDataType: 'application/json',
             requestData: { objectId: userId },
             errorsAsSuccess: false
-        });
+        })
+
+        debugger;
 
         if (this.isResponseEmpty(response)) {
             throw new Error(`Response has no values: ${JSON.stringify(response)}`);

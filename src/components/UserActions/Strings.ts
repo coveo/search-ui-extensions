@@ -2,6 +2,7 @@ import { Translation, Language } from '../../utils/translation';
 
 Translation.register(Language.English, {
     UserActions_no_actions: 'No actions available for this user',
+    UserActions_enable_prompt: 'The User Action feature isn’t enabled for you account.\nPlease contact Coveo Support.',
 
     QueryList_more: 'Show More',
     QueryList_less: 'Show Less',
