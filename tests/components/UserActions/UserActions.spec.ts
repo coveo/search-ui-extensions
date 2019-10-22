@@ -1,12 +1,13 @@
 import { Mock, Fake, Simulate } from 'coveo-search-ui-tests';
 import { UserActions } from '../../../src/components/UserActions/UserActions';
-import { Logger, Initialization, QueryEvents, ResultListEvents, IQueryResult } from 'coveo-search-ui';
+import { Logger, Initialization, QueryEvents, ResultListEvents, IQueryResult, l } from 'coveo-search-ui';
 import { createSandbox, SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
 import { UserAction, UserProfileModel } from '../../../src/models/UserProfileModel';
 import { delay, fakeUserProfileModel } from '../../utils';
 import { ClickedDocumentList, QueryList, UserActivity } from '../../../src/Index';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 import { ResponsiveUserActions } from '../../../src/components/UserActions/ResponsiveUserActions';
+import '../../../src/components/UserActions/Strings';
 
 describe('UserActions', () => {
     let sandbox: SinonSandbox;
@@ -190,6 +191,24 @@ describe('UserActions', () => {
         expect(hideSpy.called).toBe(true);
     });
 
+    it('should show a message when user actions is not enabled', () => {
+        sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
+
+        const mock = Mock.advancedComponentSetup<UserActions>(
+            UserActions,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject({ statusCode: 404 }));
+                return env;
+            })
+        );
+        mock.cmp.show();
+
+        return delay(() => {
+            expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions')).not.toBeNull();
+            expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions').innerText).toBe(l(`${UserActions.ID}_enable_prompt`));
+        });
+    });
+
     it('should show a message when no actions are available', () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
@@ -204,7 +223,7 @@ describe('UserActions', () => {
 
         return delay(() => {
             expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions')).not.toBeNull();
-            expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions').innerText).toBe('No actions available for this user');
+            expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions').innerText).toBe(l(`${UserActions.ID}_no_actions`));
         });
     });
 
@@ -221,7 +240,7 @@ describe('UserActions', () => {
         mock.cmp.show();
 
         return delay(() => {
-            expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions').innerText).toBe('No actions available for this user');
+            expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions').innerText).toBe(l(`${UserActions.ID}_no_actions`));
         });
     });
 
