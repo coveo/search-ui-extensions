@@ -143,7 +143,7 @@ export class UserActions extends Component {
             (get(this.root, UserProfileModel) as UserProfileModel)
                 .getActions(this.options.userId)
                 .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
-                .catch(() => this.renderNoActions());
+                .catch(e => (e.statusCode === 404 ? this.renderEnablePrompt() : this.renderNoActions()));
 
             this.bindings.usageAnalytics.logCustomEvent({ name: 'openUserActions', type: 'User Actions' }, {}, this.element);
             this.root.classList.add(UserActions.USER_ACTION_OPENED);
@@ -259,6 +259,15 @@ export class UserActions extends Component {
         const element = document.createElement('div');
         element.classList.add('coveo-no-actions');
         element.innerText = l(`${UserActions.ID}_no_actions`);
+
+        this.element.innerHTML = '';
+        this.element.appendChild(element);
+    }
+
+    private renderEnablePrompt() {
+        const element = document.createElement('div');
+        element.classList.add('coveo-enable-prompt');
+        element.innerText = l(`${UserActions.ID}_enable_prompt`);
 
         this.element.innerHTML = '';
         this.element.appendChild(element);
