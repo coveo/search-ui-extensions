@@ -266,9 +266,8 @@ export class UserActions extends Component {
 
     private renderEnablePrompt() {
         const element = document.createElement('div');
-        element.classList.add('coveo-no-actions');
+        element.classList.add('coveo-enable-prompt');
         element.innerText = l(`${UserActions.ID}_enable_prompt`);
-        element.style.padding = '1.5em';
 
         this.element.innerHTML = '';
         this.element.appendChild(element);
