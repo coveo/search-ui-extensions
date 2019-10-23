@@ -204,8 +204,8 @@ describe('UserActions', () => {
         mock.cmp.show();
 
         return delay(() => {
-            expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions')).not.toBeNull();
-            expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions').innerText).toBe(
+            expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-enable-prompt')).not.toBeNull();
+            expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-enable-prompt').innerText).toBe(
                 l(`${UserActions.ID}_enable_prompt`).replace('\n', '')
             );
         });
