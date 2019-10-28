@@ -85,7 +85,7 @@
         "webpack-karma-die-hard": "^1.0.4"
     },
     "dependencies": {
-        "snyk": "^1.203.0"
+        "snyk": "^1.230.4"
     },
     "snyk": true
 }
