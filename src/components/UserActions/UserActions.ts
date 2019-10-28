@@ -56,8 +56,6 @@ export interface IUserActionsOptions {
      * Default: `True`
      */
     viewedByCustomer: Boolean;
-
-    createdBy: string;
 }
 
 /**
@@ -85,8 +83,7 @@ export class UserActions extends Component {
         }),
         viewedByCustomer: ComponentOptions.buildBooleanOption({
             defaultValue: true
-        }),
-        createdBy: ComponentOptions.buildStringOption()
+        })
     };
 
     private static readonly USER_ACTION_OPENED = 'coveo-user-actions-opened';
@@ -146,7 +143,7 @@ export class UserActions extends Component {
             (get(this.root, UserProfileModel) as UserProfileModel)
                 .getActions(this.options.userId)
                 .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
-                .catch(() => this.renderNoActions());
+                .catch(e => (e.statusCode === 404 ? this.renderEnablePrompt() : this.renderNoActions()));
 
             this.bindings.usageAnalytics.logCustomEvent({ name: 'openUserActions', type: 'User Actions' }, {}, this.element);
             this.root.classList.add(UserActions.USER_ACTION_OPENED);
@@ -267,6 +264,15 @@ export class UserActions extends Component {
         this.element.appendChild(element);
     }
 
+    private renderEnablePrompt() {
+        const element = document.createElement('div');
+        element.classList.add('coveo-enable-prompt');
+        element.innerText = l(`${UserActions.ID}_enable_prompt`);
+
+        this.element.innerHTML = '';
+        this.element.appendChild(element);
+    }
+
     private showViewedByCustomer() {
         this.bind.onRootElement(ResultListEvents.newResultDisplayed, (args: IDisplayedNewResultEventArgs) => {
             if (Boolean(args.item.getElementsByClassName('CoveoViewedByCustomer').length)) {
@@ -283,7 +289,7 @@ export class UserActions extends Component {
         Coveo.$$(this.root).on('buildingQuery', (e, args) => {
             try {
                 args.queryBuilder.userActions = {
-                    tagViewsOfUser: this.options.createdBy
+                    tagViewsOfUser: this.options.userId
                 };
             } catch (e) {
                 this.logger.warn("CreatedBy Email wasn't found", e);
