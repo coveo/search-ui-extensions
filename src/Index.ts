@@ -9,3 +9,4 @@ export { UserProfilingEndpoint } from './rest/UserProfilingEndpoint';
 export { UserProfileModel } from './models/UserProfileModel';
 export { ResultsFilter } from './components/ResultsFilter/ResultsFilter';
 export { ViewedByCustomer } from './components/ViewedByCustomer/ViewedByCustomer';
+export { StarRating } from './components/StarRating/StarRating';
