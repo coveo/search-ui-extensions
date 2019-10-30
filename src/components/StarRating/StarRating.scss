@@ -1,5 +1,5 @@
-$color-placeholder-star: #E1E1E1;
-$color-active-star: #D9AF00;
+$color-placeholder-star: #e1e1e1;
+$color-active-star: #d9af00;
 $color-number-reviews: gray;
 
 .CoveoStarRating {
@@ -24,7 +24,7 @@ $color-number-reviews: gray;
     }
 }
 
-.coveo-star-rating-number {
+.coveo-star-rating-label {
     margin-left: 5px;
     font-size: 11px;
     color: $color-number-reviews;
