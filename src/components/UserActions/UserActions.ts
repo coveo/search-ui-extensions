@@ -106,11 +106,6 @@ export class UserActions extends Component {
             return;
         }
 
-        (get(this.root, UserProfileModel) as UserProfileModel)
-            .getActions(this.options.userId)
-            .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
-            .catch(() => this.renderNoActions());
-
         if (this.options.viewedByCustomer) {
             this.showViewedByCustomer();
         }
@@ -143,7 +138,7 @@ export class UserActions extends Component {
             (get(this.root, UserProfileModel) as UserProfileModel)
                 .getActions(this.options.userId)
                 .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
-                .catch(e => (e.statusCode === 404 ? this.renderEnablePrompt() : this.renderNoActions()));
+                .catch(e => (e && e.statusCode === 404 ? this.renderEnablePrompt() : this.renderNoActions()));
 
             this.bindings.usageAnalytics.logCustomEvent({ name: 'openUserActions', type: 'User Actions' }, {}, this.element);
             this.root.classList.add(UserActions.USER_ACTION_OPENED);
