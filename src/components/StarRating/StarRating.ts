@@ -66,7 +66,7 @@ export class StarRating extends Component {
     }
 
     private renderComponent(element: HTMLElement) {
-        for (let starNumber = 1; starNumber <= 5; starNumber++) {
+        for (let starNumber = 1; starNumber <= DEFAULT_SCALE; starNumber++) {
             this.renderStar(element, starNumber <= this.rating, starNumber);
         }
         this.renderNumberOfReviews(element, this.numberOfRatings);

@@ -55,8 +55,8 @@ describe('StarRating', () => {
             it('should display five stars with a number of active stars equal to rating given', () => {
                 for (let i = 0; i <= 5; i++) {
                     initStarRatingComponent(i.toString());
-                    let starData = getActiveStars(test.cmp.element);
 
+                    let starData = getActiveStars(test.cmp.element);
                     expect(starData.numStars).toBe(5);
                     expect(starData.numActiveStars).toBe(i);
                 }
@@ -65,8 +65,8 @@ describe('StarRating', () => {
             it('should display no active stars when the rating provided is negative', () => {
                 const testRating = -Number.MAX_SAFE_INTEGER;
                 initStarRatingComponent(testRating.toString());
-                let starData = getActiveStars(test.cmp.element);
 
+                let starData = getActiveStars(test.cmp.element);
                 expect(starData.numStars).toBe(5);
                 expect(starData.numActiveStars).toBe(0);
             });
@@ -75,8 +75,8 @@ describe('StarRating', () => {
         describe('The label showing number of ratings', () => {
             it('should display a label with "No Ratings" shown when there are none', () => {
                 initStarRatingComponent((0).toString());
-                const testLabel = test.cmp.element.lastElementChild;
 
+                const testLabel = test.cmp.element.lastElementChild;
                 expect(testLabel.className).toEqual(STAR_LABEL_CSS_CLASS);
                 expect(testLabel.textContent).toEqual(l(`${StarRating.ID}_NoRatingsLabel`));
             });
@@ -84,8 +84,8 @@ describe('StarRating', () => {
             it('should display a label with "No Ratings" shown when a negative number is given', () => {
                 const testNumRatings = -Number.MAX_SAFE_INTEGER;
                 initStarRatingComponent((0).toString(), testNumRatings.toString());
-                const testLabel = test.cmp.element.lastElementChild;
 
+                const testLabel = test.cmp.element.lastElementChild;
                 expect(testLabel.className).toEqual(STAR_LABEL_CSS_CLASS);
                 expect(testLabel.textContent).toEqual(l(`${StarRating.ID}_NoRatingsLabel`));
             });
@@ -93,8 +93,8 @@ describe('StarRating', () => {
             it('should display the number when they are provided', () => {
                 const testNumRatings = Number.MAX_SAFE_INTEGER;
                 initStarRatingComponent((0).toString(), testNumRatings.toString());
-                const testLabel = test.cmp.element.lastElementChild;
 
+                const testLabel = test.cmp.element.lastElementChild;
                 expect(testLabel.className).toEqual(STAR_LABEL_CSS_CLASS);
                 expect(testLabel.textContent).toEqual(`(${testNumRatings})`);
             });
@@ -105,8 +105,8 @@ describe('StarRating', () => {
                 const newScale = 10;
                 for (let i = 0; i <= newScale; i++) {
                     initStarRatingComponent(i.toString(), undefined, newScale);
-                    let starData = getActiveStars(test.cmp.element);
 
+                    let starData = getActiveStars(test.cmp.element);
                     expect(starData.numStars).toBe(5);
                     expect(starData.numActiveStars).toBe(Math.floor(i / 2));
                 }
@@ -117,6 +117,7 @@ describe('StarRating', () => {
                     const newScale = 7;
                     const rating = '10';
                     initStarRatingComponent(rating, undefined, newScale);
+
                     expect(test.cmp.element.children.length).toBe(0);
                 });
             });
@@ -126,6 +127,7 @@ describe('StarRating', () => {
                     const newScale = 0;
                     const rating = '4';
                     initStarRatingComponent(rating, undefined, newScale);
+
                     expect(test.cmp.element.children.length).toBe(0);
                 });
             });
@@ -135,6 +137,7 @@ describe('StarRating', () => {
                     const newScale = -Number.MAX_SAFE_INTEGER;
                     const rating = '4';
                     initStarRatingComponent(rating, undefined, newScale);
+
                     expect(test.cmp.element.children.length).toBe(0);
                 });
             });
