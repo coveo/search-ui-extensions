@@ -12,14 +12,16 @@ $color-number-reviews: gray;
     margin-left: 2px;
 }
 
-.coveo-star-rating-star-svg {
-    width: 15px;
-    height: 15px;
-    color: $color-placeholder-star;
+.coveo-star-rating-star {
+    svg {
+        width: 15px;
+        height: 15px;
+        color: $color-placeholder-star;
+    }
 }
 
 .coveo-star-rating-star-active {
-    .coveo-star-rating-star-svg {
+    svg {
         color: $color-active-star;
     }
 }
