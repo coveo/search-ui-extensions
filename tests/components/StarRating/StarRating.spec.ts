@@ -29,8 +29,8 @@ const getActiveStars = (starRatingElement: HTMLElement) => {
 describe('StarRating', () => {
     let test: Mock.IBasicComponentSetup<StarRating>;
 
-    function initStarRatingComponent(ratingValue: String, numRatingsValue?: String) {
-        const options: IStarRatingOptions = { rating: '@rating', numberOfRatings: '@numberOfRatings' };
+    function initStarRatingComponent(ratingValue: String, numRatingsValue?: String, ratingScale?: number) {
+        const options: IStarRatingOptions = { rating: '@rating', numberOfRatings: '@numberOfRatings', ratingScale: ratingScale };
         const result: IQueryResult = Fake.createFakeResult();
 
         result.raw.rating = ratingValue;
@@ -48,7 +48,6 @@ describe('StarRating', () => {
     describe('When the component is instantiated', () => {
         it('should have correct class type', () => {
             initStarRatingComponent('0', '0');
-
             expect(test.cmp.element.classList.contains(CONTAINER_CSS_CLASS)).toBeTruthy;
         });
 
@@ -98,6 +97,46 @@ describe('StarRating', () => {
 
                 expect(testLabel.className).toEqual(STAR_LABEL_CSS_CLASS);
                 expect(testLabel.textContent).toEqual(`(${testNumRatings})`);
+            });
+        });
+
+        describe('When a different scale is provided', () => {
+            it('should display five stars with a number of active stars equal to new proportions', () => {
+                const newScale = 10;
+                for (let i = 0; i <= newScale; i++) {
+                    initStarRatingComponent(i.toString(), undefined, newScale);
+                    let starData = getActiveStars(test.cmp.element);
+
+                    expect(starData.numStars).toBe(5);
+                    expect(starData.numActiveStars).toBe(Math.floor(i / 2));
+                }
+            });
+
+            describe('If the scale is smaller than the rating', () => {
+                it('should not display the component', () => {
+                    const newScale = 7;
+                    const rating = '10';
+                    initStarRatingComponent(rating, undefined, newScale);
+                    expect(test.cmp.element.children.length).toBe(0);
+                });
+            });
+
+            describe('If the scale is equal to zero', () => {
+                it('should not display the component', () => {
+                    const newScale = 0;
+                    const rating = '4';
+                    initStarRatingComponent(rating, undefined, newScale);
+                    expect(test.cmp.element.children.length).toBe(0);
+                });
+            });
+
+            describe('If the scale is smaller than zero', () => {
+                it('should not display the component', () => {
+                    const newScale = -Number.MAX_SAFE_INTEGER;
+                    const rating = '4';
+                    initStarRatingComponent(rating, undefined, newScale);
+                    expect(test.cmp.element.children.length).toBe(0);
+                });
             });
         });
     });
