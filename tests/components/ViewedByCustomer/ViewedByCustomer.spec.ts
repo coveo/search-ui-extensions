@@ -19,7 +19,7 @@ describe('ViewedByCustomer', () => {
     });
     describe('when a UserActions exists in the page template', () => {
         let option: AdvancedComponentSetupOptions;
-        beforeAll(() => {
+        beforeEach(() => {
             option = new Mock.AdvancedComponentSetupOptions();
             option.modifyBuilder = (env: Mock.MockEnvironmentBuilder): Mock.MockEnvironmentBuilder => {
                 const stubUserActions = document.createElement('div');

@@ -1,5 +1,5 @@
 import { Component, ComponentOptions, IComponentBindings, Initialization, l, IQueryResult } from 'coveo-search-ui';
-import { UserActions } from '../../Index';
+import { UserActions } from '../UserActions/UserActions';
 import { user } from '../../utils/icons';
 import './Strings';
 
