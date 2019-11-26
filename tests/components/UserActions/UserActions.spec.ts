@@ -74,7 +74,23 @@ describe('UserActions', () => {
         });
     });
 
-    it('should be hidden by defaut', () => {
+    it('should not be displayed if hidden option is true', () => {
+        const responsiveComponentStub = sandbox.stub(ResponsiveUserActions, 'init');
+
+        Mock.advancedComponentSetup<UserActions>(
+            UserActions,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', hidden: true }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                return env;
+            })
+        );
+
+        return delay(() => {
+            expect(responsiveComponentStub.called).toBe(false);
+        });
+    });
+
+    it('should be collapsed by defaut', () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
         const mock = Mock.advancedComponentSetup<UserActions>(
@@ -172,7 +188,7 @@ describe('UserActions', () => {
         });
     });
 
-    it('should hide itself whenever a query is made', () => {
+    it('should collapse itself whenever a query is made', () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
         const mock = Mock.advancedComponentSetup<UserActions>(
@@ -298,7 +314,7 @@ describe('UserActions', () => {
     });
 
     describe('toggle', () => {
-        it('should show the component if the component is hidden', () => {
+        it('should open the panel if its not already opened', () => {
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
             const mock = Mock.advancedComponentSetup<UserActions>(
@@ -318,7 +334,7 @@ describe('UserActions', () => {
             });
         });
 
-        it('should hide the component if the component is shown', () => {
+        it('should collapse the panel if the panel is already opened', () => {
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
             const mock = Mock.advancedComponentSetup<UserActions>(
@@ -359,7 +375,7 @@ describe('UserActions', () => {
             sandbox.resetHistory();
         });
 
-        it('should show the component if the component is hidden', () => {
+        it('should open the panel if it is not already opened', () => {
             mock.cmp.hide();
             mock.cmp.show();
 
@@ -368,7 +384,7 @@ describe('UserActions', () => {
             });
         });
 
-        it('should do nothing if the component is shown', () => {
+        it('should do nothing if the panel is already opened', () => {
             mock.cmp.show();
 
             const domMutation = sandbox.stub();
@@ -414,7 +430,7 @@ describe('UserActions', () => {
             sandbox.resetHistory();
         });
 
-        it('should hide the component if the component is shown', () => {
+        it('should collapse the panel if the panel is opened', () => {
             mock.cmp.show();
             mock.cmp.hide();
 
@@ -423,7 +439,7 @@ describe('UserActions', () => {
             });
         });
 
-        it('should do nothing if the component is hidden', () => {
+        it('should do nothing if the panel is not opened', () => {
             mock.cmp.hide();
 
             const domMutation = sandbox.stub();
