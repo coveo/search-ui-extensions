@@ -9,6 +9,7 @@ describe('ViewedByCustomer', () => {
     const LABEL_CSS_CLASS = 'viewed-by-customer-label';
     const ICON_CSS_CLASS = 'viewed-by-customer-icon';
     let sandbox: SinonSandbox;
+    let option: AdvancedComponentSetupOptions;
 
     beforeAll(() => {
         sandbox = createSandbox();
@@ -18,7 +19,6 @@ describe('ViewedByCustomer', () => {
         sandbox.restore();
     });
     describe('when a UserActions exists in the page template', () => {
-        let option: AdvancedComponentSetupOptions;
         beforeEach(() => {
             option = new Mock.AdvancedComponentSetupOptions();
             option.modifyBuilder = (env: Mock.MockEnvironmentBuilder): Mock.MockEnvironmentBuilder => {
@@ -98,6 +98,18 @@ describe('ViewedByCustomer', () => {
                 }
                 reject();
             });
+        });
+    });
+    describe('when no UserActions exists in the page template', () => {
+        beforeEach(() => {
+            option = new Mock.AdvancedComponentSetupOptions();
+        });
+
+        it('should throw an error about the lack of UserAction', () => {
+            const fakeResult: IQueryResult = { ...Fake.createFakeResult(), isUserActionView: true };
+            expect(function() {
+                Mock.advancedResultComponentSetup<ViewedByCustomer>(ViewedByCustomer, fakeResult, option);
+            }).toThrowError('No UserActions component found on the page template.');
         });
     });
 });
