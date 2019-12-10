@@ -56,6 +56,13 @@ export interface IUserActionsOptions {
      * Default: `True`
      */
     viewedByCustomer: Boolean;
+    /**
+     * Whether or not the UserAction component should be displayed
+     * Can be used to use ViewedByCustomer alone.
+     *
+     * Default: `False`
+     */
+    hidden: Boolean;
 }
 
 /**
@@ -83,11 +90,14 @@ export class UserActions extends Component {
         }),
         viewedByCustomer: ComponentOptions.buildBooleanOption({
             defaultValue: true
+        }),
+        hidden: ComponentOptions.buildBooleanOption({
+            defaultValue: false
         })
     };
 
     private static readonly USER_ACTION_OPENED = 'coveo-user-actions-opened';
-    private isVisible: boolean;
+    private isOpened: boolean;
 
     /**
      * Create an instance of the **UserActions** class. Initialize is needed the **UserProfileModel** and fetch user actions related to the **UserId**.
@@ -110,31 +120,31 @@ export class UserActions extends Component {
             this.showViewedByCustomer();
         }
 
-        ResponsiveUserActions.init(this.root, this);
-
         this.tagViewsOfUser();
 
-        this.bind.onRootElement(QueryEvents.newQuery, () => this.hide());
-
-        this.hide();
-    }
-
-    /**
-     * Make the panel hiddem.
-     */
-    public hide() {
-        if (this.isVisible) {
-            (get(this.root, UserProfileModel) as UserProfileModel).deleteActions(this.options.userId);
-            this.root.classList.remove(UserActions.USER_ACTION_OPENED);
-            this.isVisible = false;
+        if (!options.hidden) {
+            ResponsiveUserActions.init(this.root, this);
+            this.bind.onRootElement(QueryEvents.newQuery, () => this.hide());
+            this.hide();
         }
     }
 
     /**
-     * Make the panel visible.
+     * Collapse the panel.
+     */
+    public hide() {
+        if (this.isOpened) {
+            (get(this.root, UserProfileModel) as UserProfileModel).deleteActions(this.options.userId);
+            this.root.classList.remove(UserActions.USER_ACTION_OPENED);
+            this.isOpened = false;
+        }
+    }
+
+    /**
+     * Open the panel.
      */
     public show() {
-        if (!this.isVisible) {
+        if (!this.isOpened) {
             (get(this.root, UserProfileModel) as UserProfileModel)
                 .getActions(this.options.userId)
                 .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
@@ -142,7 +152,7 @@ export class UserActions extends Component {
 
             this.bindings.usageAnalytics.logCustomEvent({ name: 'openUserActions', type: 'User Actions' }, {}, this.element);
             this.root.classList.add(UserActions.USER_ACTION_OPENED);
-            this.isVisible = true;
+            this.isOpened = true;
         }
     }
 
@@ -150,7 +160,7 @@ export class UserActions extends Component {
      * Toggle the visibility of the panel.
      */
     public toggle() {
-        if (this.isVisible) {
+        if (this.isOpened) {
             this.hide();
         } else {
             this.show();

@@ -1,4 +1,5 @@
 import { Component, ComponentOptions, IComponentBindings, Initialization, l, IQueryResult } from 'coveo-search-ui';
+import { UserActions } from '../UserActions/UserActions';
 import { user } from '../../utils/icons';
 import './Strings';
 
@@ -53,6 +54,10 @@ export class ViewedByCustomer extends Component {
         result?: IQueryResult
     ) {
         super(element, ViewedByCustomer.ID, bindings);
+        if (this.root.getElementsByClassName(Component.computeCssClassNameForType(UserActions.ID)).length === 0) {
+            throw new Error('No UserActions component found on the page template.');
+        }
+
         this.options = ComponentOptions.initComponentOptions(element, ViewedByCustomer, options);
         result = result ? result : this.resolveResult();
         if (!result) {
