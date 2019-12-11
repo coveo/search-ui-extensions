@@ -1,7 +1,7 @@
 import { ViewedByCustomer, UserActions } from '../../../src/Index';
 import { Mock, Fake } from 'coveo-search-ui-tests';
 import { IViewedByCustomerOptions } from '../../../src/components/ViewedByCustomer/ViewedByCustomer';
-import { IQueryResult, Component } from 'coveo-search-ui';
+import { IQueryResult, Component, Logger } from 'coveo-search-ui';
 import { AdvancedComponentSetupOptions } from 'coveo-search-ui-tests/MockEnvironment';
 import { createSandbox, SinonSandbox } from 'sinon';
 
@@ -107,9 +107,13 @@ describe('ViewedByCustomer', () => {
 
         it('should throw an error about the lack of UserAction', () => {
             const fakeResult: IQueryResult = { ...Fake.createFakeResult(), isUserActionView: true };
-            expect(function() {
-                Mock.advancedResultComponentSetup<ViewedByCustomer>(ViewedByCustomer, fakeResult, option);
-            }).toThrowError('No UserActions component found on the page template.');
+            const loggerWarnSpy = sandbox.spy(Logger.prototype, 'warn');
+            Mock.advancedResultComponentSetup<ViewedByCustomer>(ViewedByCustomer, fakeResult, option);
+            expect(
+                loggerWarnSpy.calledWith(
+                    'The ViewedByCustomer component has been detected without a UserActions component. You may encounter issues with the former.'
+                )
+            ).toBe(true);
         });
     });
 });

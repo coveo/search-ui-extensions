@@ -55,7 +55,9 @@ export class ViewedByCustomer extends Component {
     ) {
         super(element, ViewedByCustomer.ID, bindings);
         if (this.root.getElementsByClassName(Component.computeCssClassNameForType(UserActions.ID)).length === 0) {
-            throw new Error('No UserActions component found on the page template.');
+            this.logger.warn(
+                'The ViewedByCustomer component has been detected without a UserActions component. You may encounter issues with the former.'
+            );
         }
 
         this.options = ComponentOptions.initComponentOptions(element, ViewedByCustomer, options);
