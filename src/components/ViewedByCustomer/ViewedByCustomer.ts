@@ -56,7 +56,7 @@ export class ViewedByCustomer extends Component {
         super(element, ViewedByCustomer.ID, bindings);
         if (this.root.getElementsByClassName(Component.computeCssClassNameForType(UserActions.ID)).length === 0) {
             this.logger.warn(
-                'ViewedByCustomer component has been detected without a UserAction components, you may encounter issues with the former.'
+                'The ViewedByCustomer component has been detected without a UserActions component. You may encounter issues with the former.'
             );
         }
 

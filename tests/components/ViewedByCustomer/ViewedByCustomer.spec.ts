@@ -111,7 +111,7 @@ describe('ViewedByCustomer', () => {
             Mock.advancedResultComponentSetup<ViewedByCustomer>(ViewedByCustomer, fakeResult, option);
             expect(
                 loggerWarnSpy.calledWith(
-                    'ViewedByCustomer component has been detected without a UserAction components, you may encounter issues with the former.'
+                    'The ViewedByCustomer component has been detected without a UserActions component. You may encounter issues with the former.'
                 )
             ).toBe(true);
         });
