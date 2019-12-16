@@ -190,20 +190,21 @@ describe('UserActions', () => {
 
     it('should pass custom init options to each of the sub components', () => {
         const FAKE_USER_ID = 'someUserId' + Math.random();
-        const initOptions = {} as any;
-        initOptions[QueryList.ID] = {
-            listLabel: 'Custom Query List Title',
-            numberOfItems: 1
-        };
-        initOptions[ClickedDocumentList.ID] = {
-            listLabel: 'Custom Clicked Document List Title',
-            template: 'Custom Template',
-            numberOfItems: 2
-        };
-        initOptions[UserActivity.ID] = {
-            unfoldInclude: ['includedField'],
-            unfoldExclude: ['excludedField']
-        };
+        const initOptions = {
+            QueryList: {
+                listLabel: 'Custom Query List Title',
+                numberOfItems: 1
+            },
+            ClickedDocumentList: {
+                listLabel: 'Custom Clicked Document List Title',
+                template: 'Custom Template',
+                numberOfItems: 2
+            },
+            UserActivity: {
+                unfoldInclude: ['includedField'],
+                unfoldExclude: ['excludedField']
+            }
+        } as { [key: string]: any };
 
         const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
