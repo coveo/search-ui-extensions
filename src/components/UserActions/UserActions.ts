@@ -222,16 +222,21 @@ export class UserActions extends Component {
      * @param element Parent element of each child that would be initialize.
      */
     private initializeSearchUIComponents(element: HTMLElement) {
+        const originalOptions = this.searchInterface.options.originalOptionsObject;
+
         Initialization.automaticallyCreateComponentsInside(element, {
             options: {
-                ...this.searchInterface.options.originalOptionsObject,
+                ...originalOptions,
                 QueryList: {
+                    ...originalOptions.QueryList,
                     userId: this.options.userId
                 },
                 ClickedDocumentList: {
+                    ...originalOptions.ClickedDocumentList,
                     userId: this.options.userId
                 },
                 UserActivity: {
+                    ...originalOptions.UserActivity,
                     userId: this.options.userId
                 }
             },

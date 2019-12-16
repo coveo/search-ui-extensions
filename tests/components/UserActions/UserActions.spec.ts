@@ -188,6 +188,49 @@ describe('UserActions', () => {
         });
     });
 
+    it('should pass custom init options to each of the sub components', () => {
+        const FAKE_USER_ID = 'someUserId' + Math.random();
+        const initOptions = {} as any;
+        initOptions[QueryList.ID] = {
+            listLabel: 'Custom Query List Title',
+            numberOfItems: 1
+        };
+        initOptions[ClickedDocumentList.ID] = {
+            listLabel: 'Custom Clicked Document List Title',
+            template: 'Custom Template',
+            numberOfItems: 2
+        };
+        initOptions[UserActivity.ID] = {
+            unfoldInclude: ['includedField'],
+            unfoldExclude: ['excludedField']
+        };
+
+        const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
+
+        const component: UserActions = Mock.advancedComponentSetup<UserActions>(
+            UserActions,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: FAKE_USER_ID }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                return env;
+            })
+        ).cmp;
+
+        component.searchInterface.options.originalOptionsObject = initOptions;
+        component.show();
+
+        return delay(() => {
+            expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
+
+            const actualInitOptions = automaticallyCreateComponentsInsideStub.args[0][1].options;
+
+            [QueryList.ID, ClickedDocumentList.ID, UserActivity.ID].forEach(component => {
+                const actualComponentOptions = actualInitOptions[component];
+                expect(actualComponentOptions).toBeDefined();
+                expect(actualComponentOptions).toEqual(jasmine.objectContaining(initOptions[component]));
+            });
+        });
+    });
+
     it('should collapse itself whenever a query is made', () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 

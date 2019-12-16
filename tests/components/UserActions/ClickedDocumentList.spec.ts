@@ -65,6 +65,21 @@ describe('ClickedDocumentList', () => {
         });
     });
 
+    it('should show the title specified in "listLabel" option', () => {
+        const customTitle = 'Custom Title';
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', listLabel: customTitle }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
+                return env;
+            })
+        );
+
+        return delay(() => {
+            expect(mock.cmp.element.querySelector('.coveo-title').innerHTML).toMatch(customTitle);
+        });
+    });
+
     it('should show 4 documents by default', () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
