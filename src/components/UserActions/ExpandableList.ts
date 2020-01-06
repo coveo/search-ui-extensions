@@ -83,6 +83,7 @@ export class ExpandableList<T> {
 
     private buildMoreButton() {
         const button = document.createElement('button');
+        button.type = 'button';
         button.classList.add('coveo-more-less');
         button.addEventListener('click', this.toggleExpansion.bind(this));
         this.button = button;

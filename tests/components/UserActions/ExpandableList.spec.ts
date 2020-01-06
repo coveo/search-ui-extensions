@@ -69,7 +69,7 @@ describe('ExpandableList', () => {
     });
 
     describe('show more/less button', () => {
-        it('should start with a "Show More" text', () => {
+        it('should start with a "Show More" text and be of type button', () => {
             const list = new ExpandableList(document.createElement('div'), TEST_ITEM_LIST, {
                 transform: spanItemGenerator,
                 maximumItemsShown: 10,
@@ -81,6 +81,7 @@ describe('ExpandableList', () => {
 
                 expect(el).not.toBeNull();
                 expect(el.innerText).toBe('Show More');
+                expect(el.getAttribute('type')).toBe('button');
             });
         });
 
