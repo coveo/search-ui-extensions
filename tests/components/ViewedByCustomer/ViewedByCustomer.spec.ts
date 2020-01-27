@@ -116,4 +116,15 @@ describe('ViewedByCustomer', () => {
             ).toBe(true);
         });
     });
+
+    describe('getViewedByCustomerResultRowDom', () => {
+        it('should return a well constructed dom', () => {
+            const dom = ViewedByCustomer.getViewedByCustomerResultRowDom(new Mock.MockEnvironmentBuilder().getBindings(), Fake.createFakeResult());
+            expect(dom.className).toBe('coveo-result-row');
+            expect(dom.childElementCount).toBe(1);
+            expect(dom.firstElementChild.className).toBe('coveo-result-cell');
+            expect(dom.firstElementChild.childElementCount).toBe(1);
+            expect(dom.firstElementChild.firstElementChild.className).toBe('CoveoViewedByCustomer');
+        });
+    });
 });
