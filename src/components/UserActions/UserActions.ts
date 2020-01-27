@@ -288,10 +288,20 @@ export class UserActions extends Component {
             if (Boolean(args.item.getElementsByClassName('CoveoViewedByCustomer').length)) {
                 return;
             }
+            const viewedByCustomerRow = document.createElement('div');
+            viewedByCustomerRow.classList.add('coveo-result-row');
+
+            const viewedByCustomerCell = document.createElement('div');
+            viewedByCustomerCell.classList.add('coveo-result-cell');
+
             const viewedByCustomerElement = document.createElement('span');
             new ViewedByCustomer(viewedByCustomerElement, undefined, this.bindings, args.result);
-            const resultLastRow = '.coveo-result-row:last-child .coveo-result-cell';
-            args.item.querySelector(resultLastRow).appendChild(viewedByCustomerElement);
+
+            viewedByCustomerCell.appendChild(viewedByCustomerElement);
+            viewedByCustomerRow.appendChild(viewedByCustomerCell);
+
+            const resultLastRow = '.coveo-result-row:last-child';
+            args.item.querySelector(resultLastRow).parentNode.appendChild(viewedByCustomerElement);
         });
     }
 
