@@ -554,12 +554,16 @@ describe('UserActions', () => {
 
     describe('ViewedByCustomer', () => {
         let result: IQueryResult;
+        let resultElementFrame: HTMLElement;
         let resultElementRow: HTMLElement;
         let resultElementCol: HTMLElement;
         let viewedByCustomerOption: Boolean;
 
         beforeEach(() => {
             result = Fake.createFakeResult();
+
+            resultElementFrame = document.createElement('div');
+            resultElementFrame.classList.add('coveo-result-frame');
 
             resultElementRow = document.createElement('div');
             resultElementRow.classList.add('coveo-result-row');
@@ -568,6 +572,7 @@ describe('UserActions', () => {
             resultElementCol.classList.add('coveo-result-cell');
 
             resultElementRow.appendChild(resultElementCol);
+            resultElementFrame.appendChild(resultElementRow);
         });
 
         describe('if the viewedByCustomer option is true', () => {
@@ -584,12 +589,12 @@ describe('UserActions', () => {
                     })
                 );
 
-                const resultArgs = { result: result, item: resultElementRow };
+                const resultArgs = { result: result, item: resultElementFrame };
                 Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
 
                 return delay(() => {
                     expect(mock.cmp.options.viewedByCustomer).toBe(true);
-                    expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
+                    expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
                 });
             });
 
@@ -602,13 +607,13 @@ describe('UserActions', () => {
                     })
                 );
 
-                resultElementRow.querySelector('.coveo-result-cell').classList.add('CoveoViewedByCustomer');
+                resultElementFrame.querySelector('.coveo-result-cell').classList.add('CoveoViewedByCustomer');
 
-                const resultArgs = { result: result, item: resultElementRow };
+                const resultArgs = { result: result, item: resultElementFrame };
                 Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
 
                 return delay(() => {
-                    expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
+                    expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
                 });
             });
         });
@@ -627,12 +632,12 @@ describe('UserActions', () => {
                     })
                 );
 
-                const resultArgs = { result: result, item: resultElementRow };
+                const resultArgs = { result: result, item: resultElementFrame };
                 Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
 
                 return delay(() => {
                     expect(mock.cmp.options.viewedByCustomer).toBe(false);
-                    expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(0);
+                    expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(0);
                 });
             });
 
@@ -645,15 +650,15 @@ describe('UserActions', () => {
                     })
                 );
 
-                resultElementRow.querySelector('.coveo-result-cell').classList.add('CoveoViewedByCustomer');
+                resultElementFrame.querySelector('.coveo-result-cell').classList.add('CoveoViewedByCustomer');
 
-                expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
+                expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
 
-                const resultArgs = { result: result, item: resultElementRow };
+                const resultArgs = { result: result, item: resultElementFrame };
                 Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
 
                 return delay(() => {
-                    expect(resultElementRow.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
+                    expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
                 });
             });
         });

@@ -83,6 +83,27 @@ export class ViewedByCustomer extends Component {
         labelElement.innerText = this.options.label;
         this.element.appendChild(labelElement);
     }
+
+    /**
+     * Generate a ViewedByCustomer in a preformated Dom ready to be inserted in a result
+     * @param bindings bindings to be used by the {@link ViewedByCustomer}
+     * @param result result to be used by the {@link ViewedByCustomer}
+     */
+    public static getViewedByCustomerResultRowDom(bindings: IComponentBindings, result: IQueryResult): HTMLElement {
+        const viewedByCustomerRow = document.createElement('div');
+        viewedByCustomerRow.classList.add('coveo-result-row');
+
+        const viewedByCustomerCell = document.createElement('div');
+        viewedByCustomerCell.classList.add('coveo-result-cell');
+
+        const viewedByCustomerElement = document.createElement('span');
+        new ViewedByCustomer(viewedByCustomerElement, undefined, bindings, result);
+
+        viewedByCustomerCell.appendChild(viewedByCustomerElement);
+        viewedByCustomerRow.appendChild(viewedByCustomerCell);
+
+        return viewedByCustomerRow;
+    }
 }
 
 Initialization.registerAutoCreateComponent(ViewedByCustomer);
