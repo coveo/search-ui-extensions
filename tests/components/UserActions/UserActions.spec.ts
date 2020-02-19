@@ -576,14 +576,27 @@ describe('UserActions', () => {
         });
 
         describe('if the viewedByCustomer option is true', () => {
+            const setResultList = (el: HTMLElement, layout: 'list' | 'card' | 'table') => {
+                ['list', 'card', 'table'].forEach(key => {
+                    const resultList = document.createElement('div');
+                    resultList.classList.add('CoveoResultList');
+                    if (key !== layout) {
+                        resultList.classList.add('coveo-hidden');
+                    }
+                    resultList.dataset.layout = key;
+                    el.appendChild(resultList);
+                });
+            };
+
             beforeEach(() => {
                 viewedByCustomerOption = true;
             });
 
-            it('should add a ViewedByCustomer Component', () => {
+            it('should add a ViewedByCustomer Component when the result list layout is card', () => {
                 const mock = Mock.advancedComponentSetup<UserActions>(
                     UserActions,
                     new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, env => {
+                        setResultList(env.root, 'card');
                         fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
                         return env;
                     })
@@ -595,6 +608,44 @@ describe('UserActions', () => {
                 return delay(() => {
                     expect(mock.cmp.options.viewedByCustomer).toBe(true);
                     expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
+                });
+            });
+
+            it('should add a ViewedByCustomer Component when the result list layout is list', () => {
+                const mock = Mock.advancedComponentSetup<UserActions>(
+                    UserActions,
+                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, env => {
+                        setResultList(env.root, 'list');
+                        fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                        return env;
+                    })
+                );
+
+                const resultArgs = { result: result, item: resultElementFrame };
+                Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
+
+                return delay(() => {
+                    expect(mock.cmp.options.viewedByCustomer).toBe(true);
+                    expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
+                });
+            });
+
+            it('should not add a ViewedByCustomer Component when the result list layout is table', () => {
+                const mock = Mock.advancedComponentSetup<UserActions>(
+                    UserActions,
+                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, env => {
+                        setResultList(env.root, 'table');
+                        fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                        return env;
+                    })
+                );
+
+                const resultArgs = { result: result, item: resultElementFrame };
+                Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
+
+                return delay(() => {
+                    expect(mock.cmp.options.viewedByCustomer).toBe(true);
+                    expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(0);
                 });
             });
 
