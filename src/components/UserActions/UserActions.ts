@@ -7,7 +7,8 @@ import {
     l,
     get,
     ResultListEvents,
-    IDisplayedNewResultEventArgs
+    IDisplayedNewResultEventArgs,
+    ResultList
 } from 'coveo-search-ui';
 import { ResponsiveUserActions } from './ResponsiveUserActions';
 import { arrowDown } from '../../utils/icons';
@@ -17,6 +18,12 @@ import { UserActivity } from './UserActivity';
 import { UserProfileModel } from '../../Index';
 import './Strings';
 import { ViewedByCustomer } from '../ViewedByCustomer/ViewedByCustomer';
+
+enum ResultLayoutType {
+    LIST = 'list',
+    TABLE = 'table',
+    CARD = 'card'
+}
 
 /**
  * Initialization options of the **UserActions** class.
@@ -288,10 +295,12 @@ export class UserActions extends Component {
             if (Boolean(args.item.getElementsByClassName('CoveoViewedByCustomer').length)) {
                 return;
             }
-            const resultLastRow = '.coveo-result-row:last-child';
-            args.item
-                .querySelector(resultLastRow)
-                .parentNode.appendChild(ViewedByCustomer.getViewedByCustomerResultRowDom(this.bindings, args.result));
+            if (this.inferResultListLayout() !== ResultLayoutType.TABLE) {
+                const resultLastRow = '.coveo-result-row:last-child';
+                args.item
+                    .querySelector(resultLastRow)
+                    .parentNode.appendChild(ViewedByCustomer.getViewedByCustomerResultRowDom(this.bindings, args.result));
+            }
         });
     }
 
@@ -305,6 +314,16 @@ export class UserActions extends Component {
                 this.logger.warn("CreatedBy Email wasn't found", e);
             }
         });
+    }
+
+    private inferResultListLayout(): ResultLayoutType {
+        const resultLists = this.root.querySelectorAll<HTMLElement>(`${Component.computeSelectorForType(ResultList.ID)}:not(.coveo-hidden)`);
+        const resultListLayoutTypes = [ResultLayoutType.CARD, ResultLayoutType.TABLE, ResultLayoutType.LIST] as string[];
+
+        if (resultLists.length > 0 && resultListLayoutTypes.indexOf(resultLists[0].dataset.layout) !== -1) {
+            return resultLists[0].dataset.layout as ResultLayoutType;
+        }
+        return ResultLayoutType.LIST;
     }
 }
 

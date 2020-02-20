@@ -69,7 +69,7 @@
         "karma-spec-reporter": "0.0.32",
         "karma-webpack": "^3.0.5",
         "ncp": "^2.0.0",
-        "node-sass": "^4.12.0",
+        "node-sass": "^4.13.1",
         "pre-commit": "^1.2.2",
         "prettier": "1.16.4",
         "puppeteer": "^2.0.0",
