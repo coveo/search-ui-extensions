@@ -37,7 +37,7 @@ The code is written in [typescript](http://www.typescriptlang.org/) and compiled
 
 ## Dev
 
-`npm run dev` will start a [webpack dev server](https://webpack.github.io/docs/webpack-dev-server.html). After it finishes, load [http://localhost:8080/index.html](http://localhost:8080/pages/index.html) in a browser, and the `index.html` page should load.
+`npm run dev` will start a [webpack dev server](https://webpack.github.io/docs/webpack-dev-server.html). After it finishes, load [http://localhost:8080/pages/attached_result.html](http://localhost:8080/pages/attached_result.html) in a browser, and the `index.html` page should load.
 
 Then, anytime you hit save in a typescript file, the server will reload your application.
 
@@ -45,3 +45,10 @@ Then, anytime you hit save in a typescript file, the server will reload your app
 
 -   `npm run test` will execute the tests one time and give you the report
 -   `npm run watchTest` will watch changes and reexecute the tests and coverage when saving a file.
+
+## Running functional tests
+
+1. `npm run dev` will start the developer server.
+2. `npx cypress run` will run the cypress functional tests suite.
+
+To add a new test suite simply add a new spec file in `./cypress/integration/` folder.
