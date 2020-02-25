@@ -51,4 +51,4 @@ Then, anytime you hit save in a typescript file, the server will reload your app
 1. `npm run dev` will start the developer server.
 2. `npx cypress run` will run the cypress functional tests suite.
 
-To add a new test suite simply add a new spec file in `./cypress/integration/` folder.
+To add a new test suite simply add a new spec file in the `./cypress/integration/` folder.
