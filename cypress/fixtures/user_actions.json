@@ -1,0 +1,17 @@
+{
+    "value": [
+        {
+            "name": "SEARCH",
+            "value": "{\"cause\":\"searchboxSubmit\",\"origin_level_1\":\"some_origin_level_one\",\"query_expression\":\"some_query\"}",
+            "time": "1582552168987"
+        },
+        {
+            "name": "CLICK",
+            "value": "{\"origin_level_1\":\"some_origin_level_one\",\"uri_hash\":\"some_uri_hash\"}",
+            "time": "1582552168997"
+        }
+    ],
+    "debug": null,
+    "internalExecutionLog": null,
+    "executionTime": 0.192518166
+}
