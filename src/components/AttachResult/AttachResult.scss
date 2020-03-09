@@ -1,71 +1,34 @@
 @import '../../sass/Variables.scss';
+@import '../../sass/ResultActionMenu.scss';
 
 .CoveoAttachResult {
-    cursor: pointer;
-    position: relative;
-    width: 37px;
-    text-align: center;
-
-    &:hover .coveo-caption-for-icon {
-        display: inline;
-        top: 26px;
-        transform: translateX(-50%);
-        left: 50%;
-    }
-
-    .coveo-caption-for-icon {
-        display: none;
-        font-size: 12px;
-        background: $rhino;
-        color: white;
-        border-radius: 2px;
-        padding: 6px 16px;
-        position: absolute;
-        white-space: nowrap;
-        z-index: 1000;
-    }
-
-    .coveo-caption-for-icon:before {
-        border: solid;
-        border-color: $rhino transparent;
-        border-width: 0 6px 7px;
-        content: '';
-        position: absolute;
-        z-index: 99;
-        top: -6px;
-        left: calc(50% - 5px);
-    }
-
     div {
         display: inline-block;
 
         &.coveo-icon-attach {
+            @extend %icon;
             fill: $calypso;
         }
         &.coveo-icon-attached {
+            @extend %icon;
             fill: $tangerine;
         }
         &.coveo-icon-loading {
-            padding: 0 2px;
-            height: 21px;
-
-            &:before {
-                display: inline-block;
-                content: '';
-                background: url(../img/loading.gif) no-repeat;
-                background-size: 100%;
-                width: 12px;
-                height: 12px;
-            }
-
+            @extend %icon;
+            fill: $calypso;
             svg {
-                display: none;
+                animation: loading 0.8s linear 0s infinite normal running;
             }
         }
+    }
+}
 
-        svg {
-            width: 14px;
-            height: 18px;
-        }
+@keyframes loading {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
     }
 }
