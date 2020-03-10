@@ -1,0 +1,146 @@
+@import './Variables.scss';
+
+$menu-height: 22px;
+$menu-radius: 5px;
+$tooltip-arrow-length: 6px;
+$tooltip-z-index: 1000;
+
+%not-selectable {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+%icon {
+    display: inline-block;
+    height: $menu-height;
+    width: $menu-height;
+    border: thin solid transparent;
+
+    svg {
+        height: $menu-height;
+        width: $menu-height;
+        padding: $menu-height * (1 / 6);
+        border: thin solid transparent;
+        box-sizing: border-box;
+    }
+}
+
+.CoveoResultActionsMenu {
+    @extend %not-selectable;
+    cursor: pointer;
+    display: none;
+    position: relative;
+    height: $menu-height;
+    line-height: $menu-height * 0.9;
+    border-radius: $menu-radius;
+    background: white;
+
+    right: 0;
+    margin-top: -$menu-height;
+
+    &.coveo-menu-opened {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: flex-end;
+        float: right;
+    }
+
+    .coveo-result-actions-menu-menu-item {
+        height: $menu-height;
+        position: relative;
+        box-sizing: border-box;
+        border: thin solid $heather;
+
+        .coveo-icon {
+            @extend %icon;
+            fill: $calypso;
+        }
+
+        .coveo-icon-for-quickview {
+            display: inline-block;
+            height: $menu-height;
+            width: $menu-height;
+
+            svg {
+                fill: $calypso;
+                height: $menu-height;
+                width: $menu-height;
+                padding: $menu-height * (1 / 6) 0;
+                box-sizing: border-box;
+            }
+        }
+
+        &:first-child {
+            border-top-left-radius: $menu-radius;
+            border-bottom-left-radius: $menu-radius;
+        }
+
+        &:last-child {
+            border-top-right-radius: $menu-radius;
+            border-bottom-right-radius: $menu-radius;
+        }
+
+        &:hover,
+        &:active {
+            transition: 0.2s background-color ease-in-out;
+            background-color: whitesmoke;
+            .coveo-caption-for-icon {
+                display: inline;
+                top: $menu-height + $tooltip-arrow-length;
+                transform: translateX(-50%);
+                left: 50%;
+            }
+        }
+
+        &:active {
+            background-color: $heather;
+        }
+
+        .coveo-caption-for-icon {
+            font-size: 12px;
+            display: none;
+            background: $rhino;
+            color: white;
+            border-radius: 2px;
+            padding: 6px 16px;
+            position: absolute;
+            white-space: nowrap;
+            z-index: $tooltip-z-index;
+            &:before {
+                border: solid;
+                border-color: $rhino transparent;
+                border-width: 0 $tooltip-arrow-length 7px;
+                content: '';
+                position: absolute;
+                z-index: $tooltip-z-index;
+                top: -$tooltip-arrow-length;
+                left: calc(50% - #{$tooltip-arrow-length});
+            }
+        }
+    }
+}
+
+// Fix for quickview tooltip
+.CoveoQuickview.coveo-result-actions-menu-menu-item {
+    @extend %not-selectable;
+
+    > div {
+        height: $menu-height;
+        width: $menu-height;
+    }
+
+    // Disable popper.js
+    &:hover .coveo-caption-for-icon {
+        display: inline !important;
+        top: $menu-height + $tooltip-arrow-length !important;
+        transform: translateX(-50%) !important;
+        left: 50% !important;
+
+        // Remove the div triangle to use the ::before one.
+        > div {
+            display: none;
+        }
+    }
+}
