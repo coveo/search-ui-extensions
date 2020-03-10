@@ -9,6 +9,7 @@
     "types": "./bin/typings",
     "sideEffects": [
         "./bin/es6/components/AttachResult/Strings.js",
+        "./bin/es6/components/CopyToClipboard/Strings.js",
         "./bin/es6/components/ResultsFilter/Strings.js",
         "./bin/es6/components/UserActions/Strings.js",
         "./bin/es6/components/ViewedByCustomer/Strings.js"
