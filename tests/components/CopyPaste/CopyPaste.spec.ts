@@ -12,6 +12,7 @@ describe('CopyToClipboard ResultAction', () => {
     let testComponent: CopyToClipboard;
     let testOptions: Mock.AdvancedComponentSetupOptions;
     let writeTextStub: SinonStub<[string], Promise<void>>;
+    let execCommandStub: SinonStub<[string, boolean?, string?], boolean>;
 
     beforeAll(() => {
         sandbox = createSandbox();
@@ -29,6 +30,7 @@ describe('CopyToClipboard ResultAction', () => {
         componentSetup = Mock.advancedResultComponentSetup(CopyToClipboard, result, testOptions);
         testComponent = componentSetup.cmp;
         writeTextStub = sandbox.stub(navigator.clipboard, 'writeText').resolves();
+        execCommandStub = sandbox.stub(document, 'execCommand');
     });
 
     afterEach(() => {
@@ -43,6 +45,23 @@ describe('CopyToClipboard ResultAction', () => {
         it('should paste the result in the clipboard', async () => {
             testComponent.element.click();
             expect(writeTextStub.called).toBeTrue();
+        });
+
+        it('should paste the result in the clipboard when the navigation api fails', async () => {
+            writeTextStub.rejects();
+            testComponent.element.click();
+            expect(writeTextStub.called).toBeTrue();
+        });
+
+        describe('when the clipboard api is not available', () => {
+            beforeEach(() => {
+                writeTextStub.get(() => undefined);
+            });
+
+            it('should paste the result in the clipboard when the clipboard api is not available', async () => {
+                testComponent.element.click();
+                expect(execCommandStub.called).toBeTrue();
+            });
         });
     });
 

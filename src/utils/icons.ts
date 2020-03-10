@@ -18,4 +18,4 @@ export const dot = DOT;
 export const paperclipIcon = PAPER_CLIP;
 export const user = USER;
 export const wait = WAIT;
-export const copyToClipboard = COPY_PASTE;
+export const copy = COPY_PASTE;

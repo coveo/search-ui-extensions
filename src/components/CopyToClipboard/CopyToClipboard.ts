@@ -1,6 +1,6 @@
 import { ResultAction, IResultActionOptions } from '../ResultAction/ResultAction';
 import { ComponentOptions, l, IResultsComponentBindings, IQueryResult, StringUtils, Initialization } from 'coveo-search-ui';
-import { copyToClipboard } from '../../utils/icons';
+import { copy } from '../../utils/icons';
 import './Strings';
 
 export interface ICopyToClipboardOptions extends IResultActionOptions {
@@ -32,7 +32,7 @@ export class CopyToClipboard extends ResultAction {
      * @componentOptions
      */
     static options: ICopyToClipboardOptions = {
-        icon: ComponentOptions.buildStringOption({ defaultValue: copyToClipboard }),
+        icon: ComponentOptions.buildStringOption({ defaultValue: copy }),
 
         tooltip: ComponentOptions.buildCustomOption(tooltip => tooltip, { defaultFunction: () => l('CopyToClipboard_copy') }),
 
@@ -52,7 +52,7 @@ export class CopyToClipboard extends ResultAction {
         public bindings?: IResultsComponentBindings,
         public result?: IQueryResult
     ) {
-        super(element, ComponentOptions.initComponentOptions(element, copyToClipboard, options), bindings, result);
+        super(element, ComponentOptions.initComponentOptions(element, CopyToClipboard, options), bindings, result);
 
         super.init();
 
@@ -68,12 +68,15 @@ export class CopyToClipboard extends ResultAction {
         this.copyToClipboard(StringUtils.buildStringTemplateFromResult(this.options.template, this.result));
     }
 
-    private copyToClipboard(text: string) {
-        if (navigator && navigator.clipboard) {
-            navigator.clipboard
-                .writeText(text)
-                .then(() => (this.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText = l('CopyToClipboard_copied')))
-                .catch(err => this.logger.error('Copy to clipboard failed.', text, err));
+    private async copyToClipboard(text: string) {
+        if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+            try {
+                await navigator.clipboard.writeText(text);
+                this.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText = l('CopyToClipboard_copied');
+            } catch (err) {
+                this.logger.error('Copy to clipboard failed.', text, err);
+                this.copyToClipboardFallback(text);
+            }
         } else {
             this.copyToClipboardFallback(text);
         }
@@ -92,5 +95,5 @@ export class CopyToClipboard extends ResultAction {
     }
 }
 
-Initialization.registerComponentFields(CopyToClipboard.ID, ['title', 'ClickUri']);
+Initialization.registerComponentFields(CopyToClipboard.ID, ['title', 'clickUri']);
 Initialization.registerAutoCreateComponent(CopyToClipboard);

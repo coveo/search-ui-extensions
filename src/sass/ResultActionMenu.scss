@@ -131,7 +131,7 @@ $tooltip-z-index: 1000;
         width: $menu-height;
     }
 
-    // Disable popper.js
+    // Override popper.js
     &:hover .coveo-caption-for-icon {
         display: inline !important;
         top: $menu-height + $tooltip-arrow-length !important;

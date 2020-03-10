@@ -24,6 +24,8 @@ export interface IResultActionOptions {
 export abstract class ResultAction extends Component {
     static ID = 'ResultAction';
 
+    private isInitialized = false;
+
     /**
      * The possible options for _ResultAction_.
      * @componentOptions
@@ -41,8 +43,6 @@ export abstract class ResultAction extends Component {
          */
         tooltip: ComponentOptions.buildStringOption()
     };
-
-    private isInitialized = false;
 
     /**
      * Construct a ResultAction component.
