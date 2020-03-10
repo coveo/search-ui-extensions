@@ -11,7 +11,7 @@ import {
     IAnalyticsActionCause,
     l
 } from 'coveo-search-ui';
-import { paperclipIcon } from '../../utils/icons';
+import { paperclipIcon, wait } from '../../utils/icons';
 import { AttachResultEvents, IAttachResultEventArgs } from './Events';
 import './Strings';
 
@@ -151,7 +151,8 @@ export class AttachResult extends Component {
     }
 
     protected initialize(): void {
-        this.buttonElement = $$('div', {}, paperclipIcon).el;
+        this.buttonElement = $$('div').el;
+
         this.element.appendChild(this.buttonElement);
 
         this.tooltipElement = $$('div', {
@@ -207,7 +208,9 @@ export class AttachResult extends Component {
 
         if (this.loading) {
             $$(this.buttonElement).addClass('coveo-icon-loading');
+            this.buttonElement.innerHTML = wait;
         } else {
+            this.buttonElement.innerHTML = paperclipIcon;
             if (this.attached) {
                 $$(this.buttonElement).addClass('coveo-icon-attached');
                 $$(this.tooltipElement).text(this.options.detachCaption);
