@@ -269,30 +269,6 @@ describe('QueryList', () => {
             });
         });
 
-        it('should log a search event with "userActionsSubmit" as search cause', () => {
-            const mock = Mock.advancedComponentSetup<QueryList>(
-                QueryList,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
-                    return env;
-                })
-            );
-
-            const omnibox = new Omnibox(document.createElement('div'), {}, { ...mock.env });
-            mock.env.root.appendChild(omnibox.element);
-
-            const logSearchEventStub = sandbox.stub(mock.env.usageAnalytics, 'logSearchEvent');
-
-            return delay(() => {
-                const item = mock.env.element.querySelector<HTMLSpanElement>('.coveo-list .coveo-link');
-                item.click();
-
-                expect(logSearchEventStub.callCount).toBe(1);
-                expect(logSearchEventStub.args[0][0].name).toBe('userActionsSubmit');
-                expect(logSearchEventStub.args[0][0].type).toBe('User Actions');
-            });
-        });
-
         it('Should disable itself when the userId is falsey', () => {
             let getActionStub: SinonStub<[HTMLElement, QueryList], void>;
             const mock = Mock.advancedComponentSetup<QueryList>(
