@@ -53,6 +53,14 @@ describe('CopyToClipboard ResultAction', () => {
             expect(writeTextStub.called).toBeTrue();
         });
 
+        it('should change the tooltip text for "Copied!"', async () => {
+            testComponent.element.click();
+
+            // We need to run assumption in micro tasks context because clipboard api use promises.
+            await Promise.resolve();
+            expect(testComponent.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText).toEqual(l('CopyToClipboard_copied'));
+        });
+
         describe('when the clipboard api is not available', () => {
             beforeEach(() => {
                 writeTextStub.get(() => undefined);
@@ -62,6 +70,11 @@ describe('CopyToClipboard ResultAction', () => {
                 testComponent.element.click();
                 expect(execCommandStub.called).toBeTrue();
             });
+
+            it('should change the tooltip text for "Copied!"', async () => {
+                testComponent.element.click();
+                expect(testComponent.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText).toEqual(l('CopyToClipboard_copied'));
+            });
         });
     });
 
@@ -70,6 +83,18 @@ describe('CopyToClipboard ResultAction', () => {
             testComponent.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText = 'patate';
             testComponent.element.dispatchEvent(new MouseEvent('mouseleave'));
             expect(testComponent.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText).toEqual(l('CopyToClipboard_copy'));
+        });
+
+        describe('when the clipboard api is not available', () => {
+            beforeEach(() => {
+                writeTextStub.get(() => undefined);
+            });
+
+            it('should change the tooltip text for "Copy"', () => {
+                testComponent.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText = 'patate';
+                testComponent.element.dispatchEvent(new MouseEvent('mouseleave'));
+                expect(testComponent.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText).toEqual(l('CopyToClipboard_copy'));
+            });
         });
     });
 
