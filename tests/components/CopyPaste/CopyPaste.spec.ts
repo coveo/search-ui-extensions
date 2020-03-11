@@ -133,7 +133,7 @@ describe('CopyToClipboard ResultAction', () => {
                 expect(testComponent.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText).toEqual(tooltipText);
             });
 
-            it('should not change the tooltip if the successTooltip is empty-like', async () => {
+            it('should not change the tooltip if the successTooltip is an empty string', async () => {
                 buildResultAction({ successTooltip: '' });
                 testComponent.element.click();
 
