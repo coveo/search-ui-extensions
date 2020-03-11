@@ -17,6 +17,11 @@ export interface ICopyToClipboardOptions extends IResultActionOptions {
     tooltip?: string;
 
     /**
+     * The tooltip that displays when the action succeeds.
+     */
+    successTooltip?: string;
+
+    /**
      * Specifies the template that will be used for the copy to clipboard.
      *
      * Default value is `${title}\n${ClickUri}`.
@@ -35,6 +40,8 @@ export class CopyToClipboard extends ResultAction {
         icon: ComponentOptions.buildStringOption({ defaultValue: copy }),
 
         tooltip: ComponentOptions.buildCustomOption(tooltip => tooltip, { defaultFunction: () => l('CopyToClipboard_copy') }),
+
+        successTooltip: ComponentOptions.buildCustomOption(tooltip => tooltip, { defaultFunction: () => l('CopyToClipboard_copied') }),
 
         template: ComponentOptions.buildStringOption({ defaultValue: '${title}\n${clickUri}' })
     };
@@ -58,7 +65,7 @@ export class CopyToClipboard extends ResultAction {
 
         this.bind.on(this.element, 'mouseleave', (event: MouseEvent) => {
             if (event.target == this.element) {
-                this.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText = l('CopyToClipboard_copy');
+                this.setToolipText(this.options.tooltip);
             }
         });
     }
@@ -72,13 +79,20 @@ export class CopyToClipboard extends ResultAction {
         if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
             try {
                 await navigator.clipboard.writeText(text);
-                this.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText = l('CopyToClipboard_copied');
             } catch (err) {
                 this.logger.error('Copy to clipboard failed.', text, err);
                 this.copyToClipboardFallback(text);
             }
         } else {
             this.copyToClipboardFallback(text);
+        }
+        this.setToolipText(this.options.successTooltip);
+    }
+
+    private setToolipText(text: string) {
+        const tooltipElement = this.element.querySelector<HTMLElement>('.coveo-caption-for-icon');
+        if (tooltipElement && text) {
+            tooltipElement.innerText = text;
         }
     }
 
