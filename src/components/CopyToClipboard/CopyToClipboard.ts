@@ -17,7 +17,7 @@ export interface ICopyToClipboardOptions extends IResultActionOptions {
     tooltip?: string;
 
     /**
-     * The tooltip that displays when the action succeed.
+     * The tooltip that displays when the action succeeds.
      */
     successTooltip?: string;
 
