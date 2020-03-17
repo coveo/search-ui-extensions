@@ -71,7 +71,7 @@ export class CopyToClipboard extends ResultAction {
     }
 
     protected doAction() {
-        this.usageAnalytics.logClickEvent({ name: 'copyToClipboard', type: 'Click' }, {}, this.result, this.element);
+        this.usageAnalytics.logClickEvent({ name: 'copyToClipboard', type: 'resultAction' }, {}, this.result, this.element);
         this.copyToClipboard(StringUtils.buildStringTemplateFromResult(this.options.template, this.result));
     }
 
