@@ -56,6 +56,38 @@ describe('CopyToClipboard ResultAction', () => {
             expect(writeTextStub.called).toBeTrue();
         });
 
+        describe('after half a second', () => {
+            beforeEach(() => {
+                jasmine.clock().install();
+            });
+
+            afterEach(() => {
+                jasmine.clock().uninstall();
+            });
+
+            it('should change the tooltip text for "Copy"', async () => {
+                testComponent.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText = 'patate';
+                testComponent.element.click();
+                await Promise.resolve();
+                jasmine.clock().tick(500);
+                expect(testComponent.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText).toEqual(l('CopyToClipboard_copy'));
+            });
+
+            describe('when the clipboard api is not available', () => {
+                beforeEach(() => {
+                    writeTextStub.get(() => undefined);
+                });
+
+                it('should change the tooltip text for "Copy"', async () => {
+                    testComponent.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText = 'patate';
+                    testComponent.element.click();
+                    await Promise.resolve();
+                    jasmine.clock().tick(500);
+                    expect(testComponent.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText).toEqual(l('CopyToClipboard_copy'));
+                });
+            });
+        });
+
         it('should change the tooltip text for "Copied!"', async () => {
             testComponent.element.click();
 
@@ -77,26 +109,6 @@ describe('CopyToClipboard ResultAction', () => {
             it('should change the tooltip text for "Copied!"', async () => {
                 testComponent.element.click();
                 expect(testComponent.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText).toEqual(l('CopyToClipboard_copied'));
-            });
-        });
-    });
-
-    describe('on mouseleave', () => {
-        it('should change the tooltip text for "Copy"', () => {
-            testComponent.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText = 'patate';
-            testComponent.element.dispatchEvent(new MouseEvent('mouseleave'));
-            expect(testComponent.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText).toEqual(l('CopyToClipboard_copy'));
-        });
-
-        describe('when the clipboard api is not available', () => {
-            beforeEach(() => {
-                writeTextStub.get(() => undefined);
-            });
-
-            it('should change the tooltip text for "Copy"', () => {
-                testComponent.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText = 'patate';
-                testComponent.element.dispatchEvent(new MouseEvent('mouseleave'));
-                expect(testComponent.element.querySelector<HTMLElement>('.coveo-caption-for-icon').innerText).toEqual(l('CopyToClipboard_copy'));
             });
         });
     });

@@ -62,12 +62,6 @@ export class CopyToClipboard extends ResultAction {
         super(element, ComponentOptions.initComponentOptions(element, CopyToClipboard, options), bindings, result);
 
         super.init();
-
-        this.bind.on(this.element, 'mouseleave', (event: MouseEvent) => {
-            if (event.target == this.element) {
-                this.setToolipText(this.options.tooltip);
-            }
-        });
     }
 
     protected doAction() {
@@ -87,6 +81,11 @@ export class CopyToClipboard extends ResultAction {
             this.copyToClipboardFallback(text);
         }
         this.setToolipText(this.options.successTooltip);
+        this.refreshTooltip();
+    }
+
+    private refreshTooltip() {
+        setTimeout(() => this.setToolipText(this.options.tooltip), 500);
     }
 
     private setToolipText(text: string) {
