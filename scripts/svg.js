@@ -8,35 +8,35 @@ const builder = new xml.Builder({
     },
     headless: true
 });
+const parser = new xml.Parser();
 
-const svgImport = /import \* as *(?<variable>.*) from '(?<path>.*\.svg)';/i;
-
+const svgImport = /import \* as *(?<svgvariable>.*) from '(?<svgpath>.*\.svg)';/i;
 const svgfolder = path.resolve('./svg/');
 
-const filenames = fs.readdirSync(svgfolder);
+function readSVG(filename) {
+    return fs.readFileSync(path.join(svgfolder, filename));
+}
 
-let svgStrings = {};
-filenames.forEach(filename => {
-    const buffer = fs.readFileSync(path.join(svgfolder, filename));
-    xml.parseString(buffer.toString('utf8'), (err, result) => {
-        svgStrings[filename] = builder.buildObject(result);
-    });
-});
+async function uglifySVG(svg) {
+    const result = await parser.parseStringPromise(svg.toString('utf8'));
+    return builder.buildObject(result);
+}
+
+async function replaceSVGImport(line) {
+    if (!svgImport.test(line)) {
+        return line;
+    }
+    const { svgpath, svgvariable } = line.match(svgImport).groups;
+    return line.replace(svgImport, `const ${svgvariable} = \'${await uglifySVG(readSVG(path.basename(svgpath)))}\';`);
+}
 
 const iconFile = path.resolve('./bin/es6/utils/icons.js');
-const iconFileContent = fs.readFileSync(iconFile, { encoding: 'utf8' });
 
-let newIconFileContent = [];
-const oldIconFileContent = iconFileContent.split('\n');
-oldIconFileContent.forEach(content => {
-    if (svgImport.test(content)) {
-        const matched = content.match(svgImport).groups;
-        const filename = path.basename(matched.path);
-        const changed = content.replace(svgImport, `const ${matched.variable} = \'${svgStrings[filename]}\';`);
-        newIconFileContent.push(changed);
-    } else {
-        newIconFileContent.push(content);
-    }
+const contents = fs
+    .readFileSync(iconFile, { encoding: 'utf8' })
+    .split('\n')
+    .map(replaceSVGImport);
+
+Promise.all(contents).then(data => {
+    fs.writeFileSync(iconFile, data.join('\n'), { encoding: 'utf8' });
 });
-
-fs.writeFileSync(path.resolve('./bin/es6/utils/icons.js'), newIconFileContent.join('\n'), { encoding: 'utf8' });
