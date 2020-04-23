@@ -1,14 +1,14 @@
 /// <reference path='../typings/custom.d.ts'/>
 
-import * as ARROW_DOWN from '../../img/arrow-down.svg';
-import * as DUPLICATE from '../../img/duplicate.svg';
-import * as SEARCH from '../../img/search.svg';
-import * as VIEW from '../../img/view.svg';
-import * as DOT from '../../img/dot.svg';
-import * as PAPER_CLIP from '../../img/paperclip.svg';
-import * as USER from '../../img/user.svg';
-import * as WAIT from '../../img/wait.svg';
-import * as COPY_PASTE from '../../img/copy-paste.svg';
+import * as ARROW_DOWN from '../../svg/arrow-down.svg';
+import * as DUPLICATE from '../../svg/duplicate.svg';
+import * as SEARCH from '../../svg/search.svg';
+import * as VIEW from '../../svg/view.svg';
+import * as DOT from '../../svg/dot.svg';
+import * as PAPER_CLIP from '../../svg/paperclip.svg';
+import * as USER from '../../svg/user.svg';
+import * as WAIT from '../../svg/wait.svg';
+import * as COPY_PASTE from '../../svg/copy-paste.svg';
 
 export const arrowDown = ARROW_DOWN;
 export const duplicate = DUPLICATE;

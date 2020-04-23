@@ -17,11 +17,12 @@
     "scripts": {
         "test": "karma start ./config/karma.config.js --single-run",
         "testCoverage": "npm run test && cat ./bin/coverage/lcov.info | node ./node_modules/coveralls/bin/coveralls.js",
-        "build": "npm run setup && npm run css && npm run build-es && npm run build-commonjs",
+        "build": "npm run setup && npm run css && npm run build-es && npm run svg && npm run build-commonjs",
         "build-es": "tsc -p ./config/",
         "build-commonjs": "webpack --config ./config/webpack.config.js",
         "setup": "node ./scripts/setup.js",
         "css": "node ./scripts/css.js",
+        "svg": "node ./scripts/svg.js",
         "dev": "node ./scripts/dev.server.js",
         "watchTest": "karma start ./config/karma.config.js",
         "lint": "prettier --check \"./**/*\" --config \".prettierrc.js\" --ignore-path \".prettierignore\"",
@@ -89,7 +90,8 @@
         "webpack": "^4.29.6",
         "webpack-cli": "^3.2.3",
         "webpack-dev-server": "^3.2.1",
-        "webpack-karma-die-hard": "^1.0.4"
+        "webpack-karma-die-hard": "^1.0.4",
+        "xml2js": "^0.4.23"
     },
     "snyk": true,
     "dependencies": {}
