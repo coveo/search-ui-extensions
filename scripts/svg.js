@@ -27,7 +27,7 @@ async function replaceSVGImport(line) {
         return line;
     }
     const { svgpath, svgvariable } = line.match(svgImport).groups;
-    return line.replace(svgImport, `const ${svgvariable} = \'${await uglifySVG(readSVG(path.basename(svgpath)))}\';`);
+    return line.replace(svgImport, `var ${svgvariable} = \'${await uglifySVG(readSVG(path.basename(svgpath)))}\';`);
 }
 
 const iconFile = path.resolve('./bin/es6/utils/icons.js');
