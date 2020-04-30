@@ -29,7 +29,10 @@ module.exports = {
                 test: /\.ts$/,
                 loader: 'ts-loader',
                 options: {
-                    configFile: path.resolve('./config/tsconfig.json')
+                    configFile: path.resolve('./config/tsconfig.json'),
+                    compilerOptions: {
+                        target: 'es5'
+                    }
                 }
             },
             {
