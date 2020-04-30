@@ -1,5 +1,3 @@
-/// <reference path='../typings/custom.d.ts'/>
-
 import * as ARROW_DOWN from '../../svg/arrow-down.svg';
 import * as DUPLICATE from '../../svg/duplicate.svg';
 import * as SEARCH from '../../svg/search.svg';
