@@ -16,7 +16,6 @@ $tooltip-z-index: 1000;
     display: inline-block;
     height: $menu-height;
     width: $menu-height;
-    border: thin solid transparent;
 
     svg {
         height: $menu-height;
@@ -32,7 +31,7 @@ $tooltip-z-index: 1000;
     cursor: pointer;
     display: none;
     position: relative;
-    height: $menu-height+1px;
+    height: $menu-height;
     line-height: $menu-height * 0.9;
     border-radius: $menu-radius;
     background: white;
@@ -41,8 +40,6 @@ $tooltip-z-index: 1000;
     margin-top: -$menu-height;
 
     &.coveo-menu-opened {
-        margin-top: 0px;
-        position: absolute;
         display: flex;
         flex-flow: row nowrap;
         justify-content: flex-end;
@@ -50,7 +47,7 @@ $tooltip-z-index: 1000;
     }
 
     .coveo-result-actions-menu-menu-item {
-        height: $menu-height;
+        height: $menu-height - 1px;
         position: relative;
         box-sizing: border-box;
 
@@ -123,10 +120,6 @@ $tooltip-z-index: 1000;
     }
 }
 
-//Fix for attach icon aligment
-.CoveoAttachResult div.coveo-icon-attach{
-    border: none
-}
 
 // Fix for quickview tooltip
 .CoveoQuickview.coveo-result-actions-menu-menu-item {
