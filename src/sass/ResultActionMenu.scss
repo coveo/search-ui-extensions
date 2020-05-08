@@ -4,6 +4,7 @@ $menu-height: 22px;
 $menu-radius: 5px;
 $tooltip-arrow-length: 6px;
 $tooltip-z-index: 1000;
+$result-action-menu-item-border: thin solid #bcc3ca;
 
 %not-selectable {
     -webkit-user-select: none;
@@ -68,6 +69,16 @@ $tooltip-z-index: 1000;
                 padding: $menu-height * (1 / 6) 0;
                 box-sizing: border-box;
             }
+        }
+        
+        //All visible result actions that are alone have no left border
+        &:not(.coveo-hidden):not([style*="display: none"]) {
+            border-left: none;
+        }
+        
+        //  All result actions after a visible result action have a left border.
+        &:not(.coveo-hidden):not([style*="display: none"]) ~ .coveo-result-actions-menu-menu-item:not(.coveo-hidden):not([style*="display: none"]) {
+            border-left: $result-action-menu-item-border;
         }
 
         &:first-child {
