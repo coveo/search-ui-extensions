@@ -7,12 +7,16 @@ import { l } from 'coveo-search-ui';
  * @returns A string formated version of the date.
  */
 export function formatDate(date: Date) {
-    return date.toLocaleDateString('default', {
+    const formattedDate = date.toLocaleDateString('default', {
         weekday: 'short',
-        month: 'short',
         day: '2-digit',
+        month: 'short',
         year: 'numeric'
     });
+    const dateArray = formattedDate.split(',');
+    const dateSection = dateArray[1].trim().split(' ');
+    const dateSectionString = `${dateSection[1]} ${dateSection[0]}`;
+    return `${dateArray[0]}, ${dateSectionString} ${dateArray[2]}`;
 }
 
 /**
@@ -27,6 +31,16 @@ export function formatTime(date: Date) {
         minute: '2-digit',
         second: '2-digit'
     });
+}
+
+/**
+ * Format a date object to a date and time string that follow the format describe below.
+ * > Ex: `Mon, 29 April 2019 - 12:00:00 PM`
+ * @param date The date that will be formated.
+ * @returns A string formated version of the date and time.
+ */
+export function formatDateAndTime(date: Date) {
+  return `${formatDate(date)} - ${formatTime(date)}`;
 }
 
 const SECOND = 1000;
