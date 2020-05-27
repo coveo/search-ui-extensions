@@ -40,7 +40,7 @@ export function formatTime(date: Date) {
  * @returns A string formated version of the date and time.
  */
 export function formatDateAndTime(date: Date) {
-  return `${formatDate(date)} - ${formatTime(date)}`;
+    return `${formatDate(date)} - ${formatTime(date)}`;
 }
 
 const SECOND = 1000;
