@@ -2,7 +2,7 @@ import { l } from 'coveo-search-ui';
 
 /**
  * Format a date object to a date string that follow the format describe below.
- * > Ex: `Mon, Apr 29, 2019`
+ * > Ex: `Mon, 29 Apr 2019`
  * @param date The date that will be formated.
  * @returns A string formated version of the date.
  */
