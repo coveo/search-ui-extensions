@@ -1,19 +1,26 @@
-import { formatDate, formatTime, formatTimeInterval } from '../../src/utils/time';
+import { formatDate, formatTime, formatDateAndTime, formatTimeInterval } from '../../src/utils/time';
 
 const UTC_TEST_TIME = '2019-04-29T20:53:13';
 
 describe('Time', () => {
     describe('formatDate', () => {
-        it('should format a date to a string like "Mon, Apr 29, 2019" when in a EN_US context', () => {
+        it('should format a date to a string like "Mon, 29 Apr 2019" when in a EN_US context', () => {
             const formatedDate = formatDate(new Date(UTC_TEST_TIME));
-            expect(formatedDate).toEqual('Mon, Apr 29, 2019');
+            expect(formatedDate).toEqual('Mon, 29 Apr 2019');
         });
     });
 
     describe('formatTime', () => {
         it('should format a date to a string format like "8:53:13 PM" when in a EN_US context', () => {
             const formatedTime = formatTime(new Date(UTC_TEST_TIME));
-            expect(formatedTime).toMatch('8:53:13 PM');
+            expect(formatedTime).toEqual('08:53:13 PM');
+        });
+    });
+
+    describe('formatDateAndTime', () => {
+        it('should format a date and time to a string like "Mon, 29 Apr 2019 - 8:53:13 PM" when in a EN_US context', () => {
+            const formatedDateAndTime = formatDateAndTime(new Date(UTC_TEST_TIME));
+            expect(formatedDateAndTime).toEqual('Mon, 29 Apr 2019 - 08:53:13 PM');
         });
     });
 

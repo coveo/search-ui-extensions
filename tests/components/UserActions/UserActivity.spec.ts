@@ -5,9 +5,9 @@ import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 import { UserActivity } from '../../../src/Index';
 import { delay, fakeUserProfileModel } from '../../utils';
 import { formatDate, formatTime, formatTimeInterval } from '../../../src/utils/time';
-
 describe('UserActivity', () => {
-    const FAKE_CLICK_EVENT = new UserAction(UserActionType.Click, new Date('1:00:00 AM'), {
+    const TEST_DATE_STRING = 'December 17, 1995 1:00:00 AM'
+    const FAKE_CLICK_EVENT = new UserAction(UserActionType.Click, new Date(TEST_DATE_STRING), {
         origin_level_1: 'relevant' + Math.random(),
         uri_hash: 'product' + Math.random(),
         c_contentidkey: '@sysurihash',
@@ -15,54 +15,54 @@ describe('UserActivity', () => {
     });
     FAKE_CLICK_EVENT.document = Fake.createFakeResult();
 
-    const FAKE_SEARCH_EVENT = new UserAction(UserActionType.Search, new Date('1:00:00 AM'), {
+    const FAKE_SEARCH_EVENT = new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
         origin_level_1: 'relevant' + Math.random(),
         cause: 'interfaceLoad'
     });
 
-    const FAKE_USER_SEARCH_EVENT = new UserAction(UserActionType.Search, new Date('1:00:00 AM'), {
+    const FAKE_USER_SEARCH_EVENT = new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
         origin_level_1: 'relevant' + Math.random(),
         query_expression: 'someSearch' + Math.random(),
         cause: 'searchboxSubmit'
     });
     FAKE_USER_SEARCH_EVENT.query = FAKE_USER_SEARCH_EVENT.raw.query_expression;
 
-    const FAKE_VIEW_EVENT = new UserAction(UserActionType.PageView, new Date('1:00:00 AM'), {
+    const FAKE_VIEW_EVENT = new UserAction(UserActionType.PageView, new Date(TEST_DATE_STRING), {
         origin_level_1: 'relevant' + Math.random(),
         content_id_key: '@someKey' + Math.random(),
         content_id_value: 'someValue' + Math.random()
     });
 
-    const FAKE_CUSTOM_EVENT = new UserAction(UserActionType.Custom, new Date('1:00:00 AM'), {
+    const FAKE_CUSTOM_EVENT = new UserAction(UserActionType.Custom, new Date(TEST_DATE_STRING), {
         origin_level_1: 'relevant' + Math.random(),
         event_type: 'Submit' + Math.random(),
         event_value: 'Case Submit' + Math.random()
     });
 
-    const FAKE_CUSTOM_EVENT_WITHOUT_TYPE = new UserAction(UserActionType.Custom, new Date('1:00:00 AM'), {
+    const FAKE_CUSTOM_EVENT_WITHOUT_TYPE = new UserAction(UserActionType.Custom, new Date(TEST_DATE_STRING), {
         origin_level_1: 'relevant' + Math.random(),
         event_value: 'Case Submit' + Math.random()
     });
 
     const IRRELEVANT_ACTIONS = [
-        new UserAction(UserActionType.Search, new Date('2:00:00 AM'), {
+        new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
             origin_level_1: 'not relevant' + Math.random(),
             query_expression: 'not relevant',
             cause: 'interfaceLoad'
         }),
-        new UserAction(UserActionType.PageView, new Date('2:10:00 AM'), {
+        new UserAction(UserActionType.PageView, new Date(TEST_DATE_STRING), {
             origin_level_1: 'not relevant' + Math.random(),
             content_id_key: '@sysurihash',
             content_id_value: 'product1'
         }),
-        new UserAction(UserActionType.Custom, new Date('2:20:00 AM'), {
+        new UserAction(UserActionType.Custom, new Date(TEST_DATE_STRING), {
             origin_level_1: 'not relevant' + Math.random(),
             c_contentidkey: '@sysurihash',
             c_contentidvalue: 'headphones-gaming',
             event_type: 'addPurchase',
             event_value: 'headphones-gaming'
         }),
-        new UserAction(UserActionType.Custom, new Date('2:30:00 AM'), {
+        new UserAction(UserActionType.Custom, new Date(TEST_DATE_STRING), {
             origin_level_1: 'relevant' + Math.random(),
             c_contentidkey: '@sysurihash',
             c_contentidvalue: 'headphones-gaming',
@@ -72,12 +72,12 @@ describe('UserActivity', () => {
     ];
 
     const FAKE_USER_ACTIONS = [
-        new UserAction(UserActionType.Search, new Date('1:00:00 AM'), {
+        new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
             origin_level_1: 'relevant' + Math.random(),
             cause: 'searchboxSubmit',
             query_expression: 'Best product'
         }),
-        new UserAction(UserActionType.Click, new Date('3:00:00 AM'), {
+        new UserAction(UserActionType.Click, new Date(TEST_DATE_STRING), {
             origin_level_1: 'relevant' + Math.random(),
             uri_hash: 'product' + Math.random(),
             c_contentidkey: '@sysurihash',
@@ -208,7 +208,7 @@ describe('UserActivity', () => {
                     new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
                         fakeUserProfileModel(env.root, sandbox).getActions.returns(
                             Promise.resolve([
-                                new UserAction(UserActionType.Search, new Date('1:00:00 AM'), {
+                                new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
                                     origin_level_1: 'relevant' + Math.random(),
                                     query_expression: 'someSearch' + Math.random(),
                                     cause: cause

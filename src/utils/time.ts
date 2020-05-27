@@ -13,8 +13,8 @@ export function formatDate(date: Date) {
         month: 'short',
         year: 'numeric'
     });
-    const dateArray = formattedDate.split(',');
-    const dateSection = dateArray[1].trim().split(' ');
+    const dateArray = formattedDate.split(',').map(subtring => subtring.trim());
+    const dateSection = dateArray[1].split(' ');
     const dateSectionString = `${dateSection[1]} ${dateSection[0]}`;
     return `${dateArray[0]}, ${dateSectionString} ${dateArray[2]}`;
 }
