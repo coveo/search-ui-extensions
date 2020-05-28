@@ -6,7 +6,11 @@ import { UserActivity } from '../../../src/Index';
 import { delay, fakeUserProfileModel } from '../../utils';
 import { formatDate, formatTime, formatTimeInterval } from '../../../src/utils/time';
 describe('UserActivity', () => {
-    const TEST_DATE_STRING = 'December 17, 1995 1:00:00 AM'
+    const TEST_DATE_STRING = 'December 17, 1995 1:00:00 AM';
+    const ACTIVITY_SELECTOR = '.coveo-activity';
+    const ACTIVITY_TITLE_SELECTOR = '.coveo-activity-title';
+    const ACTIVIY_TIMESTAMP_SELECTOR = '.coveo-activity-timestamp';
+
     const FAKE_CLICK_EVENT = new UserAction(UserActionType.Click, new Date(TEST_DATE_STRING), {
         origin_level_1: 'relevant' + Math.random(),
         uri_hash: 'product' + Math.random(),
@@ -141,7 +145,7 @@ describe('UserActivity', () => {
 
         return delay(() => {
             IRRELEVANT_ACTIONS.forEach(action => {
-                expect(mock.cmp.element.querySelector('.coveo-activity').innerHTML).not.toMatch(action.raw.origin_level_1);
+                expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).not.toMatch(action.raw.origin_level_1);
             });
         });
     });
@@ -157,7 +161,7 @@ describe('UserActivity', () => {
 
         return delay(() => {
             FAKE_USER_ACTIONS.forEach(action => {
-                expect(mock.cmp.element.querySelector('.coveo-activity').innerHTML).toMatch(action.raw.origin_level_1);
+                expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).toMatch(action.raw.origin_level_1);
             });
         });
     });
@@ -173,7 +177,7 @@ describe('UserActivity', () => {
 
         return delay(() => {
             IRRELEVANT_ACTIONS.forEach(action => {
-                expect(mock.cmp.element.querySelector('.coveo-activity').innerHTML).toMatch(action.raw.origin_level_1);
+                expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).toMatch(action.raw.origin_level_1);
             });
         });
     });
@@ -194,7 +198,7 @@ describe('UserActivity', () => {
                 expect(folded).not.toBeNull();
                 folded.click();
                 IRRELEVANT_ACTIONS.forEach(action => {
-                    expect(mock.cmp.element.querySelector('.coveo-activity').innerHTML).toMatch(action.raw.origin_level_1);
+                    expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).toMatch(action.raw.origin_level_1);
                 });
             });
         });
@@ -226,7 +230,7 @@ describe('UserActivity', () => {
 
                     expect(action[0].raw.cause).toBe(cause);
                     expect(clickElement).not.toBeNull();
-                    expect(clickElement.querySelector<HTMLElement>('.coveo-title').innerText).toBe('User Query');
+                    expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('User Query');
                 });
             });
         });
@@ -244,7 +248,7 @@ describe('UserActivity', () => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-search');
 
                 expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>('.coveo-title').innerText).toBe('Query');
+                expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('Query');
             });
         });
 
@@ -278,7 +282,9 @@ describe('UserActivity', () => {
                 const searchElement = mock.cmp.element.querySelector('.coveo-search');
 
                 expect(searchElement).not.toBeNull();
-                expect(searchElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(formatTime(FAKE_SEARCH_EVENT.timestamp));
+                expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
+                    formatTime(FAKE_SEARCH_EVENT.timestamp)
+                );
             });
         });
 
@@ -314,7 +320,7 @@ describe('UserActivity', () => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-click');
 
                 expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>('.coveo-title').innerText).toBe('Clicked Document');
+                expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('Clicked Document');
             });
         });
 
@@ -349,7 +355,7 @@ describe('UserActivity', () => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-click');
 
                 expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(formatTime(FAKE_CLICK_EVENT.timestamp));
+                expect(clickElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(formatTime(FAKE_CLICK_EVENT.timestamp));
             });
         });
 
@@ -385,7 +391,7 @@ describe('UserActivity', () => {
                 const viewElement = mock.cmp.element.querySelector('.coveo-view');
 
                 expect(viewElement).not.toBeNull();
-                expect(viewElement.querySelector<HTMLElement>('.coveo-title').innerText).toBe('Page View');
+                expect(viewElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('Page View');
             });
         });
 
@@ -420,7 +426,7 @@ describe('UserActivity', () => {
                 const viewElement = mock.cmp.element.querySelector('.coveo-view');
 
                 expect(viewElement).not.toBeNull();
-                expect(viewElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(formatTime(FAKE_VIEW_EVENT.timestamp));
+                expect(viewElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(formatTime(FAKE_VIEW_EVENT.timestamp));
             });
         });
 
@@ -456,7 +462,7 @@ describe('UserActivity', () => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-custom');
 
                 expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>('.coveo-title').innerText).toBe(FAKE_CUSTOM_EVENT.raw.event_type);
+                expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe(FAKE_CUSTOM_EVENT.raw.event_type);
             });
         });
 
@@ -473,7 +479,7 @@ describe('UserActivity', () => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-custom');
 
                 expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>('.coveo-title').innerText).toBe('Custom Action');
+                expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('Custom Action');
             });
         });
 
@@ -507,7 +513,9 @@ describe('UserActivity', () => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-custom');
 
                 expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(formatTime(FAKE_CUSTOM_EVENT.timestamp));
+                expect(clickElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
+                    formatTime(FAKE_CUSTOM_EVENT.timestamp)
+                );
             });
         });
 

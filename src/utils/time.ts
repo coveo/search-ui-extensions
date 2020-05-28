@@ -7,16 +7,12 @@ import { l } from 'coveo-search-ui';
  * @returns A string formated version of the date.
  */
 export function formatDate(date: Date) {
-    const formattedDate = date.toLocaleDateString('default', {
+    return date.toLocaleDateString('default', {
         weekday: 'short',
         day: '2-digit',
         month: 'short',
         year: 'numeric'
     });
-    const dateArray = formattedDate.split(',').map(subtring => subtring.trim());
-    const dateSection = dateArray[1].split(' ');
-    const dateSectionString = `${dateSection[1]} ${dateSection[0]}`;
-    return `${dateArray[0]}, ${dateSectionString} ${dateArray[2]}`;
 }
 
 /**

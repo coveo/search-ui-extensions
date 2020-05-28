@@ -38,7 +38,10 @@ const MAIN_CLASS = 'coveo-user-activity';
 const CELL_CLASS = 'coveo-cell';
 const TITLE_CLASS = 'coveo-title';
 const DATA_CLASS = 'coveo-data';
-const TIMESTAMP_CLASS = 'coveo-footer';
+const ORIGIN_CLASS = 'coveo-footer';
+const ACTIVITY_TITLE_SECTION = 'coveo-activity-title-section';
+const ACTIVITY_TITLE_CLASS = 'coveo-activity-title';
+const ACTIVIY_TIMESTAMP_CLASS = 'coveo-activity-timestamp';
 const HEADER_CLASS = 'coveo-header';
 const ACTIVITY_CLASS = 'coveo-activity';
 
@@ -238,11 +241,11 @@ export class UserActivity extends Component {
 
         document.createAttributeNS('svg', 'svg');
 
-        li.appendChild(this.buildTitleElement(action));
+        li.appendChild(this.buildTitleSection(action));
         if (action.document) {
             li.appendChild(dataElement);
         }
-        li.appendChild(this.buildTimestampElement(action));
+        li.appendChild(this.buildOriginElement(action));
         li.appendChild(this.buildIcon(duplicate));
 
         return li;
@@ -252,7 +255,7 @@ export class UserActivity extends Component {
         const li = document.createElement('li');
         li.classList.add(SEARCH_EVENT_CLASS);
 
-        li.appendChild(this.buildTitleElement(action));
+        li.appendChild(this.buildTitleSection(action));
 
         if (action.query) {
             const dataElement = document.createElement('div');
@@ -262,7 +265,7 @@ export class UserActivity extends Component {
             li.appendChild(dataElement);
         }
 
-        li.appendChild(this.buildTimestampElement(action));
+        li.appendChild(this.buildOriginElement(action));
         li.appendChild(this.buildIcon(search));
 
         return li;
@@ -276,9 +279,9 @@ export class UserActivity extends Component {
         dataElement.classList.add(DATA_CLASS);
         dataElement.innerText = `${action.raw.content_id_key}: ${action.raw.content_id_value}`;
 
-        li.appendChild(this.buildTitleElement(action));
+        li.appendChild(this.buildTitleSection(action));
         li.appendChild(dataElement);
-        li.appendChild(this.buildTimestampElement(action));
+        li.appendChild(this.buildOriginElement(action));
         li.appendChild(this.buildIcon(view));
 
         return li;
@@ -289,35 +292,54 @@ export class UserActivity extends Component {
         li.classList.add(CUSTOM_EVENT_CLASS);
 
         const titleElem = document.createElement('div');
-        titleElem.classList.add(TITLE_CLASS);
+        titleElem.classList.add(ACTIVITY_TITLE_CLASS);
         titleElem.innerText = `${l(action.raw.event_type || `${UserActivity.ID}_custom`)}`;
+
+        const titleSection = this.buildTitleSection(action);
+        titleSection.querySelector(`.${ACTIVITY_TITLE_CLASS}`).remove();
+        titleSection.prepend(titleElem);
 
         const dataElement = document.createElement('div');
         dataElement.classList.add(DATA_CLASS);
         dataElement.innerText = action.raw.event_value || '';
 
-        li.appendChild(titleElem);
+        li.appendChild(titleSection);
         li.appendChild(dataElement);
-        li.appendChild(this.buildTimestampElement(action));
+        li.appendChild(this.buildOriginElement(action));
         li.appendChild(this.buildIcon(dot));
 
         return li;
     }
 
-    private buildTimestampElement(action: UserAction) {
+    private buildOriginElement(action: UserAction): HTMLElement {
         const el = document.createElement('div');
-        el.classList.add(TIMESTAMP_CLASS);
-        el.innerText = `${formatDateAndTime(action.timestamp)}${(action.raw.origin_level_1 && ` - ${action.raw.origin_level_1}`) || ''}`;
+        el.classList.add(ORIGIN_CLASS);
+        el.innerText = `${(action.raw.origin_level_1 && action.raw.origin_level_1) || ''}`;
         return el;
     }
 
-    private buildTitleElement(action: UserAction) {
+    private buildTimestampElement(action: UserAction): HTMLElement {
+        const el = document.createElement('div');
+        el.classList.add(ACTIVIY_TIMESTAMP_CLASS);
+        el.innerText = `${formatDateAndTime(action.timestamp)}`;
+        return el;
+    }
+
+    private buildTitleElement(action: UserAction): HTMLElement {
         const title = this.isManualSubmitAction(action) ? 'query' : action.type.toLowerCase();
 
         const el = document.createElement('div');
-        el.classList.add(TITLE_CLASS);
+        el.classList.add(ACTIVITY_TITLE_CLASS);
         el.innerText = l(`${UserActivity.ID}_${title}`);
         return el;
+    }
+
+    private buildTitleSection(action: UserAction): HTMLElement {
+        const titleSection = document.createElement('div');
+        titleSection.classList.add(ACTIVITY_TITLE_SECTION);
+        titleSection.appendChild(this.buildTitleElement(action));
+        titleSection.appendChild(this.buildTimestampElement(action));
+        return titleSection;
     }
 
     private buildIcon(icon: string) {
