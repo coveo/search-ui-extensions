@@ -2,7 +2,7 @@ import { l } from 'coveo-search-ui';
 
 /**
  * Format a date object to a date string that follow the format describe below.
- * > Ex: `Mon, 29 Apr 2019`
+ * > Ex: `Mon, Apr 29, 2019`
  * @param date The date that will be formated.
  * @returns A string formated version of the date.
  */
@@ -31,7 +31,7 @@ export function formatTime(date: Date) {
 
 /**
  * Format a date object to a date and time string that follow the format describe below.
- * > Ex: `Mon, 29 April 2019 - 12:00:00 PM`
+ * > Ex: `Mon, Apr 29, 2019 - 12:00:00 PM`
  * @param date The date that will be formated.
  * @returns A string formated version of the date and time.
  */

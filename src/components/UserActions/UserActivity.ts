@@ -314,14 +314,14 @@ export class UserActivity extends Component {
     private buildOriginElement(action: UserAction): HTMLElement {
         const el = document.createElement('div');
         el.classList.add(ORIGIN_CLASS);
-        el.innerText = `${(action.raw.origin_level_1 && action.raw.origin_level_1) || ''}`;
+        el.innerText = action.raw.origin_level_1 || '';
         return el;
     }
 
     private buildTimestampElement(action: UserAction): HTMLElement {
         const el = document.createElement('div');
         el.classList.add(ACTIVIY_TIMESTAMP_CLASS);
-        el.innerText = `${formatDateAndTime(action.timestamp)}`;
+        el.innerText = formatDateAndTime(action.timestamp);
         return el;
     }
 
