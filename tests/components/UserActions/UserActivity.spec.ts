@@ -297,7 +297,7 @@ describe('UserActivity', () => {
                 })
             );
 
-            Object.defineProperty( mock.cmp.element, 'clientWidth', {value: 500});
+            Object.defineProperty(mock.cmp.element, 'clientWidth', { value: 500 });
 
             return delay(() => {
                 const searchElement = mock.cmp.element.querySelector('.coveo-search');
@@ -376,7 +376,9 @@ describe('UserActivity', () => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-click');
 
                 expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(formatDateAndTimeShort(FAKE_CLICK_EVENT.timestamp));
+                expect(clickElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
+                    formatDateAndTimeShort(FAKE_CLICK_EVENT.timestamp)
+                );
             });
         });
 
@@ -389,7 +391,7 @@ describe('UserActivity', () => {
                 })
             );
 
-            Object.defineProperty( mock.cmp.element, 'clientWidth', {value: 500});
+            Object.defineProperty(mock.cmp.element, 'clientWidth', { value: 500 });
 
             return delay(() => {
                 const searchElement = mock.cmp.element.querySelector('.coveo-search');
@@ -468,7 +470,9 @@ describe('UserActivity', () => {
                 const viewElement = mock.cmp.element.querySelector('.coveo-view');
 
                 expect(viewElement).not.toBeNull();
-                expect(viewElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(formatDateAndTimeShort(FAKE_VIEW_EVENT.timestamp));
+                expect(viewElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
+                    formatDateAndTimeShort(FAKE_VIEW_EVENT.timestamp)
+                );
             });
         });
 
@@ -481,7 +485,7 @@ describe('UserActivity', () => {
                 })
             );
 
-            Object.defineProperty( mock.cmp.element, 'clientWidth', {value: 500});
+            Object.defineProperty(mock.cmp.element, 'clientWidth', { value: 500 });
 
             return delay(() => {
                 const searchElement = mock.cmp.element.querySelector('.coveo-search');
@@ -591,7 +595,7 @@ describe('UserActivity', () => {
                 })
             );
 
-            Object.defineProperty( mock.cmp.element, 'clientWidth', {value: 500});
+            Object.defineProperty(mock.cmp.element, 'clientWidth', { value: 500 });
 
             return delay(() => {
                 const searchElement = mock.cmp.element.querySelector('.coveo-search');

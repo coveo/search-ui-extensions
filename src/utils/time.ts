@@ -22,10 +22,10 @@ export function formatDate(date: Date) {
  * @returns A string formated version of the date.
  */
 export function formatDateShort(date: Date) {
-  return date.toLocaleDateString('default', {
-      day: '2-digit',
-      month: 'short',
-  });
+    return date.toLocaleDateString('default', {
+        day: '2-digit',
+        month: 'short'
+    });
 }
 
 /**
@@ -49,10 +49,10 @@ export function formatTime(date: Date) {
  * @returns A string formated version of the time.
  */
 export function formatTimeShort(date: Date) {
-  return date.toLocaleTimeString('default', {
-      hour: '2-digit',
-      minute: '2-digit'
-  });
+    return date.toLocaleTimeString('default', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 }
 
 /**
@@ -72,7 +72,7 @@ export function formatDateAndTime(date: Date) {
  * @returns A string formated version of the date and time.
  */
 export function formatDateAndTimeShort(date: Date) {
-  return `${formatDateShort(date)} - ${formatTimeShort(date)}`;
+    return `${formatDateShort(date)} - ${formatTimeShort(date)}`;
 }
 
 const SECOND = 1000;
