@@ -90,14 +90,14 @@ describe('UserActivity', () => {
     ];
 
     const getMockComponent = (returnedActions: UserAction | UserAction[]) => {
-      return Mock.advancedComponentSetup<UserActivity>(
-          UserActivity,
-          new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-              fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(returnedActions));
-              return env;
-          })
-      );
-    }
+        return Mock.advancedComponentSetup<UserActivity>(
+            UserActivity,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(returnedActions));
+                return env;
+            })
+        );
+    };
 
     let sandbox: SinonSandbox;
 
@@ -180,12 +180,12 @@ describe('UserActivity', () => {
         ['omniboxAnalytics', 'userActionsSubmit', 'omniboxFromLink', 'searchboxAsYouType', 'searchboxSubmit', 'searchFromLink'].map(cause => {
             it(`should display the "User Query" as event title when there is a query expression and the cause is ${cause}`, () => {
                 const mock = getMockComponent([
-                  new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
-                      origin_level_1: 'relevant' + Math.random(),
-                      query_expression: 'someSearch' + Math.random(),
-                      cause: cause
-                  })
-              ]);
+                    new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
+                        origin_level_1: 'relevant' + Math.random(),
+                        query_expression: 'someSearch' + Math.random(),
+                        cause: cause
+                    })
+                ]);
 
                 return delay(async () => {
                     const clickElement = mock.cmp.element.querySelector('.coveo-search');
