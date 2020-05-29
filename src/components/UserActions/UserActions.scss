@@ -8,6 +8,7 @@ $dot-width: $headers-gap / 3;
 $font-size: 1em;
 $icon-size: 1em;
 $search-ui-dropdown-header-color: #1d4f76;
+$timestamp-grey: #67768b;
 
 %bold-blue-text {
     color: $coveo-blue-6;
@@ -187,6 +188,29 @@ $search-ui-dropdown-header-color: #1d4f76;
                     padding: 0 0.5em;
                     background-color: $grey-1;
                 }
+            }
+        }
+
+        .coveo-activity-title-section {
+            display: table;
+            table-layout: fixed;
+            margin: 0.25em 0;
+            width: 100%;
+
+            .coveo-activity-title {
+                box-sizing: border-box;
+                vertical-align: top;
+                text-align: left;
+                display: table-cell;
+            }
+
+            .coveo-activity-timestamp {
+                box-sizing: border-box;
+                font-size: 0.85em;
+                color: $timestamp-grey;
+                vertical-align: top;
+                text-align: right;
+                display: table-cell;
             }
         }
 

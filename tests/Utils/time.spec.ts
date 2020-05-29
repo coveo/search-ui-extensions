@@ -1,4 +1,12 @@
-import { formatDate, formatTime, formatTimeInterval } from '../../src/utils/time';
+import {
+    formatDate,
+    formatDateShort,
+    formatTime,
+    formatTimeShort,
+    formatDateAndTime,
+    formatDateAndTimeShort,
+    formatTimeInterval
+} from '../../src/utils/time';
 
 const UTC_TEST_TIME = '2019-04-29T20:53:13';
 
@@ -10,10 +18,38 @@ describe('Time', () => {
         });
     });
 
+    describe('formatDate', () => {
+        it('should format a date to a string like "Apr 29" when in a EN_US context', () => {
+            const formatedDate = formatDateShort(new Date(UTC_TEST_TIME));
+            expect(formatedDate).toEqual('Apr 29');
+        });
+    });
+
     describe('formatTime', () => {
-        it('should format a date to a string format like "8:53:13 PM" when in a EN_US context', () => {
+        it('should format a date to a string format like "08:53:13 PM" when in a EN_US context', () => {
             const formatedTime = formatTime(new Date(UTC_TEST_TIME));
-            expect(formatedTime).toMatch('8:53:13 PM');
+            expect(formatedTime).toEqual('08:53:13 PM');
+        });
+    });
+
+    describe('formatTime', () => {
+        it('should format a date to a string format like "08:53 PM" when in a EN_US context', () => {
+            const formatedTime = formatTimeShort(new Date(UTC_TEST_TIME));
+            expect(formatedTime).toEqual('08:53 PM');
+        });
+    });
+
+    describe('formatDateAndTime', () => {
+        it('should format a date and time to a string like "Mon, Apr 29, 2019 - 8:53 PM" when in a EN_US context', () => {
+            const formatedDateAndTime = formatDateAndTime(new Date(UTC_TEST_TIME));
+            expect(formatedDateAndTime).toEqual('Mon, Apr 29, 2019 - 08:53 PM');
+        });
+    });
+
+    describe('formatDateAndTimeShort', () => {
+        it('should format a date to a string like "Apr 29 - 08:53 PM"', () => {
+            const formatedShortDate = formatDateAndTimeShort(new Date(UTC_TEST_TIME));
+            expect(formatedShortDate).toEqual('Apr 29 - 08:53 PM');
         });
     });
 
