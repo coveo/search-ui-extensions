@@ -1,5 +1,5 @@
 import { Component, IComponentBindings, Initialization, ComponentOptions, l, get } from 'coveo-search-ui';
-import { formatTime, formatDate, formatDateAndTime, formatTimeInterval } from '../../utils/time';
+import { formatTime, formatDate, formatDateAndTime, formatDateAndTimeShort, formatTimeInterval } from '../../utils/time';
 import { UserAction, UserProfileModel } from '../../models/UserProfileModel';
 import { duplicate, search, view, dot } from '../../utils/icons';
 import { UserActionType } from '../../rest/UserProfilingEndpoint';
@@ -321,7 +321,7 @@ export class UserActivity extends Component {
     private buildTimestampElement(action: UserAction): HTMLElement {
         const el = document.createElement('div');
         el.classList.add(ACTIVIY_TIMESTAMP_CLASS);
-        el.innerText = formatDateAndTime(action.timestamp);
+        el.innerText = this.element.clientWidth > 350 ? formatDateAndTime(action.timestamp) : formatDateAndTimeShort(action.timestamp);
         return el;
     }
 

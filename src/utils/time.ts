@@ -16,6 +16,19 @@ export function formatDate(date: Date) {
 }
 
 /**
+ * Format a date object to a short date string that follow the format describe below.
+ * > Ex: `Apr 29`
+ * @param date The date that will be formated.
+ * @returns A string formated version of the date.
+ */
+export function formatDateShort(date: Date) {
+  return date.toLocaleDateString('default', {
+      day: '2-digit',
+      month: 'short',
+  });
+}
+
+/**
  * Format a date object to a time string that follow the format describe below.
  * > Ex: `12:00:00 PM`
  * @param date The date that will be formated.
@@ -30,13 +43,36 @@ export function formatTime(date: Date) {
 }
 
 /**
+ * Format a date object to a short time string that follow the format describe below.
+ * > Ex: `12:00 PM`
+ * @param date The date that will be formated.
+ * @returns A string formated version of the time.
+ */
+export function formatTimeShort(date: Date) {
+  return date.toLocaleTimeString('default', {
+      hour: '2-digit',
+      minute: '2-digit'
+  });
+}
+
+/**
  * Format a date object to a date and time string that follow the format describe below.
- * > Ex: `Mon, Apr 29, 2019 - 12:00:00 PM`
+ * > Ex: `Mon, Apr 29, 2019 - 12:00 PM`
  * @param date The date that will be formated.
  * @returns A string formated version of the date and time.
  */
 export function formatDateAndTime(date: Date) {
-    return `${formatDate(date)} - ${formatTime(date)}`;
+    return `${formatDate(date)} - ${formatTimeShort(date)}`;
+}
+
+/**
+ * Format a date object to a date and time string that follow the format describe below.
+ * > Ex: `Apr 29 - 12:00 PM`
+ * @param date The date that will be formated.
+ * @returns A string formated version of the date and time.
+ */
+export function formatDateAndTimeShort(date: Date) {
+  return `${formatDateShort(date)} - ${formatTimeShort(date)}`;
 }
 
 const SECOND = 1000;

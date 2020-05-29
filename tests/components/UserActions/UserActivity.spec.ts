@@ -4,7 +4,7 @@ import { Mock, Fake } from 'coveo-search-ui-tests';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 import { UserActivity } from '../../../src/Index';
 import { delay, fakeUserProfileModel } from '../../utils';
-import { formatDate, formatTime, formatTimeInterval } from '../../../src/utils/time';
+import { formatDate, formatTime, formatDateAndTime, formatDateAndTimeShort, formatTimeInterval } from '../../../src/utils/time';
 describe('UserActivity', () => {
     const TEST_DATE_STRING = 'December 17, 1995 1:00:00 AM';
     const ACTIVITY_SELECTOR = '.coveo-activity';
@@ -269,7 +269,7 @@ describe('UserActivity', () => {
             });
         });
 
-        it('should display the time of the event as event footer', () => {
+        it('should display the time of the event', () => {
             const mock = Mock.advancedComponentSetup<UserActivity>(
                 UserActivity,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
@@ -283,7 +283,28 @@ describe('UserActivity', () => {
 
                 expect(searchElement).not.toBeNull();
                 expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                    formatTime(FAKE_SEARCH_EVENT.timestamp)
+                    formatDateAndTimeShort(FAKE_SEARCH_EVENT.timestamp)
+                );
+            });
+        });
+
+        it('should display the time of the event in long format if in a wider interface', () => {
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
+                    return env;
+                })
+            );
+
+            Object.defineProperty( mock.cmp.element, 'clientWidth', {value: 500});
+
+            return delay(() => {
+                const searchElement = mock.cmp.element.querySelector('.coveo-search');
+
+                expect(searchElement).not.toBeNull();
+                expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
+                    formatDateAndTime(FAKE_SEARCH_EVENT.timestamp)
                 );
             });
         });
@@ -342,7 +363,7 @@ describe('UserActivity', () => {
                 expect(clickElement.querySelector<HTMLAnchorElement>('.coveo-data').href).toMatch(FAKE_CLICK_EVENT.document.clickUri);
             });
         });
-        it('should display the time of the event as event footer', () => {
+        it('should display the time of the event', () => {
             const mock = Mock.advancedComponentSetup<UserActivity>(
                 UserActivity,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
@@ -355,7 +376,28 @@ describe('UserActivity', () => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-click');
 
                 expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(formatTime(FAKE_CLICK_EVENT.timestamp));
+                expect(clickElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(formatDateAndTimeShort(FAKE_CLICK_EVENT.timestamp));
+            });
+        });
+
+        it('should display the time of the event in long format if in a wider interface', () => {
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
+                    return env;
+                })
+            );
+
+            Object.defineProperty( mock.cmp.element, 'clientWidth', {value: 500});
+
+            return delay(() => {
+                const searchElement = mock.cmp.element.querySelector('.coveo-search');
+
+                expect(searchElement).not.toBeNull();
+                expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
+                    formatDateAndTime(FAKE_SEARCH_EVENT.timestamp)
+                );
             });
         });
 
@@ -413,7 +455,7 @@ describe('UserActivity', () => {
             });
         });
 
-        it('should display the time of the event as event footer', () => {
+        it('should display the time of the event', () => {
             const mock = Mock.advancedComponentSetup<UserActivity>(
                 UserActivity,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
@@ -426,7 +468,28 @@ describe('UserActivity', () => {
                 const viewElement = mock.cmp.element.querySelector('.coveo-view');
 
                 expect(viewElement).not.toBeNull();
-                expect(viewElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(formatTime(FAKE_VIEW_EVENT.timestamp));
+                expect(viewElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(formatDateAndTimeShort(FAKE_VIEW_EVENT.timestamp));
+            });
+        });
+
+        it('should display the time of the event in long format if in a wider interface', () => {
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
+                    return env;
+                })
+            );
+
+            Object.defineProperty( mock.cmp.element, 'clientWidth', {value: 500});
+
+            return delay(() => {
+                const searchElement = mock.cmp.element.querySelector('.coveo-search');
+
+                expect(searchElement).not.toBeNull();
+                expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
+                    formatDateAndTime(FAKE_SEARCH_EVENT.timestamp)
+                );
             });
         });
 
@@ -500,7 +563,7 @@ describe('UserActivity', () => {
             });
         });
 
-        it('should display the time of the event as event footer', () => {
+        it('should display the time of the event', () => {
             const mock = Mock.advancedComponentSetup<UserActivity>(
                 UserActivity,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
@@ -514,7 +577,28 @@ describe('UserActivity', () => {
 
                 expect(clickElement).not.toBeNull();
                 expect(clickElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                    formatTime(FAKE_CUSTOM_EVENT.timestamp)
+                    formatDateAndTimeShort(FAKE_CUSTOM_EVENT.timestamp)
+                );
+            });
+        });
+
+        it('should display the time of the event in long format if in a wider interface', () => {
+            const mock = Mock.advancedComponentSetup<UserActivity>(
+                UserActivity,
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
+                    return env;
+                })
+            );
+
+            Object.defineProperty( mock.cmp.element, 'clientWidth', {value: 500});
+
+            return delay(() => {
+                const searchElement = mock.cmp.element.querySelector('.coveo-search');
+
+                expect(searchElement).not.toBeNull();
+                expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
+                    formatDateAndTime(FAKE_SEARCH_EVENT.timestamp)
                 );
             });
         });
