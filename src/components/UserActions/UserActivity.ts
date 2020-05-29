@@ -51,10 +51,10 @@ const CUSTOM_EVENT_CLASS = 'coveo-custom';
 const VIEW_EVENT_CLASS = 'coveo-view';
 const FOLDED_CLASS = 'coveo-folded';
 const TEXT_CLASS = 'coveo-text';
-
 const ICON_CLASS = 'coveo-icon';
-
 const BUBBLE_CLASS = 'coveo-bubble';
+
+const WIDTH_CUTOFF = 350;
 
 export class UserActivity extends Component {
     static readonly ID = 'UserActivity';
@@ -321,7 +321,7 @@ export class UserActivity extends Component {
     private buildTimestampElement(action: UserAction): HTMLElement {
         const el = document.createElement('div');
         el.classList.add(ACTIVIY_TIMESTAMP_CLASS);
-        el.innerText = this.element.clientWidth > 350 ? formatDateAndTime(action.timestamp) : formatDateAndTimeShort(action.timestamp);
+        el.innerText = this.element.offsetWidth > WIDTH_CUTOFF ? formatDateAndTime(action.timestamp) : formatDateAndTimeShort(action.timestamp);
         return el;
     }
 

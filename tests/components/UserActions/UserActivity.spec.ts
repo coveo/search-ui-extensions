@@ -89,6 +89,16 @@ describe('UserActivity', () => {
         })
     ];
 
+    const getMockComponent = (returnedActions: UserAction | UserAction[]) => {
+      return Mock.advancedComponentSetup<UserActivity>(
+          UserActivity,
+          new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+              fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(returnedActions));
+              return env;
+          })
+      );
+    }
+
     let sandbox: SinonSandbox;
 
     beforeAll(() => {
@@ -100,14 +110,7 @@ describe('UserActivity', () => {
     });
 
     it('should show the starting date and time of the user action session', () => {
-        const mock = Mock.advancedComponentSetup<UserActivity>(
-            UserActivity,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(FAKE_USER_ACTIONS));
-                return env;
-            })
-        );
-
+        const mock = getMockComponent(FAKE_USER_ACTIONS);
         const timestamps = FAKE_USER_ACTIONS.map(action => action.timestamp).sort();
 
         return delay(() => {
@@ -119,14 +122,7 @@ describe('UserActivity', () => {
     });
 
     it('should duration of the user action session', () => {
-        const mock = Mock.advancedComponentSetup<UserActivity>(
-            UserActivity,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(FAKE_USER_ACTIONS));
-                return env;
-            })
-        );
-
+        const mock = getMockComponent(FAKE_USER_ACTIONS);
         const timestamps = FAKE_USER_ACTIONS.map(action => action.timestamp).sort();
 
         return delay(() => {
@@ -135,13 +131,7 @@ describe('UserActivity', () => {
     });
 
     it('should fold each actions that are tagged as not meaningful', () => {
-        const mock = Mock.advancedComponentSetup<UserActivity>(
-            UserActivity,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]));
-                return env;
-            })
-        );
+        const mock = getMockComponent([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]);
 
         return delay(() => {
             IRRELEVANT_ACTIONS.forEach(action => {
@@ -151,13 +141,7 @@ describe('UserActivity', () => {
     });
 
     it('should show each actions that are tagged as meaningful', () => {
-        const mock = Mock.advancedComponentSetup<UserActivity>(
-            UserActivity,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]));
-                return env;
-            })
-        );
+        const mock = getMockComponent([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]);
 
         return delay(() => {
             FAKE_USER_ACTIONS.forEach(action => {
@@ -167,13 +151,7 @@ describe('UserActivity', () => {
     });
 
     it('should show all actions when no action are tagged as meaningful', () => {
-        const mock = Mock.advancedComponentSetup<UserActivity>(
-            UserActivity,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(IRRELEVANT_ACTIONS));
-                return env;
-            })
-        );
+        const mock = getMockComponent(IRRELEVANT_ACTIONS);
 
         return delay(() => {
             IRRELEVANT_ACTIONS.forEach(action => {
@@ -184,13 +162,7 @@ describe('UserActivity', () => {
 
     describe('folded events', () => {
         it('should unfold on click', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]);
 
             return delay(() => {
                 const folded = mock.cmp.element.querySelector<HTMLElement>('.coveo-folded');
@@ -207,21 +179,13 @@ describe('UserActivity', () => {
     describe('search event', () => {
         ['omniboxAnalytics', 'userActionsSubmit', 'omniboxFromLink', 'searchboxAsYouType', 'searchboxSubmit', 'searchFromLink'].map(cause => {
             it(`should display the "User Query" as event title when there is a query expression and the cause is ${cause}`, () => {
-                const mock = Mock.advancedComponentSetup<UserActivity>(
-                    UserActivity,
-                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                        fakeUserProfileModel(env.root, sandbox).getActions.returns(
-                            Promise.resolve([
-                                new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
-                                    origin_level_1: 'relevant' + Math.random(),
-                                    query_expression: 'someSearch' + Math.random(),
-                                    cause: cause
-                                })
-                            ])
-                        );
-                        return env;
-                    })
-                );
+                const mock = getMockComponent([
+                  new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
+                      origin_level_1: 'relevant' + Math.random(),
+                      query_expression: 'someSearch' + Math.random(),
+                      cause: cause
+                  })
+              ]);
 
                 return delay(async () => {
                     const clickElement = mock.cmp.element.querySelector('.coveo-search');
@@ -236,13 +200,7 @@ describe('UserActivity', () => {
         });
 
         it('should display the "Query" as event title', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_SEARCH_EVENT]);
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-search');
@@ -253,13 +211,7 @@ describe('UserActivity', () => {
         });
 
         it('should display the query made by the user as event data', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_USER_SEARCH_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_USER_SEARCH_EVENT]);
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-search');
@@ -270,13 +222,7 @@ describe('UserActivity', () => {
         });
 
         it('should display the time of the event', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_SEARCH_EVENT]);
 
             return delay(() => {
                 const searchElement = mock.cmp.element.querySelector('.coveo-search');
@@ -289,15 +235,9 @@ describe('UserActivity', () => {
         });
 
         it('should display the time of the event in long format if in a wider interface', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_SEARCH_EVENT]);
 
-            Object.defineProperty(mock.cmp.element, 'clientWidth', { value: 500 });
+            Object.defineProperty(mock.cmp.element, 'offsetWidth', { value: 500 });
 
             return delay(() => {
                 const searchElement = mock.cmp.element.querySelector('.coveo-search');
@@ -310,13 +250,7 @@ describe('UserActivity', () => {
         });
 
         it('should display the originLevel1 as event footer', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_SEARCH_EVENT]);
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-search');
@@ -329,13 +263,7 @@ describe('UserActivity', () => {
 
     describe('click event', () => {
         it('should display the "Clicked Document" as event title', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CLICK_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_CLICK_EVENT]);
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-click');
@@ -346,13 +274,7 @@ describe('UserActivity', () => {
         });
 
         it('should display a link to the clicked document as event data', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CLICK_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_CLICK_EVENT]);
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-click');
@@ -364,13 +286,7 @@ describe('UserActivity', () => {
             });
         });
         it('should display the time of the event', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CLICK_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_CLICK_EVENT]);
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-click');
@@ -383,34 +299,22 @@ describe('UserActivity', () => {
         });
 
         it('should display the time of the event in long format if in a wider interface', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_CLICK_EVENT]);
 
-            Object.defineProperty(mock.cmp.element, 'clientWidth', { value: 500 });
+            Object.defineProperty(mock.cmp.element, 'offsetWidth', { value: 500 });
 
             return delay(() => {
-                const searchElement = mock.cmp.element.querySelector('.coveo-search');
+                const searchElement = mock.cmp.element.querySelector('.coveo-click');
 
                 expect(searchElement).not.toBeNull();
                 expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                    formatDateAndTime(FAKE_SEARCH_EVENT.timestamp)
+                    formatDateAndTime(FAKE_CLICK_EVENT.timestamp)
                 );
             });
         });
 
         it('should display the originLevel1 as event footer', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CLICK_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_CLICK_EVENT]);
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-click');
@@ -423,13 +327,7 @@ describe('UserActivity', () => {
 
     describe('page view event', () => {
         it('should display the "Page View" as event title', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_VIEW_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_VIEW_EVENT]);
 
             return delay(() => {
                 const viewElement = mock.cmp.element.querySelector('.coveo-view');
@@ -440,13 +338,7 @@ describe('UserActivity', () => {
         });
 
         it('should display the content id key and value as event data', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_VIEW_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_VIEW_EVENT]);
 
             return delay(() => {
                 const viewElement = mock.cmp.element.querySelector('.coveo-view');
@@ -458,13 +350,7 @@ describe('UserActivity', () => {
         });
 
         it('should display the time of the event', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_VIEW_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_VIEW_EVENT]);
 
             return delay(() => {
                 const viewElement = mock.cmp.element.querySelector('.coveo-view');
@@ -477,34 +363,22 @@ describe('UserActivity', () => {
         });
 
         it('should display the time of the event in long format if in a wider interface', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_VIEW_EVENT]);
 
-            Object.defineProperty(mock.cmp.element, 'clientWidth', { value: 500 });
+            Object.defineProperty(mock.cmp.element, 'offsetWidth', { value: 500 });
 
             return delay(() => {
-                const searchElement = mock.cmp.element.querySelector('.coveo-search');
+                const searchElement = mock.cmp.element.querySelector('.coveo-view');
 
                 expect(searchElement).not.toBeNull();
                 expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                    formatDateAndTime(FAKE_SEARCH_EVENT.timestamp)
+                    formatDateAndTime(FAKE_VIEW_EVENT.timestamp)
                 );
             });
         });
 
         it('should display the originLevel1 as event footer', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_VIEW_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_VIEW_EVENT]);
 
             return delay(() => {
                 const viewElement = mock.cmp.element.querySelector('.coveo-view');
@@ -517,13 +391,7 @@ describe('UserActivity', () => {
 
     describe('custom event', () => {
         it('should display the event type as event title', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CUSTOM_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_CUSTOM_EVENT]);
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-custom');
@@ -534,13 +402,7 @@ describe('UserActivity', () => {
         });
 
         it('should display "Custom Action" as event title when the event type is unavailable', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CUSTOM_EVENT_WITHOUT_TYPE]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_CUSTOM_EVENT_WITHOUT_TYPE]);
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-custom');
@@ -551,13 +413,7 @@ describe('UserActivity', () => {
         });
 
         it('should display the event value as event data', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CUSTOM_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_CUSTOM_EVENT]);
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-custom');
@@ -568,13 +424,7 @@ describe('UserActivity', () => {
         });
 
         it('should display the time of the event', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CUSTOM_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_CUSTOM_EVENT]);
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-custom');
@@ -587,34 +437,22 @@ describe('UserActivity', () => {
         });
 
         it('should display the time of the event in long format if in a wider interface', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_SEARCH_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_CUSTOM_EVENT]);
 
-            Object.defineProperty(mock.cmp.element, 'clientWidth', { value: 500 });
+            Object.defineProperty(mock.cmp.element, 'offsetWidth', { value: 500 });
 
             return delay(() => {
-                const searchElement = mock.cmp.element.querySelector('.coveo-search');
+                const searchElement = mock.cmp.element.querySelector('.coveo-custom');
 
                 expect(searchElement).not.toBeNull();
                 expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                    formatDateAndTime(FAKE_SEARCH_EVENT.timestamp)
+                    formatDateAndTime(FAKE_CUSTOM_EVENT.timestamp)
                 );
             });
         });
 
         it('should display the originLevel1 as event footer', () => {
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([FAKE_CUSTOM_EVENT]));
-                    return env;
-                })
-            );
+            const mock = getMockComponent([FAKE_CUSTOM_EVENT]);
 
             return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-custom');
