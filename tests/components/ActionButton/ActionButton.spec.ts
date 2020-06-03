@@ -78,15 +78,15 @@ describe('ActionButton', () => {
             getSpy: () => appendIconSpy
         },
         {
-          optionName: 'tooltip',
-          optionValue: 'Some Tooltip',
-          getSpy: () => appendTooltipSpy
-        },
+            optionName: 'tooltip',
+            optionValue: 'Some Tooltip',
+            getSpy: () => appendTooltipSpy
+        }
     ].forEach(testCase => {
         describe(`with empty ${testCase.optionName} option`, () => {
             beforeEach(() => {
-              setOption(testCase.optionName, null);
-              testSubject = createActionButton(options);
+                setOption(testCase.optionName, null);
+                testSubject = createActionButton(options);
             });
 
             it(`should not include the ${testCase.optionName}`, () => {
@@ -114,7 +114,7 @@ describe('ActionButton', () => {
     };
 
     const setOption = (optionName: string, optionValue: any) => {
-      const dictOptions = options as { [key: string]: any };
-      dictOptions[optionName] = optionValue;
-    }
+        const dictOptions = options as { [key: string]: any };
+        dictOptions[optionName] = optionValue;
+    };
 });
