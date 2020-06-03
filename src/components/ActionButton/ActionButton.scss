@@ -6,8 +6,10 @@ $primary-color-light: #e5e5e5;
 $primary-color-dark: #4a4a4a;
 $accent-color: $calypso;
 
+$button-size: 36px;
+
 button.CoveoActionButton.coveo-actionbutton {
-    height: 36px;
+    height: $button-size;
     border: solid 2px $primary-color-light;
     border-radius: 3px;
     background-color: $primary-color-lightest;
@@ -19,12 +21,12 @@ button.CoveoActionButton.coveo-actionbutton {
 }
 
 .CoveoActionButton {
-    &:not(.coveo-actionbutton-icon) {
+    &:not(.coveo-actionbutton-icononly) {
         padding: 0 16px;
     }
 
-    &.coveo-actionbutton-icon {
-        width: 36px;
+    &.coveo-actionbutton-icononly {
+        width: $button-size;
     }
 
     .coveo-actionbutton_icon {

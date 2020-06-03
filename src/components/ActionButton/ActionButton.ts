@@ -57,7 +57,7 @@ export class ActionButton extends Component {
         this.element.classList.add('coveo-actionbutton');
 
         if (this.options.icon && !this.options.title) {
-            this.element.classList.add('coveo-actionbutton-icon');
+            this.element.classList.add('coveo-actionbutton-icononly');
         }
     }
 
