@@ -297,7 +297,7 @@ export class UserActivity extends Component {
 
         const titleSection = this.buildTitleSection(action);
         titleSection.querySelector(`.${ACTIVITY_TITLE_CLASS}`).remove();
-        titleSection.prepend(titleElem);
+        titleSection.insertBefore(titleElem, titleSection.firstChild);
 
         const dataElement = document.createElement('div');
         dataElement.classList.add(DATA_CLASS);
