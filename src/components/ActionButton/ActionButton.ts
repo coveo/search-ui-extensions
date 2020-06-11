@@ -71,7 +71,7 @@ export class ActionButton extends Component {
          *
          * This option must be set in JavaScript when initializing the component.
          */
-        click: ComponentOptions.buildCustomOption(s => null)
+        click: ComponentOptions.buildCustomOption(s => null, { required: true })
     };
 
     constructor(public element: HTMLElement, public options: IActionButtonOptions, public bindings?: IResultsComponentBindings) {
@@ -88,8 +88,6 @@ export class ActionButton extends Component {
 
         if (this.options.click) {
             Coveo.$$(element).on('click', () => this.options.click());
-        } else {
-            console.warn('The ActionButton has no click handler. Did you forget to set the component click option?');
         }
     }
 
