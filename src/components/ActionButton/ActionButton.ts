@@ -62,7 +62,16 @@ export class ActionButton extends Component {
          * <button class='CoveoActionButton' data-icon='&lt;svg width=&quot;1em&quot; height=&quot;1em&quot;&gt;...&lt;/svg&gt;'></button>
          * ```
          */
-        icon: ComponentOptions.buildStringOption()
+        icon: ComponentOptions.buildStringOption(),
+
+        /**
+         * Specifies the handler called when the button is clicked.
+         *
+         * Default is `null`.
+         *
+         * This option must be set in JavaScript when initializing the component.
+         */
+        click: ComponentOptions.buildCustomOption(s => null)
     };
 
     constructor(public element: HTMLElement, public options: IActionButtonOptions, public bindings?: IResultsComponentBindings) {
