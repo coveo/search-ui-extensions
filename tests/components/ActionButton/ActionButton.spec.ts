@@ -7,31 +7,31 @@ describe('ActionButton', () => {
     let sandbox: SinonSandbox;
     let options: IActionButtonOptions;
     let testSubject: ActionButton;
-
-    let appendIconSpy: SinonSpy;
-    let appendTitleSpy: SinonSpy;
-    let appendTooltipSpy: SinonSpy;
+    let consoleWarnSpy: SinonSpy;
 
     beforeAll(() => {
         sandbox = createSandbox();
     });
 
     beforeEach(() => {
+        consoleWarnSpy = sandbox.spy(console, 'warn');
+
         options = {
             title: 'a default title',
             tooltip: 'a default tooltip',
-            icon: icons.copy
+            icon: icons.copy,
+            click: () => {}
         };
 
         testSubject = createActionButton(options);
-
-        appendIconSpy = sandbox.spy(<any>ActionButton.prototype, 'appendIcon');
-        appendTitleSpy = sandbox.spy(<any>ActionButton.prototype, 'appendTitle');
-        appendTooltipSpy = sandbox.spy(<any>ActionButton.prototype, 'appendTooltip');
     });
 
     afterEach(() => {
         sandbox.restore();
+    });
+
+    it('should not log warnings in the console', () => {
+        expect(consoleWarnSpy.called).toBeFalse();
     });
 
     describe('with click option', () => {
@@ -50,19 +50,46 @@ describe('ActionButton', () => {
         });
     });
 
+    describe('without click option', () => {
+        beforeEach(() => {
+            options.click = null;
+            testSubject = createActionButton(options);
+        });
+
+        it('should log a warning in the console', () => {
+            expect(consoleWarnSpy.called).toBeTrue();
+        });
+    });
+
     describe('without icon and title', () => {
-        let renderSpy: SinonSpy;
+        let hideElementSpy: SinonSpy;
 
         beforeEach(() => {
-            renderSpy = sandbox.spy(<any>ActionButton.prototype, 'render');
+            hideElementSpy = sandbox.spy(Coveo.Dom.prototype, 'hide');
+
             options.title = '';
             options.icon = '';
+            options.click = () => {};
 
             testSubject = createActionButton(options);
         });
 
-        it('should not render the button', () => {
-            expect(renderSpy.called).toBeFalse();
+        it('should not render the button icon child element', () => {
+            const iconChild = testSubject.element.querySelector('.coveo-actionbutton_icon');
+            expect(iconChild).toBeNull();
+        });
+
+        it('should not render the title child element', () => {
+            const titleChild = testSubject.element.querySelector('.coveo-actionbutton_title');
+            expect(titleChild).toBeNull();
+        });
+
+        it('should hide the button element', () => {
+            expect(hideElementSpy.called).toBeTrue();
+        });
+
+        it('should log a warning in the console', () => {
+            expect(consoleWarnSpy.called).toBeTrue();
         });
     });
 
@@ -70,17 +97,17 @@ describe('ActionButton', () => {
         {
             optionName: 'title',
             optionValue: 'some title',
-            getSpy: () => appendTitleSpy
+            expectedSelector: '.coveo-actionbutton_title'
         },
         {
             optionName: 'icon',
             optionValue: icons.copy,
-            getSpy: () => appendIconSpy
+            expectedSelector: '.coveo-actionbutton_icon'
         },
         {
             optionName: 'tooltip',
             optionValue: 'Some Tooltip',
-            getSpy: () => appendTooltipSpy
+            expectedSelector: '.CoveoActionButton[title]'
         }
     ].forEach(testCase => {
         describe(`with empty ${testCase.optionName} option`, () => {
@@ -89,8 +116,9 @@ describe('ActionButton', () => {
                 testSubject = createActionButton(options);
             });
 
-            it(`should not include the ${testCase.optionName}`, () => {
-                expect(testCase.getSpy().called).toBeFalse();
+            it(`should not include the element matching '${testCase.expectedSelector}'`, () => {
+                const actual = testSubject.element.querySelector(testCase.expectedSelector);
+                expect(actual).toBeNull();
             });
         });
 
@@ -100,8 +128,9 @@ describe('ActionButton', () => {
                 testSubject = createActionButton(options);
             });
 
-            it(`should include the ${testCase.optionName}`, () => {
-                expect(testCase.getSpy().called).toBeTrue();
+            it(`should include the element matching '${testCase.expectedSelector}'`, () => {
+                const actual = testSubject.element.querySelector(testCase.expectedSelector);
+                expect(actual).toBeDefined();
             });
         });
     });
@@ -109,7 +138,6 @@ describe('ActionButton', () => {
     const createActionButton = (options: IActionButtonOptions) => {
         const element = document.createElement('button');
         const componentSetup = Mock.advancedComponentSetup<ActionButton>(ActionButton, new Mock.AdvancedComponentSetupOptions(element, options));
-
         return componentSetup.cmp;
     };
 

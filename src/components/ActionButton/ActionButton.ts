@@ -79,6 +79,8 @@ export class ActionButton extends Component {
 
         if (this.options.click) {
             Coveo.$$(element).on('click', () => this.options.click());
+        } else {
+            console.warn('The ActionButton has no click handler. Did you forget to set the component click option?');
         }
     }
 
