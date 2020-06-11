@@ -7,6 +7,13 @@ export interface IActionButtonOptions {
     click?: () => void;
 }
 
+/**
+ * The _ActionButton_ component is a simple button allowing to show an icon, text, and tooltip.
+ *
+ * ```html
+ * <button class='CoveoActionButton'></button>
+ * ```
+ */
 export class ActionButton extends Component {
     static ID = 'ActionButton';
 
@@ -15,10 +22,46 @@ export class ActionButton extends Component {
      * @componentOptions
      */
     static options: IActionButtonOptions = {
+        /**
+         * Specifies the button label. The text is displayed on a single line, next to the icon.
+         *
+         * Default is the empty string.
+         *
+         * ```html
+         * <button class='CoveoActionButton' data-title='My Button'></button>
+         * ```
+         */
         title: ComponentOptions.buildStringOption(),
 
+        /**
+         * Specifies the button tooltip text.
+         *
+         * Default is the empty string.
+         *
+         * ```html
+         * <button class='CoveoActionButton' data-tooltip='My button tooltip'></button>
+         * ```
+         */
         tooltip: ComponentOptions.buildStringOption(),
 
+        /**
+         * Specifies the button SVG icon.
+         * Note: The SVG markup has to be HTML encoded when set using the HTML attributes.
+         *
+         * Default is the empty string.
+         *
+         * For example, with this SVG markup:
+         *
+         * ```xml
+         * <svg width="1em" height="1em">...</svg>
+         * ```
+         *
+         * The attribute would be set like this:
+         *
+         * ```html
+         * <button class='CoveoActionButton' data-icon='&lt;svg width=&quot;1em&quot; height=&quot;1em&quot;&gt;...&lt;/svg&gt;'></button>
+         * ```
+         */
         icon: ComponentOptions.buildStringOption()
     };
 
