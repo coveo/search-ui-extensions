@@ -1,0 +1,62 @@
+@import '../../sass/Variables.scss';
+
+$primary-color-lightest: #ffffff;
+$primary-color-lightest-hover: whitesmoke;
+$primary-color-light: #e5e5e5;
+$primary-color-dark: #4a4a4a;
+$accent-color: $calypso;
+
+$button-size: 36px;
+
+button.CoveoActionButton.coveo-actionbutton {
+    height: $button-size;
+    border: solid 2px $primary-color-light;
+    border-radius: 3px;
+    background-color: $primary-color-lightest;
+    color: $primary-color-dark;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.CoveoActionButton {
+    &:not(.coveo-actionbutton-icononly) {
+        padding: 0 16px;
+    }
+
+    &.coveo-actionbutton-icononly {
+        width: $button-size;
+    }
+
+    .coveo-actionbutton_icon {
+        line-height: 0;
+        font-size: 16px;
+
+        svg {
+            height: 1em;
+            width: 1em;
+            fill: $primary-color-dark;
+        }
+
+        + .coveo-actionbutton_title {
+            margin-left: 8px;
+        }
+    }
+
+    + .coveo-actionbutton {
+        margin-left: 5px;
+    }
+}
+
+.CoveoActionButton.coveo-actionbutton:hover,
+.CoveoActionButton.coveo-actionbutton:active {
+    & {
+        color: $accent-color;
+        background-color: $primary-color-lightest-hover;
+    }
+
+    .coveo-actionbutton_icon svg {
+        fill: $accent-color;
+    }
+}

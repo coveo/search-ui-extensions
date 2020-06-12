@@ -1,5 +1,6 @@
 // This entry point defines all the components that are included in the extensions.
 
+export { ActionButton } from './components/ActionButton/ActionButton';
 export { AttachResult } from './components/AttachResult/AttachResult';
 export { UserActivity } from './components/UserActions/UserActivity';
 export { UserActions } from './components/UserActions/UserActions';
