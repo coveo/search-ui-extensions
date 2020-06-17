@@ -1,0 +1,15 @@
+@import './ActionButton.scss';
+@import '../../sass/Variables.scss';
+
+$activated-color: $calypso;
+
+button.CoveoActionButton.coveo-actionbutton.coveo-toggleactionbutton-activated {
+    background-color: $activated-color;
+    border-color: $activated-color;
+
+    .coveo-actionbutton_icon {
+        svg {
+            fill: $primary-color-lightest;
+        }
+    }
+}
