@@ -4,8 +4,8 @@ import { ActionButton } from './ActionButton';
 export interface IToggleActionButtonOptions {
     activatedIcon: string;
     activatedTooltip: string;
-    icon: string;
-    tooltip: string;
+    deactivatedIcon: string;
+    deactivatedTooltip: string;
     click?: () => void;
     activate?: () => void;
     deactivate?: () => void;
@@ -47,7 +47,7 @@ export class ToggleActionButton extends Component {
         activatedTooltip: ComponentOptions.buildStringOption(),
 
         /**
-         * Specifies the button SVG icon.
+         * Specifies the button SVG icon when the button is deactivated.
          * Note: The SVG markup has to be HTML encoded when set using the HTML attributes.
          *
          * Default is the empty string.
@@ -61,21 +61,21 @@ export class ToggleActionButton extends Component {
          * The attribute would be set like this:
          *
          * ```html
-         * <button class='CoveoToggleActionButton' data-icon='&lt;svg width=&quot;1em&quot; height=&quot;1em&quot;&gt;...&lt;/svg&gt;'></button>
+         * <button class='CoveoToggleActionButton' data-deactivated-icon='&lt;svg width=&quot;1em&quot; height=&quot;1em&quot;&gt;...&lt;/svg&gt;'></button>
          * ```
          */
-        icon: ComponentOptions.buildStringOption(),
+        deactivatedIcon: ComponentOptions.buildStringOption(),
 
         /**
-         * Specifies the button tooltip text.
+         * Specifies the button tooltip text when the button is deactivated.
          *
          * Default is the empty string.
          *
          * ```html
-         * <button class='CoveoToggleActionButton' data-tooltip='My button tooltip'></button>
+         * <button class='CoveoToggleActionButton' data-deactivated-tooltip='My button tooltip'></button>
          * ```
          */
-        tooltip: ComponentOptions.buildStringOption(),
+        deactivatedTooltip: ComponentOptions.buildStringOption(),
 
         /**
          * Specifies the handler called when the button is clicked.
@@ -152,8 +152,8 @@ export class ToggleActionButton extends Component {
         this.innerActionButton = new ActionButton(
             this.element,
             {
-                icon: this.options.icon,
-                tooltip: this.options.tooltip,
+                icon: this.options.deactivatedIcon,
+                tooltip: this.options.deactivatedTooltip,
                 click: () => this.onClick()
             },
             bindings
@@ -173,8 +173,8 @@ export class ToggleActionButton extends Component {
             this.element.classList.remove(ToggleActionButton.ACTIVATED_CLASS_NAME);
             this.element.setAttribute('aria-pressed', 'false');
 
-            this.innerActionButton.updateIcon(this.options.icon);
-            this.innerActionButton.updateTooltip(this.options.tooltip);
+            this.innerActionButton.updateIcon(this.options.deactivatedIcon);
+            this.innerActionButton.updateTooltip(this.options.deactivatedTooltip);
         }
     }
 }

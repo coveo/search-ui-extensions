@@ -29,8 +29,8 @@ describe('ToggleActionButton', () => {
         options = {
             activatedIcon: icons.duplicate,
             activatedTooltip: 'activated tooltip',
-            icon: icons.copy,
-            tooltip: 'tooltip',
+            deactivatedIcon: icons.copy,
+            deactivatedTooltip: 'tooltip',
             click: clickSpy,
             activate: activateSpy,
             deactivate: deactivateSpy
@@ -121,12 +121,12 @@ describe('ToggleActionButton', () => {
             expect(attributeValue).toEqual('false');
         });
 
-        it('should update button with icon', () => {
-            expect(updateIconSpy.calledWith(options.icon)).toBeTrue();
+        it('should update button with deactivated icon', () => {
+            expect(updateIconSpy.calledWith(options.deactivatedIcon)).toBeTrue();
         });
 
-        it('should update button with tooltip', () => {
-            expect(updateTooltipSpy.calledWith(options.tooltip)).toBeTrue();
+        it('should update button with deactivated tooltip', () => {
+            expect(updateTooltipSpy.calledWith(options.deactivatedTooltip)).toBeTrue();
         });
     });
 });
