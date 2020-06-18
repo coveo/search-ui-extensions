@@ -13,6 +13,7 @@ export interface IToggleActionButtonOptions {
 
 export class ToggleActionButton extends Component {
     static ID = 'ToggleActionButton';
+    static ACTIVATED_CLASS_NAME = 'coveo-toggleactionbutton-activated';
 
     static options: IToggleActionButtonOptions = {
         /**
@@ -76,16 +77,35 @@ export class ToggleActionButton extends Component {
          */
         tooltip: ComponentOptions.buildStringOption(),
 
+        /**
+         * Specifies the handler called when the button is clicked.
+         *
+         * Default is `null`.
+         *
+         * This option is set in JavaScript when initializing the component.
+         */
         click: ComponentOptions.buildCustomOption(s => null),
 
+        /**
+         * Specifies the handler called when the button is activated.
+         *
+         * Default is `null`.
+         *
+         * This option is set in JavaScript when initializing the component.
+         */
         activate: ComponentOptions.buildCustomOption(s => null),
 
+        /**
+         * Specifies the handler called when the button is deactivated.
+         *
+         * Default is `null`.
+         *
+         * This option is set in JavaScript when initializing the component.
+         */
         deactivate: ComponentOptions.buildCustomOption(s => null)
     };
 
-    private static ACTIVATED_CLASS_NAME = 'coveo-toggleactionbutton-activated';
-
-    private isActivated: boolean = false;
+    private _isActivated: boolean = false;
     private innerButton: ActionButton;
 
     constructor(public element: HTMLElement, public options: IToggleActionButtonOptions, public bindings?: IResultsComponentBindings) {
@@ -93,6 +113,39 @@ export class ToggleActionButton extends Component {
         this.options = ComponentOptions.initComponentOptions(element, ToggleActionButton, options);
 
         this.createInnerButton(bindings);
+    }
+
+    /**
+     * Indicates whether the toggle button is in the activated state.
+     */
+    public isActivated(): boolean {
+        return this._isActivated;
+    }
+
+    /**
+     * Sets the toggle button to the specified state.
+     * @param activated Whether the button is activated.
+     */
+    public setActivated(activated: boolean): void {
+        if (activated !== this.isActivated()) {
+            this._isActivated = activated;
+            this.updateButton();
+
+            if (this._isActivated && this.options.activate) {
+                this.options.activate();
+            }
+            if (!this._isActivated && this.options.deactivate) {
+                this.options.deactivate();
+            }
+        }
+    }
+
+    protected onClick(): void {
+        this.setActivated(!this.isActivated());
+
+        if (this.options.click) {
+            this.options.click();
+        }
     }
 
     private createInnerButton(bindings?: IResultsComponentBindings): void {
@@ -109,23 +162,8 @@ export class ToggleActionButton extends Component {
         this.updateButton();
     }
 
-    protected onClick(): void {
-        this.isActivated = !this.isActivated;
-        this.updateButton();
-
-        if (this.options.click) {
-            this.options.click();
-        }
-        if (this.isActivated && this.options.activate) {
-            this.options.activate();
-        }
-        if (!this.isActivated && this.options.deactivate) {
-            this.options.deactivate();
-        }
-    }
-
     private updateButton() {
-        if (this.isActivated) {
+        if (this._isActivated) {
             this.element.classList.add(ToggleActionButton.ACTIVATED_CLASS_NAME);
             this.element.setAttribute('aria-pressed', 'true');
 
