@@ -91,6 +91,10 @@ export class ActionButton extends Component {
         }
     }
 
+    /**
+     * Updates the button icon.
+     * @param icon Markup of the SVG icon to set.
+     */
     public updateIcon(icon: string): void {
         const iconElement = this.element.querySelector('.coveo-actionbutton_icon');
         if (iconElement && icon && icon != iconElement.innerHTML) {
@@ -98,6 +102,10 @@ export class ActionButton extends Component {
         }
     }
 
+    /**
+     * Updates the button tooltip.
+     * @param tooltip The tooltip to set.
+     */
     public updateTooltip(tooltip: string): void {
         if (tooltip && tooltip != this.element.title) {
             this.element.title = tooltip;

@@ -1,4 +1,4 @@
-import { SinonSandbox, createSandbox, spy, SinonSpy } from 'sinon';
+import { SinonSandbox, createSandbox, SinonSpy } from 'sinon';
 import { Mock } from 'coveo-search-ui-tests';
 import { IToggleActionButtonOptions, ToggleActionButton } from '../../../src/components/ActionButton/ToggleActionButton';
 import * as icons from '../../../src/utils/icons';
@@ -18,11 +18,11 @@ describe('ToggleActionButton', () => {
     beforeAll(() => {
         sandbox = createSandbox();
 
-        clickSpy = spy();
-        activateSpy = spy();
-        deactivateSpy = spy();
-        updateIconSpy = spy(<any>ActionButton.prototype, 'updateIcon');
-        updateTooltipSpy = spy(<any>ActionButton.prototype, 'updateTooltip');
+        clickSpy = sandbox.spy();
+        activateSpy = sandbox.spy();
+        deactivateSpy = sandbox.spy();
+        updateIconSpy = sandbox.spy(<any>ActionButton.prototype, 'updateIcon');
+        updateTooltipSpy = sandbox.spy(<any>ActionButton.prototype, 'updateTooltip');
     });
 
     beforeEach(() => {
@@ -40,7 +40,7 @@ describe('ToggleActionButton', () => {
     });
 
     afterEach(() => {
-        sandbox.restore();
+        sandbox.reset();
     });
 
     function createToggleButton(options: IToggleActionButtonOptions) {
@@ -98,7 +98,7 @@ describe('ToggleActionButton', () => {
     describe('deactivating the button', () => {
         beforeEach(() => {
             testSubject.setActivated(true);
-            [clickSpy, activateSpy, deactivateSpy, updateIconSpy, updateTooltipSpy].forEach(s => s.resetHistory());
+            sandbox.reset();
 
             testSubject.setActivated(false);
         });

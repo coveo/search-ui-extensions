@@ -106,7 +106,7 @@ export class ToggleActionButton extends Component {
     };
 
     private _isActivated: boolean = false;
-    private innerButton: ActionButton;
+    private innerActionButton: ActionButton;
 
     constructor(public element: HTMLElement, public options: IToggleActionButtonOptions, public bindings?: IResultsComponentBindings) {
         super(element, ToggleActionButton.ID, bindings);
@@ -149,7 +149,7 @@ export class ToggleActionButton extends Component {
     }
 
     private createInnerButton(bindings?: IResultsComponentBindings): void {
-        this.innerButton = new ActionButton(
+        this.innerActionButton = new ActionButton(
             this.element,
             {
                 icon: this.options.icon,
@@ -167,14 +167,14 @@ export class ToggleActionButton extends Component {
             this.element.classList.add(ToggleActionButton.ACTIVATED_CLASS_NAME);
             this.element.setAttribute('aria-pressed', 'true');
 
-            this.innerButton.updateIcon(this.options.activatedIcon);
-            this.innerButton.updateTooltip(this.options.activatedTooltip);
+            this.innerActionButton.updateIcon(this.options.activatedIcon);
+            this.innerActionButton.updateTooltip(this.options.activatedTooltip);
         } else {
             this.element.classList.remove(ToggleActionButton.ACTIVATED_CLASS_NAME);
             this.element.setAttribute('aria-pressed', 'false');
 
-            this.innerButton.updateIcon(this.options.icon);
-            this.innerButton.updateTooltip(this.options.tooltip);
+            this.innerActionButton.updateIcon(this.options.icon);
+            this.innerActionButton.updateTooltip(this.options.tooltip);
         }
     }
 }
