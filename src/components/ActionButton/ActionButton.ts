@@ -1,9 +1,9 @@
 import { Component, ComponentOptions, IResultsComponentBindings, Initialization } from 'coveo-search-ui';
 
 export interface IActionButtonOptions {
+    icon?: string;
     title?: string;
     tooltip?: string;
-    icon?: string;
     click?: () => void;
 }
 
@@ -88,6 +88,27 @@ export class ActionButton extends Component {
 
         if (this.options.click) {
             Coveo.$$(element).on('click', () => this.options.click());
+        }
+    }
+
+    /**
+     * Updates the button icon.
+     * @param icon Markup of the SVG icon to set.
+     */
+    public updateIcon(icon: string): void {
+        const iconElement = this.element.querySelector('.coveo-actionbutton_icon');
+        if (iconElement && icon && icon != iconElement.innerHTML) {
+            iconElement.innerHTML = icon;
+        }
+    }
+
+    /**
+     * Updates the button tooltip.
+     * @param tooltip The tooltip to set.
+     */
+    public updateTooltip(tooltip: string): void {
+        if (tooltip && tooltip != this.element.title) {
+            this.element.title = tooltip;
         }
     }
 

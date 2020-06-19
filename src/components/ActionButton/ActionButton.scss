@@ -1,10 +1,7 @@
-@import '../../sass/Variables.scss';
-
 $primary-color-lightest: #ffffff;
 $primary-color-lightest-hover: whitesmoke;
 $primary-color-light: #e5e5e5;
 $primary-color-dark: #4a4a4a;
-$accent-color: $calypso;
 
 $button-size: 36px;
 
@@ -52,11 +49,11 @@ button.CoveoActionButton.coveo-actionbutton {
 .CoveoActionButton.coveo-actionbutton:hover,
 .CoveoActionButton.coveo-actionbutton:active {
     & {
-        color: $accent-color;
+        color: $primary-color-dark;
         background-color: $primary-color-lightest-hover;
     }
 
     .coveo-actionbutton_icon svg {
-        fill: $accent-color;
+        fill: $primary-color-dark;
     }
 }

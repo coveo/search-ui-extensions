@@ -30,6 +30,27 @@ describe('ActionButton', () => {
         sandbox.restore();
     });
 
+    function createActionButton(options: IActionButtonOptions) {
+        const element = document.createElement('button');
+        const componentSetup = Mock.advancedComponentSetup<ActionButton>(ActionButton, new Mock.AdvancedComponentSetupOptions(element, options));
+        return componentSetup.cmp;
+    }
+
+    function setOption(optionName: string, optionValue: any) {
+        const dictOptions = options as { [key: string]: any };
+        dictOptions[optionName] = optionValue;
+    }
+
+    function assertIconsAreEqual(actualIcon: string, expectedIcon: string) {
+        const actualElement = document.createElement('span');
+        actualElement.innerHTML = actualIcon;
+
+        const expectedElement = document.createElement('span');
+        expectedElement.innerHTML = expectedIcon;
+
+        expect(actualElement.innerHTML).toEqual(expectedElement.innerHTML);
+    }
+
     it('should not log warnings in the console', () => {
         expect(consoleWarnSpy.called).toBeFalse();
     });
@@ -93,6 +114,24 @@ describe('ActionButton', () => {
         });
     });
 
+    describe('updateIcon', () => {
+        it('should update the button icon', () => {
+            testSubject.updateIcon(icons.duplicate);
+
+            const iconChild = testSubject.element.querySelector('.coveo-actionbutton_icon');
+            assertIconsAreEqual(iconChild.innerHTML, icons.duplicate);
+        });
+    });
+
+    describe('updateTooltip', () => {
+        it('should update the button tooltip', () => {
+            const newTooltip = 'some new tooltip';
+            testSubject.updateTooltip(newTooltip);
+
+            expect(testSubject.element.title).toEqual(newTooltip);
+        });
+    });
+
     [
         {
             optionName: 'title',
@@ -134,15 +173,4 @@ describe('ActionButton', () => {
             });
         });
     });
-
-    const createActionButton = (options: IActionButtonOptions) => {
-        const element = document.createElement('button');
-        const componentSetup = Mock.advancedComponentSetup<ActionButton>(ActionButton, new Mock.AdvancedComponentSetupOptions(element, options));
-        return componentSetup.cmp;
-    };
-
-    const setOption = (optionName: string, optionValue: any) => {
-        const dictOptions = options as { [key: string]: any };
-        dictOptions[optionName] = optionValue;
-    };
 });
