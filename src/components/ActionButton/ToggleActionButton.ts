@@ -34,7 +34,7 @@ export class ToggleActionButton extends Component {
          * <button class='CoveoToggleActionButton' data-activate-icon='&lt;svg width=&quot;1em&quot; height=&quot;1em&quot;&gt;...&lt;/svg&gt;'></button>
          * ```
          */
-        activateIcon: ComponentOptions.buildStringOption(),
+        activateIcon: ComponentOptions.buildStringOption({ alias: 'deactivatedIcon' }),
 
         /**
          * Specifies the button tooltip text displayed to activate the button.
@@ -45,7 +45,7 @@ export class ToggleActionButton extends Component {
          * <button class='CoveoToggleActionButton' data-activate-tooltip='Activate the feature'></button>
          * ```
          */
-        activateTooltip: ComponentOptions.buildStringOption(),
+        activateTooltip: ComponentOptions.buildStringOption({ alias: 'deactivatedTooltip' }),
 
         /**
          * Specifies the button icon displayed to deactivate the button.
@@ -64,7 +64,7 @@ export class ToggleActionButton extends Component {
          * <button class='CoveoToggleActionButton' data-deactivate-icon='&lt;svg width=&quot;1em&quot; height=&quot;1em&quot;&gt;...&lt;/svg&gt;'></button>
          * ```
          */
-        deactivateIcon: ComponentOptions.buildStringOption(),
+        deactivateIcon: ComponentOptions.buildStringOption({ alias: 'activatedIcon' }),
 
         /**
          * Specifies the button tooltip displayed to deactivate the button.
@@ -75,7 +75,7 @@ export class ToggleActionButton extends Component {
          * <button class='CoveoToggleActionButton' data-deactivate-tooltip='Deactivate the feature'></button>
          * ```
          */
-        deactivateTooltip: ComponentOptions.buildStringOption(),
+        deactivateTooltip: ComponentOptions.buildStringOption({ alias: 'activatedTooltip' }),
 
         /**
          * Specifies the handler called when the button is clicked.

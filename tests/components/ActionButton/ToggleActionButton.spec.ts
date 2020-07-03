@@ -3,6 +3,7 @@ import { Mock } from 'coveo-search-ui-tests';
 import { IToggleActionButtonOptions, ToggleActionButton } from '../../../src/components/ActionButton/ToggleActionButton';
 import * as icons from '../../../src/utils/icons';
 import { ActionButton } from '../../../src/components/ActionButton/ActionButton';
+import { IComponentOptions } from 'coveo-search-ui';
 
 describe('ToggleActionButton', () => {
     let sandbox: SinonSandbox;
@@ -50,6 +51,11 @@ describe('ToggleActionButton', () => {
             new Mock.AdvancedComponentSetupOptions(element, options)
         );
         return componentSetup.cmp;
+    }
+
+    function getOption(optionName: string): IComponentOptions<any> {
+        const dictOptions = ToggleActionButton.options as { [key: string]: any };
+        return dictOptions[optionName] as IComponentOptions<any>;
     }
 
     describe('clicking the button', () => {
@@ -127,6 +133,21 @@ describe('ToggleActionButton', () => {
 
         it('should update button with activate tooltip', () => {
             expect(updateTooltipSpy.calledWith(options.activateTooltip)).toBeTrue();
+        });
+    });
+
+    describe('legacy options compatibility', () => {
+        [
+            { legacy: 'activatedIcon', current: 'deactivateIcon' },
+            { legacy: 'activatedTooltip', current: 'deactivateTooltip' },
+            { legacy: 'deactivatedIcon', current: 'activateIcon' },
+            { legacy: 'deactivatedTooltip', current: 'activateTooltip' }
+        ].forEach(({ legacy, current }) => {
+            it(`should support legacy '${legacy}' option through '${current}'`, () => {
+                const option = getOption(current);
+
+                expect(option.alias).toContain(legacy);
+            });
         });
     });
 });
