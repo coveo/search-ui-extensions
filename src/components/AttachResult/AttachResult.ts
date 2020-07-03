@@ -23,6 +23,10 @@ export interface IAttachResultOptions {
     attachCaption?: string;
     /** Specifies the tooltip displayed when the result is already attached. */
     detachCaption?: string;
+    /** The field of the query result which represents the Article ID in the index, used for Usage Analytics purposes. */
+    articleIdField?: string;
+    /** Id of the record where the search is currently displayed, if any. */
+    caseId?: string;
     /** The function that is called when the user wants to attach a result. */
     attach?: (queryResult: IQueryResult) => Promise<void>;
     /** The function called when the user wants to un-link a result. */
@@ -50,6 +54,10 @@ export class AttachResult extends Component {
         detachCaption: ComponentOptions.buildStringOption({
             defaultValue: l(`${AttachResult.ID}_Detach`)
         }),
+        articleIdField: ComponentOptions.buildStringOption({
+            defaultValue: 'permanentid'
+        }),
+        caseId: ComponentOptions.buildStringOption(),
         attach: ComponentOptions.buildCustomOption(
             name => (result: IQueryResult) =>
                 new Promise<void>((resolve, reject) => {
@@ -116,6 +124,7 @@ export class AttachResult extends Component {
             .attach(this.queryResult)
             .then(() => {
                 this.attached = true;
+                this.usageAnalytics.logClickEvent(analyticsActionCauseList.caseAttach, {}, this.queryResult, this.element);
                 this.logAnalyticsCaseEvent(analyticsActionCauseList.caseAttach);
                 Coveo.$$(this.root).trigger(AttachResultEvents.Attach, { queryResult: this.queryResult } as IAttachResultEventArgs);
             })
@@ -194,8 +203,11 @@ export class AttachResult extends Component {
         let customData: IAnalyticsCaseAttachMeta = {
             resultUriHash: this.queryResult.raw.urihash,
             author: this.queryResult.raw.author,
-            articleID: null,
-            caseID: null
+            articleID:
+                this.options.articleIdField && this.queryResult.raw[this.options.articleIdField]
+                    ? this.queryResult.raw[this.options.articleIdField]
+                    : null,
+            caseID: this.options.caseId
         };
 
         this.usageAnalytics.logCustomEvent<IAnalyticsCaseDetachMeta>(cause, customData, this.root);
