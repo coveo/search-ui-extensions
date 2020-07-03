@@ -203,14 +203,11 @@ export class AttachResult extends Component {
         let customData: IAnalyticsCaseAttachMeta = {
             resultUriHash: this.queryResult.raw.urihash,
             author: this.queryResult.raw.author,
-            articleID:
-                this.options.articleIdField && this.queryResult.raw[this.options.articleIdField]
-                    ? this.queryResult.raw[this.options.articleIdField]
-                    : null,
+            articleID: this.queryResult.raw[this.options.articleIdField],
             caseID: this.options.caseId
         };
 
-        this.usageAnalytics.logCustomEvent<IAnalyticsCaseDetachMeta>(cause, customData, this.root);
+        this.usageAnalytics.logCustomEvent<IAnalyticsCaseDetachMeta>(cause, customData, this.element, this.queryResult);
     }
 
     protected render(): void {

@@ -1,11 +1,12 @@
 import { AttachResult, IAttachResultOptions } from '../../../src/components/AttachResult/AttachResult';
 import { Mock, Fake } from 'coveo-search-ui-tests';
-import { IQueryResult, Logger } from 'coveo-search-ui';
+import { IQueryResult, Logger, analyticsActionCauseList } from 'coveo-search-ui';
 import { AttachResultEvents, IAttachResultEventArgs } from '../../../src/components/AttachResult/Events';
 
 describe('AttachResult', () => {
     let attachResult: Mock.IBasicComponentSetup<AttachResult>;
     let fakeResult = Fake.createFakeResult();
+    fakeResult.raw.article = 'foo';
 
     beforeAll(() => {
         Logger.disable();
@@ -94,14 +95,23 @@ describe('AttachResult', () => {
 
             attachSpy = spyOn(faker, 'attach').and.callThrough();
 
-            attachResult = Mock.optionsResultComponentSetup(
+            attachResult = Mock.advancedResultComponentSetup(
                 AttachResult,
-                {
-                    attach: faker.attach,
-                    detachCaption: 'detach me',
-                    attachCaption: 'attach me'
-                },
-                fakeResult
+                fakeResult,
+                new Mock.AdvancedComponentSetupOptions(
+                    document.createElement('div'),
+                    {
+                        attach: faker.attach,
+                        detachCaption: 'detach me',
+                        attachCaption: 'attach me',
+                        caseId: 'testcase',
+                        articleIdField: 'article'
+                    },
+                    env => {
+                        env.searchInterface.usageAnalytics = env.usageAnalytics;
+                        return env;
+                    }
+                )
             );
 
             attachResult.cmp.detach().then(() => {
@@ -145,6 +155,22 @@ describe('AttachResult', () => {
             });
             attachResult.cmp.attach();
         });
+
+        it('should log a click and attach event', async () => {
+            await attachResult.cmp.attach();
+            expect(attachResult.env.usageAnalytics.logClickEvent).toHaveBeenCalledWith(
+                analyticsActionCauseList.caseAttach,
+                jasmine.any(Object),
+                fakeResult,
+                attachResult.cmp.element
+            );
+            expect(attachResult.env.usageAnalytics.logCustomEvent).toHaveBeenCalledWith(
+                analyticsActionCauseList.caseAttach,
+                jasmine.objectContaining({ caseID: 'testcase', articleID: 'foo', resultUriHash: fakeResult.raw.urihash }),
+                attachResult.cmp.element,
+                fakeResult
+            );
+        });
     });
 
     describe('detach', () => {
@@ -159,14 +185,23 @@ describe('AttachResult', () => {
 
             detachSpy = spyOn(faker, 'detach').and.callThrough();
 
-            attachResult = Mock.optionsResultComponentSetup(
+            attachResult = Mock.advancedResultComponentSetup(
                 AttachResult,
-                {
-                    detach: faker.detach,
-                    detachCaption: 'detach me',
-                    attachCaption: 'attach me'
-                },
-                fakeResult
+                fakeResult,
+                new Mock.AdvancedComponentSetupOptions(
+                    document.createElement('div'),
+                    {
+                        detach: faker.detach,
+                        detachCaption: 'detach me',
+                        attachCaption: 'attach me',
+                        caseId: 'testcase',
+                        articleIdField: 'article'
+                    },
+                    env => {
+                        env.searchInterface.usageAnalytics = env.usageAnalytics;
+                        return env;
+                    }
+                )
             );
 
             attachResult.cmp.attach().then(() => {
@@ -209,6 +244,16 @@ describe('AttachResult', () => {
                 done();
             });
             attachResult.cmp.detach();
+        });
+
+        it('should log a detach event', async () => {
+            await attachResult.cmp.detach();
+            expect(attachResult.env.usageAnalytics.logCustomEvent).toHaveBeenCalledWith(
+                analyticsActionCauseList.caseDetach,
+                jasmine.objectContaining({ caseID: 'testcase', articleID: 'foo', resultUriHash: fakeResult.raw.urihash }),
+                attachResult.cmp.element,
+                fakeResult
+            );
         });
     });
 
