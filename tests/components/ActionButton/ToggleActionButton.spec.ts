@@ -27,10 +27,10 @@ describe('ToggleActionButton', () => {
 
     beforeEach(() => {
         options = {
-            activatedIcon: icons.duplicate,
-            activatedTooltip: 'activated tooltip',
-            deactivatedIcon: icons.copy,
-            deactivatedTooltip: 'tooltip',
+            activateIcon: icons.copy,
+            activateTooltip: 'Activate feature',
+            deactivateIcon: icons.duplicate,
+            deactivateTooltip: 'Deactivate feature',
             click: clickSpy,
             activate: activateSpy,
             deactivate: deactivateSpy
@@ -86,12 +86,12 @@ describe('ToggleActionButton', () => {
             expect(attributeValue).toEqual('true');
         });
 
-        it('should update button with activated icon', () => {
-            expect(updateIconSpy.calledWith(options.activatedIcon)).toBeTrue();
+        it('should update button with deactivate icon', () => {
+            expect(updateIconSpy.calledWith(options.deactivateIcon)).toBeTrue();
         });
 
-        it('should update button with activated tooltip', () => {
-            expect(updateTooltipSpy.calledWith(options.activatedTooltip)).toBeTrue();
+        it('should update button with deactivate tooltip', () => {
+            expect(updateTooltipSpy.calledWith(options.deactivateTooltip)).toBeTrue();
         });
     });
 
@@ -121,12 +121,12 @@ describe('ToggleActionButton', () => {
             expect(attributeValue).toEqual('false');
         });
 
-        it('should update button with deactivated icon', () => {
-            expect(updateIconSpy.calledWith(options.deactivatedIcon)).toBeTrue();
+        it('should update button with activate icon', () => {
+            expect(updateIconSpy.calledWith(options.activateIcon)).toBeTrue();
         });
 
-        it('should update button with deactivated tooltip', () => {
-            expect(updateTooltipSpy.calledWith(options.deactivatedTooltip)).toBeTrue();
+        it('should update button with activate tooltip', () => {
+            expect(updateTooltipSpy.calledWith(options.activateTooltip)).toBeTrue();
         });
     });
 });

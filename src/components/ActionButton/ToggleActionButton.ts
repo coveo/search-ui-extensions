@@ -2,10 +2,10 @@ import { ComponentOptions, IResultsComponentBindings, Component, Initialization 
 import { ActionButton } from './ActionButton';
 
 export interface IToggleActionButtonOptions {
-    activatedIcon: string;
-    activatedTooltip: string;
-    deactivatedIcon: string;
-    deactivatedTooltip: string;
+    activateIcon: string;
+    activateTooltip: string;
+    deactivateIcon: string;
+    deactivateTooltip: string;
     click?: () => void;
     activate?: () => void;
     deactivate?: () => void;
@@ -17,37 +17,7 @@ export class ToggleActionButton extends Component {
 
     static options: IToggleActionButtonOptions = {
         /**
-         * Specifies the button icon when the button is activated.
-         *
-         * Default is the empty string.
-         *
-         * For example, with this SVG markup:
-         *
-         * ```xml
-         * <svg width="1em" height="1em">...</svg>
-         * ```
-         *
-         * The attribute would be set like this:
-         *
-         * ```html
-         * <button class='CoveoToggleActionButton' data-activated-icon='&lt;svg width=&quot;1em&quot; height=&quot;1em&quot;&gt;...&lt;/svg&gt;'></button>
-         * ```
-         */
-        activatedIcon: ComponentOptions.buildStringOption(),
-
-        /**
-         * Specifies the button tooltip when the button is activated.
-         *
-         * Default is the empty string.
-         *
-         * ```html
-         * <button class='CoveoToggleActionButton' data-activated-tooltip='My activated button tooltip'></button>
-         * ```
-         */
-        activatedTooltip: ComponentOptions.buildStringOption(),
-
-        /**
-         * Specifies the button SVG icon when the button is deactivated.
+         * Specifies the button SVG icon displayed to activate the button.
          * Note: The SVG markup has to be HTML encoded when set using the HTML attributes.
          *
          * Default is the empty string.
@@ -61,21 +31,51 @@ export class ToggleActionButton extends Component {
          * The attribute would be set like this:
          *
          * ```html
-         * <button class='CoveoToggleActionButton' data-deactivated-icon='&lt;svg width=&quot;1em&quot; height=&quot;1em&quot;&gt;...&lt;/svg&gt;'></button>
+         * <button class='CoveoToggleActionButton' data-activate-icon='&lt;svg width=&quot;1em&quot; height=&quot;1em&quot;&gt;...&lt;/svg&gt;'></button>
          * ```
          */
-        deactivatedIcon: ComponentOptions.buildStringOption(),
+        activateIcon: ComponentOptions.buildStringOption(),
 
         /**
-         * Specifies the button tooltip text when the button is deactivated.
+         * Specifies the button tooltip text displayed to activate the button.
          *
          * Default is the empty string.
          *
          * ```html
-         * <button class='CoveoToggleActionButton' data-deactivated-tooltip='My button tooltip'></button>
+         * <button class='CoveoToggleActionButton' data-activate-tooltip='Activate the feature'></button>
          * ```
          */
-        deactivatedTooltip: ComponentOptions.buildStringOption(),
+        activateTooltip: ComponentOptions.buildStringOption(),
+
+        /**
+         * Specifies the button icon displayed to deactivate the button.
+         *
+         * Default is the empty string.
+         *
+         * For example, with this SVG markup:
+         *
+         * ```xml
+         * <svg width="1em" height="1em">...</svg>
+         * ```
+         *
+         * The attribute would be set like this:
+         *
+         * ```html
+         * <button class='CoveoToggleActionButton' data-deactivate-icon='&lt;svg width=&quot;1em&quot; height=&quot;1em&quot;&gt;...&lt;/svg&gt;'></button>
+         * ```
+         */
+        deactivateIcon: ComponentOptions.buildStringOption(),
+
+        /**
+         * Specifies the button tooltip displayed to deactivate the button.
+         *
+         * Default is the empty string.
+         *
+         * ```html
+         * <button class='CoveoToggleActionButton' data-deactivate-tooltip='Deactivate the feature'></button>
+         * ```
+         */
+        deactivateTooltip: ComponentOptions.buildStringOption(),
 
         /**
          * Specifies the handler called when the button is clicked.
@@ -152,8 +152,8 @@ export class ToggleActionButton extends Component {
         this.innerActionButton = new ActionButton(
             this.element,
             {
-                icon: this.options.deactivatedIcon,
-                tooltip: this.options.deactivatedTooltip,
+                icon: this.options.activateIcon,
+                tooltip: this.options.activateTooltip,
                 click: () => this.onClick()
             },
             bindings
@@ -167,14 +167,14 @@ export class ToggleActionButton extends Component {
             this.element.classList.add(ToggleActionButton.ACTIVATED_CLASS_NAME);
             this.element.setAttribute('aria-pressed', 'true');
 
-            this.innerActionButton.updateIcon(this.options.activatedIcon);
-            this.innerActionButton.updateTooltip(this.options.activatedTooltip);
+            this.innerActionButton.updateIcon(this.options.deactivateIcon);
+            this.innerActionButton.updateTooltip(this.options.deactivateTooltip);
         } else {
             this.element.classList.remove(ToggleActionButton.ACTIVATED_CLASS_NAME);
             this.element.setAttribute('aria-pressed', 'false');
 
-            this.innerActionButton.updateIcon(this.options.deactivatedIcon);
-            this.innerActionButton.updateTooltip(this.options.deactivatedTooltip);
+            this.innerActionButton.updateIcon(this.options.activateIcon);
+            this.innerActionButton.updateTooltip(this.options.activateTooltip);
         }
     }
 }
