@@ -58,3 +58,9 @@ Then, anytime you hit save in a typescript file, the server will reload your app
 2. `npx cypress run` will run the cypress functional tests suite.
 
 To add a new test suite simply add a new spec file in the `./cypress/integration/` folder.
+
+## Compatibility
+
+The components provided in this repository should be used as examples to build your own components. Since the project is still in the pre-release phase, the backward compatibility of the compiled JavaScript is not guaranteed. The TypeScript definitions can be modified without notice.
+
+As new releases could impact your implementation, you are strongly encouraged to validate each release content before upgrading to a newer version.
