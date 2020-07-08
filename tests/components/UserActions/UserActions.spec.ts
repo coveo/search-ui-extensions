@@ -486,6 +486,13 @@ describe('UserActions', () => {
                 expect(modelMock.getActions.calledWithExactly(someUserId)).toBe(true);
             });
         });
+
+        it('should trigger a userActionsShow event', () => {
+            const spyDispatchEvent = sandbox.spy(mock.cmp.element, 'dispatchEvent');
+            mock.cmp.show();
+
+            expect(spyDispatchEvent.calledOnceWith(new CustomEvent('userActionsPanelHide')));
+        });
     });
 
     describe('hide', () => {
@@ -543,6 +550,15 @@ describe('UserActions', () => {
             return delay(() => {
                 expect(modelMock.deleteActions.calledWithExactly(someUserId)).toBe(true);
             });
+        });
+
+        it('should trigger a userActionsHide event', () => {
+            mock.cmp.show();
+            const spyDispatchEvent = sandbox.spy(mock.cmp.element, 'dispatchEvent');
+
+            mock.cmp.hide();
+
+            expect(spyDispatchEvent.calledOnceWith(new CustomEvent('userActionsPanelHide')));
         });
     });
 

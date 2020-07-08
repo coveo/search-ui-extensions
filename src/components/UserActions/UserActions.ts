@@ -87,6 +87,10 @@ export class UserActions extends Component {
      * Identifier of the Search-UI component.
      */
     static readonly ID = 'UserActions';
+    static readonly Events = {
+        Hide: 'userActionsPanelHide',
+        Show: 'userActionsPanelShow'
+    };
 
     /**
      * Default initialization options of the **UserActions** class.
@@ -156,33 +160,45 @@ export class UserActions extends Component {
             (get(this.root, UserProfileModel) as UserProfileModel).deleteActions(this.options.userId);
             this.root.classList.remove(UserActions.USER_ACTION_OPENED);
             this.isOpened = false;
+            this.element.dispatchEvent(new CustomEvent(UserActions.Events.Hide));
         }
     }
 
     /**
      * Open the panel.
      */
-    public show() {
+    public async show() {
         if (!this.isOpened) {
-            (get(this.root, UserProfileModel) as UserProfileModel)
-                .getActions(this.options.userId)
-                .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
-                .catch(e => (e && e.statusCode === 404 ? this.renderEnablePrompt() : this.renderNoActions()));
-
+            this.element.dispatchEvent(new CustomEvent(UserActions.Events.Show));
             this.bindings.usageAnalytics.logCustomEvent({ name: 'openUserActions', type: 'User Actions' }, {}, this.element);
             this.root.classList.add(UserActions.USER_ACTION_OPENED);
             this.isOpened = true;
+
+            try {
+                const userActions = await (get(this.root, UserProfileModel) as UserProfileModel).getActions(this.options.userId);
+                if (userActions.length > 0) {
+                    this.render();
+                } else {
+                    this.renderNoActions();
+                }
+            } catch (e) {
+                if (e && e.statusCode === 404) {
+                    this.renderEnablePrompt();
+                } else {
+                    this.renderNoActions();
+                }
+            }
         }
     }
 
     /**
      * Toggle the visibility of the panel.
      */
-    public toggle() {
+    public async toggle() {
         if (this.isOpened) {
             this.hide();
         } else {
-            this.show();
+            await this.show();
         }
     }
 
