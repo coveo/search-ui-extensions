@@ -76,10 +76,44 @@ describe('UserActions', () => {
 
     it('should not be displayed if hidden option is true', () => {
         const responsiveComponentStub = sandbox.stub(ResponsiveUserActions, 'init');
+        const hideSpy = sandbox.spy(UserActions.prototype, 'hide');
 
         Mock.advancedComponentSetup<UserActions>(
             UserActions,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', hidden: true }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                return env;
+            })
+        );
+
+        return delay(() => {
+            expect(hideSpy.called).toBe(false);
+            expect(responsiveComponentStub.called).toBe(false);
+        });
+    });
+
+    it('should register to the ResponsiveComponentManager by default', () => {
+        const responsiveComponentStub = sandbox.stub(ResponsiveUserActions, 'init');
+
+        Mock.advancedComponentSetup<UserActions>(
+            UserActions,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                return env;
+            })
+        );
+
+        return delay(() => {
+            expect(responsiveComponentStub.called).toBe(true);
+        });
+    });
+
+    it('should not register to the ResponsiveComponentManager when useResponsiveManager is false', () => {
+        const responsiveComponentStub = sandbox.stub(ResponsiveUserActions, 'init');
+
+        Mock.advancedComponentSetup<UserActions>(
+            UserActions,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', useResponsiveManager: false }, env => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
                 return env;
             })

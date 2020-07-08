@@ -70,6 +70,13 @@ export interface IUserActionsOptions {
      * Default: `False`
      */
     hidden: Boolean;
+    /**
+     * Whether or not the UserAction component should use the CoveoSearchUI ResponsiveManager
+     * Inoperant if `hidden` is true.
+     *
+     * Default: `True`
+     */
+    useResponsiveManager: Boolean;
 }
 
 /**
@@ -100,6 +107,9 @@ export class UserActions extends Component {
         }),
         hidden: ComponentOptions.buildBooleanOption({
             defaultValue: false
+        }),
+        useResponsiveManager: ComponentOptions.buildBooleanOption({
+            defaultValue: true
         })
     };
 
@@ -130,7 +140,9 @@ export class UserActions extends Component {
         this.tagViewsOfUser();
 
         if (!options.hidden) {
-            ResponsiveUserActions.init(this.root, this);
+            if (options.useResponsiveManager) {
+                ResponsiveUserActions.init(this.root, this);
+            }
             this.bind.onRootElement(QueryEvents.newQuery, () => this.hide());
             this.hide();
         }
