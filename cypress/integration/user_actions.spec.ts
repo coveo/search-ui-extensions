@@ -9,9 +9,7 @@ describe('User actions', () => {
     describe('When I click on the user actions button', () => {
         beforeEach(() => {
             cy.get('.coveo-main-section').should('be.visible');
-            cy.get('.coveo-user-actions-dropdown-header')
-                .should('be.visible')
-                .click();
+            cy.get('.coveo-user-actions-dropdown-header').should('be.visible').click();
         });
 
         it('should hide user actions panel when I click on the user actions button', () => {
@@ -26,25 +24,17 @@ describe('User actions', () => {
         it('should display user activity', () => {
             cy.get('.CoveoUserActivity').should('be.visible');
 
-            cy.get('.coveo-activity > .coveo-search')
-                .should('be.visible')
-                .should('contain', 'some_query');
+            cy.get('.coveo-activity > .coveo-search').should('be.visible').should('contain', 'some_query');
 
-            cy.get('.coveo-activity > .coveo-click')
-                .should('be.visible')
-                .should('contain', 'some_document_title');
+            cy.get('.coveo-activity > .coveo-click').should('be.visible').should('contain', 'some_document_title');
         });
 
         it('should display user clicked document', () => {
-            cy.get('.CoveoClickedDocumentList')
-                .should('be.visible')
-                .should('contain', 'some_document_title');
+            cy.get('.CoveoClickedDocumentList').should('be.visible').should('contain', 'some_document_title');
         });
 
         it('should display user queries', () => {
-            cy.get('.CoveoQueryList')
-                .should('be.visible')
-                .should('contain', 'some_query');
+            cy.get('.CoveoQueryList').should('be.visible').should('contain', 'some_query');
         });
     });
 });

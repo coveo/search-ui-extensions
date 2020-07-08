@@ -56,7 +56,7 @@ describe('ViewedByCustomer', () => {
             });
         });
 
-        [false, undefined, null].forEach(falsyValue => {
+        [false, undefined, null].forEach((falsyValue) => {
             describe(`when the field isUserActionView of the result is ${falsyValue}`, () => {
                 const fakeResult: IQueryResult = { ...Fake.createFakeResult(), isUserActionView: falsyValue };
 

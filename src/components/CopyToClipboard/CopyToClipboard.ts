@@ -39,11 +39,11 @@ export class CopyToClipboard extends ResultAction {
     static options: ICopyToClipboardOptions = {
         icon: ComponentOptions.buildStringOption({ defaultValue: copy }),
 
-        tooltip: ComponentOptions.buildCustomOption(tooltip => tooltip, { defaultFunction: () => l('CopyToClipboard_copy') }),
+        tooltip: ComponentOptions.buildCustomOption((tooltip) => tooltip, { defaultFunction: () => l('CopyToClipboard_copy') }),
 
-        successTooltip: ComponentOptions.buildCustomOption(tooltip => tooltip, { defaultFunction: () => l('CopyToClipboard_copied') }),
+        successTooltip: ComponentOptions.buildCustomOption((tooltip) => tooltip, { defaultFunction: () => l('CopyToClipboard_copied') }),
 
-        template: ComponentOptions.buildStringOption({ defaultValue: '${title}\n${clickUri}' })
+        template: ComponentOptions.buildStringOption({ defaultValue: '${title}\n${clickUri}' }),
     };
 
     /**

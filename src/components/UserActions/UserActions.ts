@@ -8,7 +8,7 @@ import {
     get,
     ResultListEvents,
     IDisplayedNewResultEventArgs,
-    ResultList
+    ResultList,
 } from 'coveo-search-ui';
 import { ResponsiveUserActions } from './ResponsiveUserActions';
 import { arrowDown } from '../../utils/icons';
@@ -22,7 +22,7 @@ import { ViewedByCustomer } from '../ViewedByCustomer/ViewedByCustomer';
 enum ResultLayoutType {
     LIST = 'list',
     TABLE = 'table',
-    CARD = 'card'
+    CARD = 'card',
 }
 
 /**
@@ -87,20 +87,20 @@ export class UserActions extends Component {
     static readonly options: IUserActionsOptions = {
         userId: ComponentOptions.buildStringOption({ required: true }),
         buttonLabel: ComponentOptions.buildStringOption({
-            defaultValue: 'User Actions'
+            defaultValue: 'User Actions',
         }),
         summaryLabel: ComponentOptions.buildStringOption({
-            defaultValue: 'Session Summary'
+            defaultValue: 'Session Summary',
         }),
         activityLabel: ComponentOptions.buildStringOption({
-            defaultValue: "User's Recent Activity"
+            defaultValue: "User's Recent Activity",
         }),
         viewedByCustomer: ComponentOptions.buildBooleanOption({
-            defaultValue: true
+            defaultValue: true,
         }),
         hidden: ComponentOptions.buildBooleanOption({
-            defaultValue: false
-        })
+            defaultValue: false,
+        }),
     };
 
     private static readonly USER_ACTION_OPENED = 'coveo-user-actions-opened';
@@ -154,8 +154,8 @@ export class UserActions extends Component {
         if (!this.isOpened) {
             (get(this.root, UserProfileModel) as UserProfileModel)
                 .getActions(this.options.userId)
-                .then(actions => (actions.length > 0 ? this.render() : this.renderNoActions()))
-                .catch(e => (e && e.statusCode === 404 ? this.renderEnablePrompt() : this.renderNoActions()));
+                .then((actions) => (actions.length > 0 ? this.render() : this.renderNoActions()))
+                .catch((e) => (e && e.statusCode === 404 ? this.renderEnablePrompt() : this.renderNoActions()));
 
             this.bindings.usageAnalytics.logCustomEvent({ name: 'openUserActions', type: 'User Actions' }, {}, this.element);
             this.root.classList.add(UserActions.USER_ACTION_OPENED);
@@ -201,7 +201,7 @@ export class UserActions extends Component {
         const foldable = document.createElement('div');
         foldable.classList.add('coveo-accordion-foldable');
 
-        elements.forEach(el => foldable.appendChild(el));
+        elements.forEach((el) => foldable.appendChild(el));
 
         div.appendChild(header);
         div.appendChild(foldable);
@@ -236,18 +236,18 @@ export class UserActions extends Component {
                 ...originalOptions,
                 QueryList: {
                     ...originalOptions.QueryList,
-                    userId: this.options.userId
+                    userId: this.options.userId,
                 },
                 ClickedDocumentList: {
                     ...originalOptions.ClickedDocumentList,
-                    userId: this.options.userId
+                    userId: this.options.userId,
                 },
                 UserActivity: {
                     ...originalOptions.UserActivity,
-                    userId: this.options.userId
-                }
+                    userId: this.options.userId,
+                },
             },
-            bindings: this.bindings
+            bindings: this.bindings,
         });
     }
 
@@ -256,7 +256,7 @@ export class UserActions extends Component {
 
         const summarySection = this.buildAccordion(this.options.summaryLabel, [
             this.buildCoveoElement(ClickedDocumentList),
-            this.buildCoveoElement(QueryList)
+            this.buildCoveoElement(QueryList),
         ]);
         summarySection.classList.add(`coveo-summary`);
 
@@ -308,7 +308,7 @@ export class UserActions extends Component {
         Coveo.$$(this.root).on('buildingQuery', (e, args) => {
             try {
                 args.queryBuilder.userActions = {
-                    tagViewsOfUser: this.options.userId
+                    tagViewsOfUser: this.options.userId,
                 };
             } catch (e) {
                 this.logger.warn("CreatedBy Email wasn't found", e);

@@ -9,8 +9,8 @@ module.exports = {
         {
             files: '*.json',
             options: {
-                singleQuote: false
-            }
-        }
-    ]
+                singleQuote: false,
+            },
+        },
+    ],
 };

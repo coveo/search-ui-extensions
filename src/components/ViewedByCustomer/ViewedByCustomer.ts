@@ -34,7 +34,7 @@ export class ViewedByCustomer extends Component {
      */
     public static readonly options: IViewedByCustomerOptions = {
         showIcon: ComponentOptions.buildBooleanOption({ defaultValue: true }),
-        label: ComponentOptions.buildStringOption({ defaultValue: l(`${ViewedByCustomer.ID}_DefaultLabel`) })
+        label: ComponentOptions.buildStringOption({ defaultValue: l(`${ViewedByCustomer.ID}_DefaultLabel`) }),
     };
 
     // Internal CSS selectors.

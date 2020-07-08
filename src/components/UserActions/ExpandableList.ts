@@ -49,7 +49,7 @@ export class ExpandableList<T> {
         MORE_LABEL: 'Show More',
         LIST_LABEL: 'Items',
         MAXIMUM_ITEMS_SHOWN: 8,
-        MINIMUM_ITEMS_SHOWN: 4
+        MINIMUM_ITEMS_SHOWN: 4,
     });
     private static readonly COMPONENT_CLASS = 'coveo-expandable-list';
     private static readonly EMPTY_CLASS = 'coveo-empty';
@@ -165,14 +165,14 @@ export class ExpandableList<T> {
     private async update(items: Promise<HTMLElement>[], buttonText: string) {
         const list = this.element.querySelector<HTMLOListElement>('.coveo-list') as HTMLElement;
 
-        const listItems = (await Promise.all(items)).map(itemElement => {
+        const listItems = (await Promise.all(items)).map((itemElement) => {
             const listItem = document.createElement('li');
             listItem.appendChild(itemElement);
             return listItem;
         });
 
         list.innerHTML = '';
-        listItems.forEach(itemElement => {
+        listItems.forEach((itemElement) => {
             $$(list).append(itemElement);
         });
 

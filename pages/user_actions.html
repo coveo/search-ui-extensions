@@ -9,7 +9,7 @@
         <script src="../js/CoveoJsSearch.Lazy.js"></script>
         <script src="../commonjs/CoveoJsSearchExtensions.js"></script>
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function () {
                 Coveo.SearchEndpoint.configureSampleEndpointV2();
 
                 const endpoint = Coveo.SearchEndpoint.endpoints['default'];
@@ -17,13 +17,13 @@
                 new Coveo.UserProfileModel(document.body, {
                     searchEndpoint: endpoint,
                     organizationId: 'searchuisamples',
-                    restUri: ''
+                    restUri: '',
                 });
 
                 Coveo.init(document.body, {
                     UserActions: {
-                        userId: 'test'
-                    }
+                        userId: 'test',
+                    },
                 });
             });
         </script>

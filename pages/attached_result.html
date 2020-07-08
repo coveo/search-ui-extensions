@@ -10,35 +10,35 @@
         <script src="../commonjs/CoveoJsSearchExtensions.js"></script>
         <script>
             let attachedIds = [];
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function () {
                 Coveo.SearchEndpoint.configureSampleEndpointV2();
                 Coveo.init(document.body, {
                     AttachResult: {
-                        attach: function(result) {
+                        attach: function (result) {
                             return new Promise((resolve, reject) => {
                                 console.log('attached ', result);
                                 attachedIds.push(result.raw.urihash);
                                 setTimeout(resolve, 1000);
                             });
                         },
-                        detach: function(result) {
+                        detach: function (result) {
                             return new Promise((resolve, reject) => {
                                 console.log('detached ', result);
                                 attachedIds.pop(result.raw.urihash);
                                 setTimeout(resolve, 1000);
                             });
                         },
-                        isAttached: function(result) {
+                        isAttached: function (result) {
                             return new Promise((resolve, reject) => {
                                 setTimeout(() => resolve(attachedIds.indexOf(result.raw.urihash) >= 0), 1000);
                             });
-                        }
+                        },
                     },
                     ResultsFilter: {
-                        getValues: function() {
+                        getValues: function () {
                             return attachedIds;
-                        }
-                    }
+                        },
+                    },
                 });
             });
         </script>
