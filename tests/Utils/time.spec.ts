@@ -5,7 +5,7 @@ import {
     formatTimeShort,
     formatDateAndTime,
     formatDateAndTimeShort,
-    formatTimeInterval
+    formatTimeInterval,
 } from '../../src/utils/time';
 
 const UTC_TEST_TIME = '2019-04-29T20:53:13';

@@ -2,7 +2,7 @@
  * Supported languages.
  */
 export enum Language {
-    English = 'en'
+    English = 'en',
 }
 
 /**
@@ -23,7 +23,7 @@ export class Translation {
      * @param translationDictionary Key-Value dictionary that contain all traslation for a language.
      */
     public static register(language: Language, translationDictionary: ILanguageDictionary) {
-        Object.keys(translationDictionary).forEach(key => {
+        Object.keys(translationDictionary).forEach((key) => {
             (String as any)['locales'] = (String as any)['locales'] || {};
             (String as any)['locales'][language] = (String as any)['locales'][language] || {};
             (String as any)['locales'][language][key] = translationDictionary[key];

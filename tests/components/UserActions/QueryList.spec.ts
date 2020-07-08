@@ -9,7 +9,7 @@ import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 describe('QueryList', () => {
     const sortUserActions = (a: UserAction, b: UserAction) => a.timestamp.getTime() - b.timestamp.getTime();
 
-    const TEST_QUERIES = generate(20, i => {
+    const TEST_QUERIES = generate(20, (i) => {
         const query = `${Math.random()}`;
         return new UserAction(UserActionType.Search, new Date(i), { query_expression: query, origin_level_1: 'foo' }, null, query);
     });
@@ -34,7 +34,7 @@ describe('QueryList', () => {
     it('should show "No queries made by this user" when no query were made', () => {
         const mock = Mock.advancedComponentSetup<QueryList>(
             QueryList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([]));
                 return env;
             })
@@ -51,7 +51,7 @@ describe('QueryList', () => {
     it('should show "Recent Queries" as title', () => {
         const mock = Mock.advancedComponentSetup<QueryList>(
             QueryList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
                 return env;
             })
@@ -65,7 +65,7 @@ describe('QueryList', () => {
     it('should show 4 queries by default', () => {
         const mock = Mock.advancedComponentSetup<QueryList>(
             QueryList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
                 return env;
             })
@@ -81,7 +81,7 @@ describe('QueryList', () => {
     it('should show a number of queries equal to the "numberOfItems" option', () => {
         const mock = Mock.advancedComponentSetup<QueryList>(
             QueryList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
                 return env;
             })
@@ -97,7 +97,7 @@ describe('QueryList', () => {
     it('should display a search icon on every list item', () => {
         const mock = Mock.advancedComponentSetup<QueryList>(
             QueryList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
                 return env;
             })
@@ -116,7 +116,7 @@ describe('QueryList', () => {
     it('should show all queries when expanded', () => {
         const mock = Mock.advancedComponentSetup<QueryList>(
             QueryList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
                 return env;
             })
@@ -138,14 +138,14 @@ describe('QueryList', () => {
             new UserAction(UserActionType.Search, new Date(1), { query_expression: 'someQuery2', origin_level_1: 'foo' }, null, 'someQuery2'),
             new UserAction(UserActionType.Search, new Date(2), { query_expression: 'someQuery2', origin_level_1: 'foo' }, null, 'someQuery2'),
             new UserAction(UserActionType.Search, new Date(3), { query_expression: 'someQuery2', origin_level_1: 'foo' }, null, 'someQuery2'),
-            new UserAction(UserActionType.Search, new Date(4), { query_expression: 'someQuery', origin_level_1: 'foo' }, null, 'someQuery')
+            new UserAction(UserActionType.Search, new Date(4), { query_expression: 'someQuery', origin_level_1: 'foo' }, null, 'someQuery'),
         ];
 
         const SORTED_AND_TRIMMED_SEARCH_EVENT = ['someQuery', 'someQuery2'];
 
         const mock = Mock.advancedComponentSetup<QueryList>(
             QueryList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(SEARCH_EVENTS));
                 return env;
             })
@@ -173,7 +173,7 @@ describe('QueryList', () => {
     it('should render a list of queries made by a user as a list and put the most recent queries on top', () => {
         const mock = Mock.advancedComponentSetup<QueryList>(
             QueryList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
                 return env;
             })
@@ -195,7 +195,7 @@ describe('QueryList', () => {
 
         Mock.advancedComponentSetup<QueryList>(
             QueryList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, (env) => {
                 model = fakeUserProfileModel(env.root, sandbox);
                 model.getActions.returns(Promise.reject());
                 return env;
@@ -211,7 +211,7 @@ describe('QueryList', () => {
 
         const mock = Mock.advancedComponentSetup<QueryList>(
             QueryList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
                 return env;
             })
@@ -227,7 +227,7 @@ describe('QueryList', () => {
         it('should do a query in the omnibox if the search interface has an omnibox', () => {
             const mock = Mock.advancedComponentSetup<QueryList>(
                 QueryList,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, (env) => {
                     fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
                     return env;
                 })
@@ -253,7 +253,7 @@ describe('QueryList', () => {
         it('should not do a query if the search interface does not have an omnibox', () => {
             const mock = Mock.advancedComponentSetup<QueryList>(
                 QueryList,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, (env) => {
                     fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_QUERIES));
                     return env;
                 })
@@ -273,7 +273,7 @@ describe('QueryList', () => {
             let getActionStub: SinonStub<[HTMLElement, QueryList], void>;
             const mock = Mock.advancedComponentSetup<QueryList>(
                 QueryList,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: null }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: null }, (env) => {
                     getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
                     return env;
                 })
@@ -288,7 +288,7 @@ describe('QueryList', () => {
             let getActionStub: SinonStub<[HTMLElement, QueryList], void>;
             const mock = Mock.advancedComponentSetup<QueryList>(
                 QueryList,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: '' }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: '' }, (env) => {
                     getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
                     return env;
                 })

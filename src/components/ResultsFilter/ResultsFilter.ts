@@ -10,7 +10,7 @@ import {
     QueryStateModel,
     load,
     IAttributesChangedEventArg,
-    l
+    l,
 } from 'coveo-search-ui';
 import { ResultsFilterEvents, IResultsFilterEventArgs } from './Events';
 import './Strings';
@@ -45,14 +45,14 @@ export class ResultsFilter extends Component {
 
     static options: IResultsFilterOptions = {
         text: ComponentOptions.buildStringOption({
-            defaultValue: l(`${ResultsFilter.ID}_Label`)
+            defaultValue: l(`${ResultsFilter.ID}_Label`),
         }),
         field: ComponentOptions.buildStringOption({
-            defaultValue: 'urihash'
+            defaultValue: 'urihash',
         }),
-        getValues: ComponentOptions.buildCustomOption(name => () => new Array<string>(), {
-            defaultFunction: () => () => new Array<string>()
-        })
+        getValues: ComponentOptions.buildCustomOption((name) => () => new Array<string>(), {
+            defaultFunction: () => () => new Array<string>(),
+        }),
     };
 
     constructor(public element: HTMLElement, public options: IResultsFilterOptions, public bindings?: IComponentBindings) {
@@ -83,12 +83,12 @@ export class ResultsFilter extends Component {
         const mainSection = $$('div', { className: 'CoveoFacet' });
         const headerSection = $$('div', { className: 'coveo-facet-header' });
         const labelDiv = $$('label', {
-            className: 'coveo-facet-value-label-wrapper'
+            className: 'coveo-facet-value-label-wrapper',
         }).el;
         headerSection.append(labelDiv);
         mainSection.append(headerSection.el);
 
-        this.createCheckbox().then(checkbox => {
+        this.createCheckbox().then((checkbox) => {
             this.checkbox = checkbox;
             labelDiv.appendChild(this.checkbox.getElement());
         });

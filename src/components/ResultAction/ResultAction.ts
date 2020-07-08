@@ -41,7 +41,7 @@ export abstract class ResultAction extends Component {
          * See {@link IResultActionOptions.tooltip}
          * Optional. If no tooltip is provided, the tooltip popup will not appear.
          */
-        tooltip: ComponentOptions.buildStringOption()
+        tooltip: ComponentOptions.buildStringOption(),
     };
 
     /**

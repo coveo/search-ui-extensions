@@ -5,7 +5,7 @@ import {
     Dom,
     ResponsiveComponentsManager,
     IResponsiveComponentOptions,
-    ResponsiveDropdownHeader
+    ResponsiveDropdownHeader,
 } from 'coveo-search-ui';
 import { UserActions } from './UserActions';
 

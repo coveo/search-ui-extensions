@@ -4,9 +4,9 @@ const path = require('path');
 const xml = require('xml2js');
 const builder = new xml.Builder({
     renderOpts: {
-        pretty: false
+        pretty: false,
     },
-    headless: true
+    headless: true,
 });
 const parser = new xml.Parser();
 
@@ -32,11 +32,8 @@ async function replaceSVGImport(line) {
 
 const iconFile = path.resolve('./bin/es6/utils/icons.js');
 
-const contents = fs
-    .readFileSync(iconFile, { encoding: 'utf8' })
-    .split('\n')
-    .map(replaceSVGImport);
+const contents = fs.readFileSync(iconFile, { encoding: 'utf8' }).split('\n').map(replaceSVGImport);
 
-Promise.all(contents).then(data => {
+Promise.all(contents).then((data) => {
     fs.writeFileSync(iconFile, data.join('\n'), { encoding: 'utf8' });
 });

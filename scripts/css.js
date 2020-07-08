@@ -5,7 +5,7 @@ let fs = require('fs');
 let basePath = './bin/css/';
 let result = sass.renderSync({
     file: './src/sass/Index.scss',
-    outFile: `${basePath}CoveoJsSearchExtensions.css`
+    outFile: `${basePath}CoveoJsSearchExtensions.css`,
 });
 
 if (!fs.existsSync(basePath)) {

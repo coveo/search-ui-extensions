@@ -10,19 +10,19 @@ var configuration = {
         // Both CoveoJsSearch and CoveoJsSearchTests are included as externals, so you need include them in your testing environment.
         {
             pattern: '../node_modules/coveo-search-ui/bin/js/CoveoJsSearch.js',
-            watched: false
+            watched: false,
         },
         {
             pattern: '../node_modules/coveo-search-ui-tests/bin/js/CoveoJsSearchTests.js',
-            watched: false
+            watched: false,
         },
         { pattern: '../src/Index.ts' },
-        { pattern: '../tests/**/*.spec.ts' }
+        { pattern: '../tests/**/*.spec.ts' },
     ],
     preprocessors: {
         // Builds both the components and the tests.
         '../src/**/*.ts': ['webpack'],
-        '../tests/**/*.spec.ts': ['webpack']
+        '../tests/**/*.spec.ts': ['webpack'],
     },
     // Required for Chrome, if you use it.
     mime: { 'text/x-typescript': ['ts'] },
@@ -31,22 +31,22 @@ var configuration = {
     coverageIstanbulReporter: {
         dir: path.resolve('./bin/coverage'),
         reports: ['html', 'cobertura', 'json', 'lcov', 'text-summary'],
-        fixWebpackSourcePaths: true
+        fixWebpackSourcePaths: true,
     },
     webpack: webpackConfig,
     webpackMiddleware: {
         stats: 'minimal',
-        logLevel: 'warn'
+        logLevel: 'warn',
     },
     browsers: ['ChromeHeadlessNoSandbox'],
     customLaunchers: {
         ChromeHeadlessNoSandbox: {
             base: 'ChromeHeadless',
-            flags: ['--no-sandbox']
-        }
-    }
+            flags: ['--no-sandbox'],
+        },
+    },
 };
 
-module.exports = function(config) {
+module.exports = function (config) {
     config.set(configuration);
 };

@@ -7,11 +7,11 @@ describe('Translation', () => {
             (String as any)['locales']['en'] = {};
             const dict: { [key: string]: string } = {
                 '1': 'someTest1',
-                '2': ''
+                '2': '',
             };
             Translation.register(Language.English, dict);
 
-            Object.keys(dict).forEach(key => {
+            Object.keys(dict).forEach((key) => {
                 expect((String as any)['locales'][Language.English][key]).toBe(dict[key]);
                 expect(key.toLocaleString()).toBe(dict[key]);
             });
@@ -22,11 +22,11 @@ describe('Translation', () => {
             (String as any)['locales'] = undefined;
             const dict: { [key: string]: string } = {
                 '1': 'someTest1',
-                '2': ''
+                '2': '',
             };
             Translation.register(Language.English, dict);
 
-            Object.keys(dict).forEach(key => {
+            Object.keys(dict).forEach((key) => {
                 expect((String as any)['locales'][Language.English][key]).toBe(dict[key]);
                 expect(key.toLocaleString()).toBe(dict[key]);
             });
@@ -36,11 +36,11 @@ describe('Translation', () => {
         it('should enable toLocaleString for each registered strings', () => {
             const dict: { [key: string]: string } = {
                 '1': 'someTest1',
-                '2': ''
+                '2': '',
             };
             Translation.register(Language.English, dict);
 
-            Object.keys(dict).forEach(key => {
+            Object.keys(dict).forEach((key) => {
                 expect(key.toLocaleString()).toBe(dict[key]);
             });
             expect('3'.toLocaleString()).toBe('3');

@@ -3,24 +3,24 @@ const path = require('path');
 module.exports = {
     mode: 'development',
     entry: {
-        CoveoJsSearchExtensions: './src/Index'
+        CoveoJsSearchExtensions: './src/Index',
     },
     output: {
         path: path.resolve('./bin/commonjs'),
         filename: `[name].js`,
         libraryTarget: 'umd',
         library: 'CoveoExtension',
-        publicPath: '/commonjs'
+        publicPath: '/commonjs',
     },
     externals: [
         {
             // Defines the module "coveo-search-ui" as external, "Coveo" is defined in the global scope.
             // This requires you to load the original CoveoJsSearch.js file in your page.
-            'coveo-search-ui': 'Coveo'
-        }
+            'coveo-search-ui': 'Coveo',
+        },
     ],
     resolve: {
-        extensions: ['.js', '.ts']
+        extensions: ['.js', '.ts'],
     },
     devtool: 'source-map',
     module: {
@@ -31,17 +31,17 @@ module.exports = {
                 options: {
                     configFile: path.resolve('./config/tsconfig.json'),
                     compilerOptions: {
-                        target: 'es5'
-                    }
-                }
+                        target: 'es5',
+                    },
+                },
             },
             {
                 test: /\.svg$/,
                 loader: 'raw-loader',
-                options: {}
-            }
-        ]
+                options: {},
+            },
+        ],
     },
     plugins: [],
-    bail: true
+    bail: true,
 };

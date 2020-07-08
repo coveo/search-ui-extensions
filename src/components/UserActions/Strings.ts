@@ -22,5 +22,5 @@ Translation.register(Language.English, {
     UserActivity_query: 'User Query',
     UserActivity_click: 'Clicked Document',
     UserActivity_view: 'Page View',
-    UserActivity_custom: 'Custom Action'
+    UserActivity_custom: 'Custom Action',
 });
