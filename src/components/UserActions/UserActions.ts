@@ -182,7 +182,7 @@ export class UserActions extends Component {
                     this.renderNoActions();
                 }
             } catch (e) {
-                if (e && e.statusCode === 404) {
+                if (e?.statusCode === 404) {
                     this.renderEnablePrompt();
                 } else {
                     this.renderNoActions();
