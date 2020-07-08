@@ -68,14 +68,14 @@ export class UserActivity extends Component {
                 'omniboxFromLink',
                 'searchboxSubmit',
                 'searchFromLink',
-                'userActionsSubmit'
+                'userActionsSubmit',
             ],
-            required: true
+            required: true,
         }),
         unfoldExclude: ComponentOptions.buildListOption({
             defaultValue: [],
-            required: true
-        })
+            required: true,
+        }),
     };
 
     private actions: UserAction[];
@@ -101,9 +101,9 @@ export class UserActivity extends Component {
 
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
 
-        this.userProfileModel.getActions(this.options.userId).then(actions => {
+        this.userProfileModel.getActions(this.options.userId).then((actions) => {
             this.actions = actions.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-            this.foldedActions = this.actions.filter(action => !this.isUnfoldByDefault(action));
+            this.foldedActions = this.actions.filter((action) => !this.isUnfoldByDefault(action));
             this.render();
         });
     }
@@ -130,7 +130,7 @@ export class UserActivity extends Component {
         const timestampSection = document.createElement('div');
         timestampSection.classList.add(HEADER_CLASS);
 
-        this.buildTimestampSection().forEach(el => timestampSection.appendChild(el));
+        this.buildTimestampSection().forEach((el) => timestampSection.appendChild(el));
 
         const activitySection = this.buildActivitySection();
         activitySection.classList.add(ACTIVITY_CLASS);
@@ -178,7 +178,7 @@ export class UserActivity extends Component {
                     return [...acc, action];
                 }
             }, [])
-            .map(item => {
+            .map((item) => {
                 if (Array.isArray(item)) {
                     return this.buildFolded(item);
                 } else {
@@ -221,7 +221,7 @@ export class UserActivity extends Component {
         hr.appendChild(span);
 
         li.addEventListener('click', () => {
-            this.foldedActions = this.foldedActions.filter(action => actions.indexOf(action) === -1);
+            this.foldedActions = this.foldedActions.filter((action) => actions.indexOf(action) === -1);
             this.render();
         });
 
@@ -357,7 +357,7 @@ export class UserActivity extends Component {
         return [
             this.buildTimestampCell({ title: l(`${UserActivity.ID}_start_date`), data: formatDate(startDate.timestamp) }),
             this.buildTimestampCell({ title: l(`${UserActivity.ID}_start_time`), data: formatTime(startDate.timestamp) }),
-            this.buildTimestampCell({ title: l(`${UserActivity.ID}_duration`), data: formatTimeInterval(duration) })
+            this.buildTimestampCell({ title: l(`${UserActivity.ID}_duration`), data: formatTimeInterval(duration) }),
         ];
     }
 

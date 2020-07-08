@@ -84,7 +84,7 @@ export class ToggleActionButton extends Component {
          *
          * This option is set in JavaScript when initializing the component.
          */
-        click: ComponentOptions.buildCustomOption(s => null),
+        click: ComponentOptions.buildCustomOption((s) => null),
 
         /**
          * Specifies the handler called when the button is activated.
@@ -93,7 +93,7 @@ export class ToggleActionButton extends Component {
          *
          * This option is set in JavaScript when initializing the component.
          */
-        activate: ComponentOptions.buildCustomOption(s => null),
+        activate: ComponentOptions.buildCustomOption((s) => null),
 
         /**
          * Specifies the handler called when the button is deactivated.
@@ -102,7 +102,7 @@ export class ToggleActionButton extends Component {
          *
          * This option is set in JavaScript when initializing the component.
          */
-        deactivate: ComponentOptions.buildCustomOption(s => null)
+        deactivate: ComponentOptions.buildCustomOption((s) => null),
     };
 
     private _isActivated: boolean = false;
@@ -154,7 +154,7 @@ export class ToggleActionButton extends Component {
             {
                 icon: this.options.activateIcon,
                 tooltip: this.options.activateTooltip,
-                click: () => this.onClick()
+                click: () => this.onClick(),
             },
             bindings
         );

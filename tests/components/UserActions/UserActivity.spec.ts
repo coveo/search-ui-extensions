@@ -15,84 +15,84 @@ describe('UserActivity', () => {
         origin_level_1: 'relevant' + Math.random(),
         uri_hash: 'product' + Math.random(),
         c_contentidkey: '@sysurihash',
-        c_contentidvalue: '' + Math.random()
+        c_contentidvalue: '' + Math.random(),
     });
     FAKE_CLICK_EVENT.document = Fake.createFakeResult();
 
     const FAKE_SEARCH_EVENT = new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
         origin_level_1: 'relevant' + Math.random(),
-        cause: 'interfaceLoad'
+        cause: 'interfaceLoad',
     });
 
     const FAKE_USER_SEARCH_EVENT = new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
         origin_level_1: 'relevant' + Math.random(),
         query_expression: 'someSearch' + Math.random(),
-        cause: 'searchboxSubmit'
+        cause: 'searchboxSubmit',
     });
     FAKE_USER_SEARCH_EVENT.query = FAKE_USER_SEARCH_EVENT.raw.query_expression;
 
     const FAKE_VIEW_EVENT = new UserAction(UserActionType.PageView, new Date(TEST_DATE_STRING), {
         origin_level_1: 'relevant' + Math.random(),
         content_id_key: '@someKey' + Math.random(),
-        content_id_value: 'someValue' + Math.random()
+        content_id_value: 'someValue' + Math.random(),
     });
 
     const FAKE_CUSTOM_EVENT = new UserAction(UserActionType.Custom, new Date(TEST_DATE_STRING), {
         origin_level_1: 'relevant' + Math.random(),
         event_type: 'Submit' + Math.random(),
-        event_value: 'Case Submit' + Math.random()
+        event_value: 'Case Submit' + Math.random(),
     });
 
     const FAKE_CUSTOM_EVENT_WITHOUT_TYPE = new UserAction(UserActionType.Custom, new Date(TEST_DATE_STRING), {
         origin_level_1: 'relevant' + Math.random(),
-        event_value: 'Case Submit' + Math.random()
+        event_value: 'Case Submit' + Math.random(),
     });
 
     const IRRELEVANT_ACTIONS = [
         new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
             origin_level_1: 'not relevant' + Math.random(),
             query_expression: 'not relevant',
-            cause: 'interfaceLoad'
+            cause: 'interfaceLoad',
         }),
         new UserAction(UserActionType.PageView, new Date(TEST_DATE_STRING), {
             origin_level_1: 'not relevant' + Math.random(),
             content_id_key: '@sysurihash',
-            content_id_value: 'product1'
+            content_id_value: 'product1',
         }),
         new UserAction(UserActionType.Custom, new Date(TEST_DATE_STRING), {
             origin_level_1: 'not relevant' + Math.random(),
             c_contentidkey: '@sysurihash',
             c_contentidvalue: 'headphones-gaming',
             event_type: 'addPurchase',
-            event_value: 'headphones-gaming'
+            event_value: 'headphones-gaming',
         }),
         new UserAction(UserActionType.Custom, new Date(TEST_DATE_STRING), {
             origin_level_1: 'relevant' + Math.random(),
             c_contentidkey: '@sysurihash',
             c_contentidvalue: 'headphones-gaming',
             event_type: 'addPurchase',
-            event_value: 'headphones-gaming'
-        })
+            event_value: 'headphones-gaming',
+        }),
     ];
 
     const FAKE_USER_ACTIONS = [
         new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
             origin_level_1: 'relevant' + Math.random(),
             cause: 'searchboxSubmit',
-            query_expression: 'Best product'
+            query_expression: 'Best product',
         }),
         new UserAction(UserActionType.Click, new Date(TEST_DATE_STRING), {
             origin_level_1: 'relevant' + Math.random(),
             uri_hash: 'product' + Math.random(),
             c_contentidkey: '@sysurihash',
-            c_contentidvalue: 'product1'
-        })
+            c_contentidvalue: 'product1',
+        }),
     ];
 
     const getMockComponent = (returnedActions: UserAction | UserAction[]) => {
         return Mock.advancedComponentSetup<UserActivity>(
             UserActivity,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(returnedActions));
                 return env;
             })
@@ -111,7 +111,7 @@ describe('UserActivity', () => {
 
     it('should show the starting date and time of the user action session', () => {
         const mock = getMockComponent(FAKE_USER_ACTIONS);
-        const timestamps = FAKE_USER_ACTIONS.map(action => action.timestamp).sort();
+        const timestamps = FAKE_USER_ACTIONS.map((action) => action.timestamp).sort();
 
         return delay(() => {
             const firstAction = timestamps[0];
@@ -123,7 +123,7 @@ describe('UserActivity', () => {
 
     it('should duration of the user action session', () => {
         const mock = getMockComponent(FAKE_USER_ACTIONS);
-        const timestamps = FAKE_USER_ACTIONS.map(action => action.timestamp).sort();
+        const timestamps = FAKE_USER_ACTIONS.map((action) => action.timestamp).sort();
 
         return delay(() => {
             expect(mock.cmp.element.innerHTML).toMatch(formatTimeInterval(timestamps[timestamps.length - 1].getTime() - timestamps[0].getTime()));
@@ -134,7 +134,7 @@ describe('UserActivity', () => {
         const mock = getMockComponent([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]);
 
         return delay(() => {
-            IRRELEVANT_ACTIONS.forEach(action => {
+            IRRELEVANT_ACTIONS.forEach((action) => {
                 expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).not.toMatch(action.raw.origin_level_1);
             });
         });
@@ -144,7 +144,7 @@ describe('UserActivity', () => {
         const mock = getMockComponent([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]);
 
         return delay(() => {
-            FAKE_USER_ACTIONS.forEach(action => {
+            FAKE_USER_ACTIONS.forEach((action) => {
                 expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).toMatch(action.raw.origin_level_1);
             });
         });
@@ -154,7 +154,7 @@ describe('UserActivity', () => {
         const mock = getMockComponent(IRRELEVANT_ACTIONS);
 
         return delay(() => {
-            IRRELEVANT_ACTIONS.forEach(action => {
+            IRRELEVANT_ACTIONS.forEach((action) => {
                 expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).toMatch(action.raw.origin_level_1);
             });
         });
@@ -169,7 +169,7 @@ describe('UserActivity', () => {
 
                 expect(folded).not.toBeNull();
                 folded.click();
-                IRRELEVANT_ACTIONS.forEach(action => {
+                IRRELEVANT_ACTIONS.forEach((action) => {
                     expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).toMatch(action.raw.origin_level_1);
                 });
             });
@@ -177,14 +177,14 @@ describe('UserActivity', () => {
     });
 
     describe('search event', () => {
-        ['omniboxAnalytics', 'userActionsSubmit', 'omniboxFromLink', 'searchboxAsYouType', 'searchboxSubmit', 'searchFromLink'].map(cause => {
+        ['omniboxAnalytics', 'userActionsSubmit', 'omniboxFromLink', 'searchboxAsYouType', 'searchboxSubmit', 'searchFromLink'].map((cause) => {
             it(`should display the "User Query" as event title when there is a query expression and the cause is ${cause}`, () => {
                 const mock = getMockComponent([
                     new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
                         origin_level_1: 'relevant' + Math.random(),
                         query_expression: 'someSearch' + Math.random(),
-                        cause: cause
-                    })
+                        cause: cause,
+                    }),
                 ]);
 
                 return delay(async () => {
@@ -466,7 +466,7 @@ describe('UserActivity', () => {
             let getActionStub: SinonStub<[HTMLElement, UserActivity], void>;
             const mock = Mock.advancedComponentSetup<UserActivity>(
                 UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: null }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: null }, (env) => {
                     getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
                     return env;
                 })
@@ -481,7 +481,7 @@ describe('UserActivity', () => {
             let getActionStub: SinonStub<[HTMLElement, UserActivity], void>;
             const mock = Mock.advancedComponentSetup<UserActivity>(
                 UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: '' }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: '' }, (env) => {
                     getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
                     return env;
                 })

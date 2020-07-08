@@ -4,5 +4,5 @@ export const MANUAL_SEARCH_EVENT_CAUSE = Object.freeze([
     'omniboxFromLink',
     'searchboxAsYouType',
     'searchboxSubmit',
-    'searchFromLink'
+    'searchFromLink',
 ]);

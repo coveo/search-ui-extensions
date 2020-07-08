@@ -71,7 +71,7 @@ export class ActionButton extends Component {
          *
          * This option must be set in JavaScript when initializing the component.
          */
-        click: ComponentOptions.buildCustomOption(s => null, { required: true })
+        click: ComponentOptions.buildCustomOption((s) => null, { required: true }),
     };
 
     constructor(public element: HTMLElement, public options: IActionButtonOptions, public bindings?: IResultsComponentBindings) {

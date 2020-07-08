@@ -9,7 +9,7 @@ import {
     IAnalyticsCaseDetachMeta,
     analyticsActionCauseList,
     IAnalyticsActionCause,
-    l
+    l,
 } from 'coveo-search-ui';
 import { paperclipIcon, wait } from '../../utils/icons';
 import { AttachResultEvents, IAttachResultEventArgs } from './Events';
@@ -49,17 +49,17 @@ export class AttachResult extends Component {
 
     public static readonly options: IAttachResultOptions = {
         attachCaption: ComponentOptions.buildStringOption({
-            defaultValue: l(`${AttachResult.ID}_Attach`)
+            defaultValue: l(`${AttachResult.ID}_Attach`),
         }),
         detachCaption: ComponentOptions.buildStringOption({
-            defaultValue: l(`${AttachResult.ID}_Detach`)
+            defaultValue: l(`${AttachResult.ID}_Detach`),
         }),
         articleIdField: ComponentOptions.buildStringOption({
-            defaultValue: 'permanentid'
+            defaultValue: 'permanentid',
         }),
         caseId: ComponentOptions.buildStringOption(),
         attach: ComponentOptions.buildCustomOption(
-            name => (result: IQueryResult) =>
+            (name) => (result: IQueryResult) =>
                 new Promise<void>((resolve, reject) => {
                     console.log('attached ', result);
                     resolve();
@@ -69,11 +69,11 @@ export class AttachResult extends Component {
                     new Promise<void>((resolve, reject) => {
                         console.log('attached ', result);
                         resolve();
-                    })
+                    }),
             }
         ),
         detach: ComponentOptions.buildCustomOption(
-            name => (result: IQueryResult) =>
+            (name) => (result: IQueryResult) =>
                 new Promise<void>((resolve, reject) => {
                     console.log('detached ', result);
                     resolve();
@@ -83,9 +83,9 @@ export class AttachResult extends Component {
                     new Promise<void>((resolve, reject) => {
                         console.log('detached ', result);
                         resolve();
-                    })
+                    }),
             }
-        )
+        ),
     };
 
     constructor(
@@ -165,7 +165,7 @@ export class AttachResult extends Component {
         this.element.appendChild(this.buttonElement);
 
         this.tooltipElement = $$('div', {
-            className: 'coveo-caption-for-icon'
+            className: 'coveo-caption-for-icon',
         }).el;
         this.element.appendChild(this.tooltipElement);
 
@@ -181,10 +181,10 @@ export class AttachResult extends Component {
             this.setLoading(true);
             this.options
                 .isAttached(this.queryResult)
-                .then(attached => {
+                .then((attached) => {
                     this.attached = attached;
                 })
-                .catch(error => {
+                .catch((error) => {
                     this.logger.error('Error retrieving initial result attached state.', error);
                 })
                 .finally(() => {
@@ -204,7 +204,7 @@ export class AttachResult extends Component {
             resultUriHash: this.queryResult.raw.urihash,
             author: this.queryResult.raw.author,
             articleID: this.queryResult.raw[this.options.articleIdField],
-            caseID: this.options.caseId
+            caseID: this.options.caseId,
         };
 
         this.usageAnalytics.logCustomEvent<IAnalyticsCaseDetachMeta>(cause, customData, this.element, this.queryResult);

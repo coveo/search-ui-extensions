@@ -2,7 +2,7 @@
  * Events triggered by the **ResultsFilter** component.
  */
 export enum ResultsFilterEvents {
-    Click = 'click'
+    Click = 'click',
 }
 
 /**

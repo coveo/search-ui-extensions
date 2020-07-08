@@ -74,18 +74,18 @@ export class QueryList extends Component {
         numberOfItems: ComponentOptions.buildNumberOption({
             defaultValue: 4,
             min: 1,
-            required: true
+            required: true,
         }),
 
         listLabel: ComponentOptions.buildStringOption({
-            defaultValue: 'Recent Queries'
+            defaultValue: 'Recent Queries',
         }),
 
         transform: ComponentOptions.buildCustomOption<(query: string) => Promise<HTMLElement>>(DEFAULT_TRANSFORMATION, {
-            defaultValue: DEFAULT_TRANSFORMATION()
+            defaultValue: DEFAULT_TRANSFORMATION(),
         }),
 
-        userId: ComponentOptions.buildStringOption({ required: true })
+        userId: ComponentOptions.buildStringOption({ required: true }),
     };
 
     private userProfileModel: UserProfileModel;
@@ -109,12 +109,12 @@ export class QueryList extends Component {
         }
 
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
-        this.userProfileModel.getActions(this.options.userId).then(actions => {
+        this.userProfileModel.getActions(this.options.userId).then((actions) => {
             this.sortedQueryList = [...actions]
-                .filter(action => action.query)
+                .filter((action) => action.query)
                 .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
                 .reverse()
-                .map(action => action.query)
+                .map((action) => action.query)
                 .reduce(this.removeDuplicateQueries, []);
             this.render();
         }, this.logger.error.bind(this.logger));
@@ -132,7 +132,7 @@ export class QueryList extends Component {
             listLabel: this.options.listLabel,
             messageWhenEmpty: l(`${QueryList.ID}_no_queries`),
             showMoreMessage: l(`${QueryList.ID}_more`),
-            showLessMessage: l(`${QueryList.ID}_less`)
+            showLessMessage: l(`${QueryList.ID}_less`),
         });
     }
 

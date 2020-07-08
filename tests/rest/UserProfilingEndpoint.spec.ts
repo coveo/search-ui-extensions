@@ -17,13 +17,13 @@ describe('UserProfilingEndpoint', () => {
                 c_contentidkey: '@sysurihash',
                 c_contentidvalue: 'headphones-gaming',
                 event_type: 'addPurchase',
-                event_value: 'headphones-gaming'
-            }
+                event_value: 'headphones-gaming',
+            },
         },
         {
             name: UserActionType.Search,
             time: 1550509200357,
-            value: { cause: 'searchboxSubmit', query_expression: 'Best product', origin_level_1: 'originLevel1' }
+            value: { cause: 'searchboxSubmit', query_expression: 'Best product', origin_level_1: 'originLevel1' },
         },
         {
             name: UserActionType.Click,
@@ -32,14 +32,14 @@ describe('UserProfilingEndpoint', () => {
                 uri_hash: 'product1',
                 c_contentidkey: '@sysurihash',
                 c_contentidvalue: 'product1',
-                origin_level_1: 'originLevel1'
-            }
+                origin_level_1: 'originLevel1',
+            },
         },
         {
             name: UserActionType.PageView,
             time: 1547571617714,
-            value: { content_id_key: '@sysurihash', origin_level_1: 'originLevel1', content_id_value: 'product1' }
-        }
+            value: { content_id_key: '@sysurihash', origin_level_1: 'originLevel1', content_id_value: 'product1' },
+        },
     ];
 
     let sandbox: sinon.SinonSandbox;
@@ -55,7 +55,7 @@ describe('UserProfilingEndpoint', () => {
         xhr = sandbox.useFakeXMLHttpRequest();
 
         request = [];
-        xhr.onCreate = req => {
+        xhr.onCreate = (req) => {
             request.push(req);
         };
     });
@@ -72,7 +72,7 @@ describe('UserProfilingEndpoint', () => {
         it('should override the uri with the default uri when none is given as an option', () => {
             const endpoint = new UserProfilingEndpoint({
                 accessToken: buildAccessToken(TEST_ACCESS_TOKEN),
-                organization: TEST_ORGANIZATION
+                organization: TEST_ORGANIZATION,
             });
 
             expect(endpoint.options.uri).toEqual(UserProfilingEndpoint.DEFAULT_URI);
@@ -84,7 +84,7 @@ describe('UserProfilingEndpoint', () => {
             new UserProfilingEndpoint({
                 accessToken: buildAccessToken(TEST_ACCESS_TOKEN),
                 organization: TEST_ORGANIZATION,
-                uri: TEST_URI
+                uri: TEST_URI,
             }).getActions(TEST_USER_ID);
 
             const LAST_REQUEST = request[request.length - 1];
@@ -100,7 +100,7 @@ describe('UserProfilingEndpoint', () => {
                 const RESPONSE = new UserProfilingEndpoint({
                     accessToken: buildAccessToken(TEST_ACCESS_TOKEN),
                     organization: TEST_ORGANIZATION,
-                    uri: TEST_URI
+                    uri: TEST_URI,
                 }).getActions(TEST_USER_ID);
 
                 request[request.length - 1].respond(
@@ -124,7 +124,7 @@ describe('UserProfilingEndpoint', () => {
                 const RESPONSE = new UserProfilingEndpoint({
                     accessToken: buildAccessToken(TEST_ACCESS_TOKEN),
                     organization: TEST_ORGANIZATION,
-                    uri: TEST_URI
+                    uri: TEST_URI,
                 }).getActions(TEST_USER_ID);
 
                 request[request.length - 1].respond(
@@ -145,7 +145,7 @@ describe('UserProfilingEndpoint', () => {
                 const RESPONSE = new UserProfilingEndpoint({
                     accessToken: buildAccessToken(TEST_ACCESS_TOKEN),
                     organization: TEST_ORGANIZATION,
-                    uri: TEST_URI
+                    uri: TEST_URI,
                 }).getActions(TEST_USER_ID);
 
                 request[request.length - 1].respond(
@@ -168,7 +168,7 @@ describe('UserProfilingEndpoint', () => {
                 const RESPONSE = new UserProfilingEndpoint({
                     accessToken: buildAccessToken(TEST_ACCESS_TOKEN),
                     organization: TEST_ORGANIZATION,
-                    uri: TEST_URI
+                    uri: TEST_URI,
                 }).getActions(TEST_USER_ID);
 
                 request[request.length - 1].respond(400, {}, '');

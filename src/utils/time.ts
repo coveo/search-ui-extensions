@@ -11,7 +11,7 @@ export function formatDate(date: Date) {
         weekday: 'short',
         day: '2-digit',
         month: 'short',
-        year: 'numeric'
+        year: 'numeric',
     });
 }
 
@@ -24,7 +24,7 @@ export function formatDate(date: Date) {
 export function formatDateShort(date: Date) {
     return date.toLocaleDateString('default', {
         day: '2-digit',
-        month: 'short'
+        month: 'short',
     });
 }
 
@@ -38,7 +38,7 @@ export function formatTime(date: Date) {
     return date.toLocaleTimeString('default', {
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit'
+        second: '2-digit',
     });
 }
 
@@ -51,7 +51,7 @@ export function formatTime(date: Date) {
 export function formatTimeShort(date: Date) {
     return date.toLocaleTimeString('default', {
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
     });
 }
 
@@ -107,7 +107,7 @@ export function formatTimeInterval(interval: number): string {
         [nb_day, `${day_str}${nb_hour > 0 ? ` ${hour_str}` : ''}`],
         [nb_hour, `${hour_str}${nb_minutes > 0 ? ` ${minutes_str}` : ''}`],
         [nb_minutes, `${minutes_str}${nb_seconds > 0 ? ` ${seconds_str}` : ''}`],
-        [nb_seconds, seconds_str]
+        [nb_seconds, seconds_str],
     ];
 
     const first_meaningful_tuple = (time_per_unit.find(([amount, _]) => amount > 0) as [number, string]) || [0, '0 seconds'];

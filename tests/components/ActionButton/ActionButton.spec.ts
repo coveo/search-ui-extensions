@@ -20,7 +20,7 @@ describe('ActionButton', () => {
             title: 'a default title',
             tooltip: 'a default tooltip',
             icon: icons.copy,
-            click: () => {}
+            click: () => {},
         };
 
         testSubject = createActionButton(options);
@@ -136,19 +136,19 @@ describe('ActionButton', () => {
         {
             optionName: 'title',
             optionValue: 'some title',
-            expectedSelector: '.coveo-actionbutton_title'
+            expectedSelector: '.coveo-actionbutton_title',
         },
         {
             optionName: 'icon',
             optionValue: icons.copy,
-            expectedSelector: '.coveo-actionbutton_icon'
+            expectedSelector: '.coveo-actionbutton_icon',
         },
         {
             optionName: 'tooltip',
             optionValue: 'Some Tooltip',
-            expectedSelector: '.CoveoActionButton[title]'
-        }
-    ].forEach(testCase => {
+            expectedSelector: '.CoveoActionButton[title]',
+        },
+    ].forEach((testCase) => {
         describe(`with empty ${testCase.optionName} option`, () => {
             beforeEach(() => {
                 setOption(testCase.optionName, null);

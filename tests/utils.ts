@@ -11,7 +11,7 @@ export function buildAccessToken(token: string) {
     return new SearchEndpoint({
         accessToken: token,
         renewAccessToken: () => Promise.resolve(token),
-        restUri: 'https://test.uri.test'
+        restUri: 'https://test.uri.test',
     }).accessToken;
 }
 
@@ -23,16 +23,16 @@ export function buildActionHistoryResponse(actions: IActionHistory[]) {
     return {
         value:
             actions &&
-            actions.map(action => {
+            actions.map((action) => {
                 return {
                     name: action.name,
                     time: action.time.toString(),
-                    value: JSON.stringify(action.value, null, 0)
+                    value: JSON.stringify(action.value, null, 0),
                 };
             }),
         debug: false,
         internalExecutionLog: [''],
-        executionTime: 0.949252553
+        executionTime: 0.949252553,
     };
 }
 
@@ -55,7 +55,7 @@ export function generate<T>(time: number, generator: (i: number) => T): T[] {
  * @param timemout The timeout to wait.
  */
 export function delay(callback: () => any, timemout = 0) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         setTimeout(() => {
             resolve(callback());
         }, timemout);
