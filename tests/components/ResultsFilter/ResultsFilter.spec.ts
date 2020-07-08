@@ -44,7 +44,7 @@ describe('ResultsFilter', () => {
     });
 
     it('should trigger event with checked true when first toggling', () => {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             Coveo.$$(filter.env.root).on(ResultsFilterEvents.Click, (evt: Event, args: IResultsFilterEventArgs) => {
                 expect(args.checked).toBeTruthy();
                 resolve();
@@ -54,7 +54,7 @@ describe('ResultsFilter', () => {
     });
 
     it('should trigger event with checked false when toggling twice', () => {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             filter.cmp.toggle();
             Coveo.$$(filter.env.root).on(ResultsFilterEvents.Click, (evt: Event, args: IResultsFilterEventArgs) => {
                 expect(args.checked).toBeFalsy();
@@ -73,7 +73,7 @@ describe('ResultsFilter', () => {
             filter = Mock.optionsComponentSetup<ResultsFilter, IResultsFilterOptions>(ResultsFilter, {
                 text: 'much rain',
                 field: 'myField',
-                getValues: () => ['foo', 'bar']
+                getValues: () => ['foo', 'bar'],
             });
             return Promise.resolve();
         });

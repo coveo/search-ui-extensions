@@ -16,27 +16,27 @@ describe('UserActions', () => {
         new UserAction(UserActionType.Search, new Date('2:00:00 AM'), {
             origin_level_1: 'not relevant' + Math.random(),
             query_expression: 'not relevant',
-            cause: 'interfaceLoad'
+            cause: 'interfaceLoad',
         }),
         new UserAction(UserActionType.PageView, new Date('2:10:00 AM'), {
             origin_level_1: 'not relevant' + Math.random(),
             content_id_key: '@sysurihash',
-            content_id_value: 'product1'
+            content_id_value: 'product1',
         }),
         new UserAction(UserActionType.Custom, new Date('2:20:00 AM'), {
             origin_level_1: 'not relevant' + Math.random(),
             c_contentidkey: '@sysurihash',
             c_contentidvalue: 'headphones-gaming',
             event_type: 'addPurchase',
-            event_value: 'headphones-gaming'
+            event_value: 'headphones-gaming',
         }),
         new UserAction(UserActionType.Custom, new Date('2:30:00 AM'), {
             origin_level_1: 'relevant' + Math.random(),
             c_contentidkey: '@sysurihash',
             c_contentidvalue: 'headphones-gaming',
             event_type: 'addPurchase',
-            event_value: 'headphones-gaming'
-        })
+            event_value: 'headphones-gaming',
+        }),
     ];
 
     beforeAll(() => {
@@ -61,7 +61,7 @@ describe('UserActions', () => {
 
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: '' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: '' }, (env) => {
                 getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
                 return env;
             })
@@ -79,7 +79,7 @@ describe('UserActions', () => {
 
         Mock.advancedComponentSetup<UserActions>(
             UserActions,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', hidden: true }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', hidden: true }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
                 return env;
             })
@@ -95,7 +95,7 @@ describe('UserActions', () => {
 
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
                 return env;
             })
@@ -111,7 +111,7 @@ describe('UserActions', () => {
 
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
                 return env;
             })
@@ -128,7 +128,7 @@ describe('UserActions', () => {
 
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
                 return env;
             })
@@ -149,7 +149,7 @@ describe('UserActions', () => {
 
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
                 return env;
             })
@@ -172,7 +172,7 @@ describe('UserActions', () => {
 
         Mock.advancedComponentSetup<UserActions>(
             UserActions,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: FAKE_USER_ID }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: FAKE_USER_ID }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
                 return env;
             })
@@ -181,7 +181,7 @@ describe('UserActions', () => {
         return delay(() => {
             expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
 
-            [ClickedDocumentList.ID, QueryList.ID, UserActivity.ID].forEach(component => {
+            [ClickedDocumentList.ID, QueryList.ID, UserActivity.ID].forEach((component) => {
                 expect(automaticallyCreateComponentsInsideStub.args[0][1].options[component]).toBeDefined();
                 expect(automaticallyCreateComponentsInsideStub.args[0][1].options[component].userId).toBe(FAKE_USER_ID);
             });
@@ -193,24 +193,24 @@ describe('UserActions', () => {
         const initOptions = {
             QueryList: {
                 listLabel: 'Custom Query List Title',
-                numberOfItems: 1
+                numberOfItems: 1,
             },
             ClickedDocumentList: {
                 listLabel: 'Custom Clicked Document List Title',
                 template: 'Custom Template',
-                numberOfItems: 2
+                numberOfItems: 2,
             },
             UserActivity: {
                 unfoldInclude: ['includedField'],
-                unfoldExclude: ['excludedField']
-            }
+                unfoldExclude: ['excludedField'],
+            },
         } as { [key: string]: any };
 
         const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
         const component: UserActions = Mock.advancedComponentSetup<UserActions>(
             UserActions,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: FAKE_USER_ID }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: FAKE_USER_ID }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
                 return env;
             })
@@ -224,7 +224,7 @@ describe('UserActions', () => {
 
             const actualInitOptions = automaticallyCreateComponentsInsideStub.args[0][1].options;
 
-            [QueryList.ID, ClickedDocumentList.ID, UserActivity.ID].forEach(component => {
+            [QueryList.ID, ClickedDocumentList.ID, UserActivity.ID].forEach((component) => {
                 const actualComponentOptions = actualInitOptions[component];
                 expect(actualComponentOptions).toBeDefined();
                 expect(actualComponentOptions).toEqual(jasmine.objectContaining(initOptions[component]));
@@ -237,7 +237,7 @@ describe('UserActions', () => {
 
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
                 return env;
             })
@@ -256,7 +256,7 @@ describe('UserActions', () => {
 
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject({ statusCode: 404 }));
                 return env;
             })
@@ -276,7 +276,7 @@ describe('UserActions', () => {
 
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([]));
                 return env;
             })
@@ -294,7 +294,7 @@ describe('UserActions', () => {
 
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
                 return env;
             })
@@ -312,7 +312,7 @@ describe('UserActions', () => {
 
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                     fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
                     return env;
                 })
@@ -323,7 +323,7 @@ describe('UserActions', () => {
                 const accordionSections = mock.cmp.element.querySelectorAll('.coveo-accordion');
                 expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
 
-                accordionSections.forEach(el => {
+                accordionSections.forEach((el) => {
                     el.classList.remove('coveo-folded');
                     el.querySelector<HTMLElement>('.coveo-accordion-header').click();
                     expect(el.classList).toContain('coveo-folded');
@@ -336,7 +336,7 @@ describe('UserActions', () => {
 
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                     fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
                     return env;
                 })
@@ -348,7 +348,7 @@ describe('UserActions', () => {
 
                 expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
 
-                accordionSections.forEach(el => {
+                accordionSections.forEach((el) => {
                     el.classList.add('coveo-folded');
                     el.querySelector<HTMLElement>('.coveo-accordion-header').click();
                     expect(el.classList).not.toContain('coveo-folded');
@@ -363,7 +363,7 @@ describe('UserActions', () => {
 
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                     fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
                     return env;
                 })
@@ -383,7 +383,7 @@ describe('UserActions', () => {
 
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                     fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
                     return env;
                 })
@@ -409,7 +409,7 @@ describe('UserActions', () => {
 
             mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: someUserId }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: someUserId }, (env) => {
                     modelMock = fakeUserProfileModel(env.root, sandbox);
                     modelMock.getActions.returns(new Promise(() => {}));
                     return env;
@@ -464,7 +464,7 @@ describe('UserActions', () => {
 
             mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: someUserId }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: someUserId }, (env) => {
                     modelMock = fakeUserProfileModel(env.root, sandbox);
                     modelMock.getActions.returns(new Promise(() => {}));
                     return env;
@@ -516,7 +516,7 @@ describe('UserActions', () => {
         it('should add email to query', () => {
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId' }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId' }, (env) => {
                     fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
                     return env;
                 })
@@ -535,7 +535,7 @@ describe('UserActions', () => {
         it('should catch error', () => {
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', record: undefined }, env => {
+                new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', record: undefined }, (env) => {
                     fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
                     return env;
                 })
@@ -577,7 +577,7 @@ describe('UserActions', () => {
 
         describe('if the viewedByCustomer option is true', () => {
             const setResultList = (el: HTMLElement, layout: 'list' | 'card' | 'table') => {
-                ['list', 'card', 'table'].forEach(key => {
+                ['list', 'card', 'table'].forEach((key) => {
                     const resultList = document.createElement('div');
                     resultList.classList.add('CoveoResultList');
                     if (key !== layout) {
@@ -595,7 +595,7 @@ describe('UserActions', () => {
             it('should add a ViewedByCustomer Component when the result list layout is card', () => {
                 const mock = Mock.advancedComponentSetup<UserActions>(
                     UserActions,
-                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, env => {
+                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, (env) => {
                         setResultList(env.root, 'card');
                         fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
                         return env;
@@ -614,7 +614,7 @@ describe('UserActions', () => {
             it('should add a ViewedByCustomer Component when the result list layout is list', () => {
                 const mock = Mock.advancedComponentSetup<UserActions>(
                     UserActions,
-                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, env => {
+                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, (env) => {
                         setResultList(env.root, 'list');
                         fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
                         return env;
@@ -633,7 +633,7 @@ describe('UserActions', () => {
             it('should not add a ViewedByCustomer Component when the result list layout is table', () => {
                 const mock = Mock.advancedComponentSetup<UserActions>(
                     UserActions,
-                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, env => {
+                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, (env) => {
                         setResultList(env.root, 'table');
                         fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
                         return env;
@@ -652,7 +652,7 @@ describe('UserActions', () => {
             it('It should not add a viewedByCustomer if one is already there', () => {
                 const mock = Mock.advancedComponentSetup<UserActions>(
                     UserActions,
-                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, env => {
+                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, (env) => {
                         fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
                         return env;
                     })
@@ -677,7 +677,7 @@ describe('UserActions', () => {
             it('should not add a ViewedByCustomer Component', () => {
                 const mock = Mock.advancedComponentSetup<UserActions>(
                     UserActions,
-                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, env => {
+                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, (env) => {
                         fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
                         return env;
                     })
@@ -695,7 +695,7 @@ describe('UserActions', () => {
             it('It should not add a viewedByCustomer if one is already there', () => {
                 const mock = Mock.advancedComponentSetup<UserActions>(
                     UserActions,
-                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, env => {
+                    new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, (env) => {
                         fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
                         return env;
                     })

@@ -6,7 +6,7 @@ import { IQueryResult } from 'coveo-search-ui';
  */
 export enum AttachResultEvents {
     Attach = 'attach',
-    Detach = 'detach'
+    Detach = 'detach',
 }
 
 /**

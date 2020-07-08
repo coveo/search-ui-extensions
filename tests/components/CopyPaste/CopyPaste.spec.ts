@@ -41,7 +41,7 @@ describe('CopyToClipboard ResultAction', () => {
         sandbox.restore();
         $$(document.body)
             .children()
-            .forEach(el => el.remove());
+            .forEach((el) => el.remove());
     });
 
     describe('on click', () => {

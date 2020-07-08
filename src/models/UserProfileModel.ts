@@ -56,12 +56,12 @@ export class UserProfileModel extends Model {
     public static readonly ID = 'UserProfileModel';
 
     private static readonly ERROR_MESSAGE = Object.freeze({
-        FETCH_CLICKED_DOCUMENT_FAIL: 'Fetching clicked documents details failed'
+        FETCH_CLICKED_DOCUMENT_FAIL: 'Fetching clicked documents details failed',
     });
 
     private static readonly MODEL_CONFIG = {
         customAttribute: true,
-        silent: true
+        silent: true,
     };
 
     private endpoint: UserProfilingEndpoint;
@@ -85,7 +85,7 @@ export class UserProfileModel extends Model {
         this.endpoint = new UserProfilingEndpoint({
             uri: this.options.restUri,
             accessToken: this.options.accessToken || (this.options.searchEndpoint as SearchEndpoint).accessToken,
-            organization: this.options.organizationId
+            organization: this.options.organizationId,
         });
     }
 
@@ -116,7 +116,7 @@ export class UserProfileModel extends Model {
     private fetchActions(userId: string) {
         const pendingFetch = this.getOrFetchCache[userId];
         const doFetch = () => {
-            this.getOrFetchCache[userId] = this.endpoint.getActions(userId).then(actions => this.parseGetActionsResponse(userId, actions));
+            this.getOrFetchCache[userId] = this.endpoint.getActions(userId).then((actions) => this.parseGetActionsResponse(userId, actions));
             return this.getOrFetchCache[userId];
         };
         return pendingFetch || doFetch();
@@ -136,7 +136,11 @@ export class UserProfileModel extends Model {
         }
 
         const query = new QueryBuilder();
-        query.advancedExpression.addFieldExpression('@urihash', '==', urihashes.filter(x => x));
+        query.advancedExpression.addFieldExpression(
+            '@urihash',
+            '==',
+            urihashes.filter((x) => x)
+        );
 
         // Ensure we fetch the good amount of document.
         query.numberOfResults = urihashes.length;
@@ -154,7 +158,7 @@ export class UserProfileModel extends Model {
 
         const urihashes = actions
             .filter(this.isClick)
-            .map(action => action.value.uri_hash)
+            .map((action) => action.value.uri_hash)
             // Remove duplicates.
             .filter((value, index, list) => list.indexOf(value) === index);
 
@@ -164,7 +168,7 @@ export class UserProfileModel extends Model {
             this.logger.error(UserProfileModel.ERROR_MESSAGE.FETCH_CLICKED_DOCUMENT_FAIL, error);
         }
 
-        return actions.map(action => {
+        return actions.map((action) => {
             return new UserAction(
                 action.name,
                 new Date(action.time),

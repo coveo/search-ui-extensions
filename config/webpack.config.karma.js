@@ -9,7 +9,7 @@ webpackConfig.module.rules = [
         test: /\.ts$/,
         use: [
             {
-                loader: 'ts-es5-istanbul-coverage'
+                loader: 'ts-es5-istanbul-coverage',
             },
             {
                 loader: 'ts-loader',
@@ -19,16 +19,16 @@ webpackConfig.module.rules = [
                         module: 'commonjs',
                         inlineSourceMap: true,
                         sourceMap: undefined,
-                        outDir: undefined
-                    }
-                }
-            }
-        ]
+                        outDir: undefined,
+                    },
+                },
+            },
+        ],
     },
     {
         test: /\.svg$/,
         loader: 'raw-loader',
-        options: {}
+        options: {},
     },
     {
         enforce: 'post',
@@ -36,13 +36,13 @@ webpackConfig.module.rules = [
         loader: 'istanbul-instrumenter-loader',
         exclude: path.resolve('tests/'),
         query: {
-            esModules: true
-        }
-    }
+            esModules: true,
+        },
+    },
 ];
 
 webpackConfig.externals.push({
-    'coveo-search-ui-tests': 'CoveoJsSearchTests'
+    'coveo-search-ui-tests': 'CoveoJsSearchTests',
 });
 
 /**

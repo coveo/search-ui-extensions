@@ -34,7 +34,7 @@ describe('ToggleActionButton', () => {
             deactivateTooltip: 'Deactivate feature',
             click: clickSpy,
             activate: activateSpy,
-            deactivate: deactivateSpy
+            deactivate: deactivateSpy,
         };
 
         testSubject = createToggleButton(options);
@@ -141,7 +141,7 @@ describe('ToggleActionButton', () => {
             { legacy: 'activatedIcon', current: 'deactivateIcon' },
             { legacy: 'activatedTooltip', current: 'deactivateTooltip' },
             { legacy: 'deactivatedIcon', current: 'activateIcon' },
-            { legacy: 'deactivatedTooltip', current: 'activateTooltip' }
+            { legacy: 'deactivatedTooltip', current: 'activateTooltip' },
         ].forEach(({ legacy, current }) => {
             it(`should support legacy '${legacy}' option through '${current}'`, () => {
                 const option = getOption(current);

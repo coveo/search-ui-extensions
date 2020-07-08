@@ -13,7 +13,7 @@ describe('ClickedDocumentList', () => {
         return new UserAction(UserActionType.Click, new Date(i), { origin_level_1: 'foo', uri_hash: document.uri }, document);
     };
 
-    const TEST_CLICKS = generate(20, i => {
+    const TEST_CLICKS = generate(20, (i) => {
         return BUILD_ACTION(`document${i}`, i);
     });
 
@@ -38,7 +38,7 @@ describe('ClickedDocumentList', () => {
     it('should show a text when there is no document clicked', () => {
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([]));
                 return env;
             })
@@ -54,7 +54,7 @@ describe('ClickedDocumentList', () => {
     it('should show "Documents Clicked" as title', () => {
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
                 return env;
             })
@@ -69,7 +69,7 @@ describe('ClickedDocumentList', () => {
         const customTitle = 'Custom Title';
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', listLabel: customTitle }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', listLabel: customTitle }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
                 return env;
             })
@@ -85,7 +85,7 @@ describe('ClickedDocumentList', () => {
 
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
                 return env;
             })
@@ -103,7 +103,7 @@ describe('ClickedDocumentList', () => {
 
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
                 return env;
             })
@@ -121,7 +121,7 @@ describe('ClickedDocumentList', () => {
 
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
                 return env;
             })
@@ -142,7 +142,7 @@ describe('ClickedDocumentList', () => {
 
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
                 return env;
             })
@@ -168,14 +168,14 @@ describe('ClickedDocumentList', () => {
             BUILD_ACTION('someQuery2', 3),
             BUILD_ACTION('someQuery2', 2),
             BUILD_ACTION('someQuery2', 1),
-            BUILD_ACTION('someQuery', 0)
+            BUILD_ACTION('someQuery', 0),
         ];
 
         const SORTED_AND_TRIMMED_CLICK_EVENTS = [CLICK_EVENTS[0], CLICK_EVENTS[1]];
 
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(CLICK_EVENTS));
                 return env;
             })
@@ -199,7 +199,7 @@ describe('ClickedDocumentList', () => {
 
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
                 return env;
             })
@@ -222,7 +222,7 @@ describe('ClickedDocumentList', () => {
 
         Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 model = fakeUserProfileModel(env.root, sandbox);
                 model.getActions.returns(Promise.resolve(TEST_CLICKS));
                 return env;
@@ -237,7 +237,7 @@ describe('ClickedDocumentList', () => {
 
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
                 return env;
             })
@@ -253,7 +253,7 @@ describe('ClickedDocumentList', () => {
         let getActionStub: SinonStub<[HTMLElement, ClickedDocumentList], void>;
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: null }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: null }, (env) => {
                 getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
                 return env;
             })
@@ -268,7 +268,7 @@ describe('ClickedDocumentList', () => {
         let getActionStub: SinonStub<[HTMLElement, ClickedDocumentList], void>;
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: '' }, env => {
+            new Mock.AdvancedComponentSetupOptions(null, { userId: '' }, (env) => {
                 getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
                 return env;
             })
@@ -293,10 +293,10 @@ describe('ClickedDocumentList', () => {
                         max: TEST_CLICKS.length,
                         show: TEST_CLICKS.length,
                         template: {
-                            instantiateToElement: instantiateToElementStub
-                        }
+                            instantiateToElement: instantiateToElementStub,
+                        },
                     },
-                    env => {
+                    (env) => {
                         fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
                         return env;
                     }

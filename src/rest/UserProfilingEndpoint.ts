@@ -29,7 +29,7 @@ export enum UserActionType {
     Search = 'SEARCH',
     Click = 'CLICK',
     PageView = 'VIEW',
-    Custom = 'CUSTOM'
+    Custom = 'CUSTOM',
 }
 
 /**
@@ -113,7 +113,7 @@ export class UserProfilingEndpoint {
             responseType: 'json',
             requestDataType: 'application/json',
             requestData: { objectId: userId },
-            errorsAsSuccess: false
+            errorsAsSuccess: false,
         });
 
         if (this.isResponseEmpty(response)) {
@@ -124,11 +124,11 @@ export class UserProfilingEndpoint {
     }
 
     private parseResponse(response: IActionsHistoryResponse) {
-        return response.value.map(v => {
+        return response.value.map((v) => {
             return {
                 time: parseInt(v.time),
                 value: JSON.parse(v.value) as { [key: string]: string },
-                name: v.name as UserActionType
+                name: v.name as UserActionType,
             };
         });
     }

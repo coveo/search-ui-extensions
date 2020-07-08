@@ -35,9 +35,9 @@ describe('AttachResult', () => {
         let isAttachedSpy: jasmine.Spy;
         beforeEach(() => {
             faker = {
-                isAttached: function(result: IQueryResult) {
+                isAttached: function (result: IQueryResult) {
                     return Promise.resolve(true);
-                }
+                },
             };
 
             isAttachedSpy = spyOn(faker, 'isAttached').and.callThrough();
@@ -48,7 +48,7 @@ describe('AttachResult', () => {
             expect(faker.isAttached).toHaveBeenCalledWith(fakeResult);
         });
 
-        it('should be attached when isAttached returns true', done => {
+        it('should be attached when isAttached returns true', (done) => {
             isAttachedSpy.and.returnValue(Promise.resolve(true));
             attachResult = Mock.optionsResultComponentSetup(AttachResult, { isAttached: faker.isAttached }, fakeResult);
             setTimeout(() => {
@@ -64,7 +64,7 @@ describe('AttachResult', () => {
             expect(attachResult.cmp.element.querySelector('.coveo-caption-for-icon').textContent).toBe('Attach Result');
         });
 
-        it('should be detached when isAttached returns false', done => {
+        it('should be detached when isAttached returns false', (done) => {
             isAttachedSpy.and.returnValue(Promise.resolve(false));
             attachResult = Mock.optionsResultComponentSetup(AttachResult, { isAttached: faker.isAttached }, fakeResult);
             setTimeout(() => {
@@ -73,7 +73,7 @@ describe('AttachResult', () => {
             }, 50);
         });
 
-        it('should be detached when isAttached throws', done => {
+        it('should be detached when isAttached throws', (done) => {
             isAttachedSpy.and.returnValue(Promise.reject('error'));
             attachResult = Mock.optionsResultComponentSetup(AttachResult, { isAttached: faker.isAttached }, fakeResult);
             setTimeout(() => {
@@ -86,11 +86,11 @@ describe('AttachResult', () => {
     describe('attach', () => {
         let faker: IAttachResultOptions;
         let attachSpy: jasmine.Spy;
-        beforeEach(done => {
+        beforeEach((done) => {
             faker = {
-                attach: function(result: IQueryResult) {
+                attach: function (result: IQueryResult) {
                     return Promise.resolve();
-                }
+                },
             };
 
             attachSpy = spyOn(faker, 'attach').and.callThrough();
@@ -105,9 +105,9 @@ describe('AttachResult', () => {
                         detachCaption: 'detach me',
                         attachCaption: 'attach me',
                         caseId: 'testcase',
-                        articleIdField: 'article'
+                        articleIdField: 'article',
                     },
-                    env => {
+                    (env) => {
                         env.searchInterface.usageAnalytics = env.usageAnalytics;
                         return env;
                     }
@@ -126,11 +126,11 @@ describe('AttachResult', () => {
             expect(faker.attach).toHaveBeenCalledTimes(1);
         });
 
-        it('should not change state if attach fails', done => {
+        it('should not change state if attach fails', (done) => {
             attachSpy.and.returnValue(Promise.reject('error'));
 
             expect(attachResult.cmp.isAttached()).toBeFalsy();
-            attachResult.cmp.attach().catch(error => {
+            attachResult.cmp.attach().catch((error) => {
                 expect(error).toBe('error');
                 expect(attachResult.cmp.isAttached()).toBeFalsy();
                 done();
@@ -148,7 +148,7 @@ describe('AttachResult', () => {
             expect(attachResult.cmp.element.querySelector('.coveo-caption-for-icon').innerHTML).toBe('detach me');
         });
 
-        it('should trigger the attach event', done => {
+        it('should trigger the attach event', (done) => {
             Coveo.$$(attachResult.env.root).on(AttachResultEvents.Attach, (evt: Event, args: IAttachResultEventArgs) => {
                 expect(args.queryResult).not.toBeNull();
                 done();
@@ -176,11 +176,11 @@ describe('AttachResult', () => {
     describe('detach', () => {
         let faker: IAttachResultOptions;
         let detachSpy: jasmine.Spy;
-        beforeEach(done => {
+        beforeEach((done) => {
             faker = {
-                detach: function(result: IQueryResult) {
+                detach: function (result: IQueryResult) {
                     return Promise.resolve();
-                }
+                },
             };
 
             detachSpy = spyOn(faker, 'detach').and.callThrough();
@@ -195,9 +195,9 @@ describe('AttachResult', () => {
                         detachCaption: 'detach me',
                         attachCaption: 'attach me',
                         caseId: 'testcase',
-                        articleIdField: 'article'
+                        articleIdField: 'article',
                     },
-                    env => {
+                    (env) => {
                         env.searchInterface.usageAnalytics = env.usageAnalytics;
                         return env;
                     }
@@ -216,11 +216,11 @@ describe('AttachResult', () => {
             expect(faker.detach).toHaveBeenCalledTimes(1);
         });
 
-        it('should not change state if attach fails', done => {
+        it('should not change state if attach fails', (done) => {
             detachSpy.and.returnValue(Promise.reject('error'));
 
             expect(attachResult.cmp.isAttached()).toBeTruthy();
-            attachResult.cmp.detach().catch(error => {
+            attachResult.cmp.detach().catch((error) => {
                 expect(error).toBe('error');
                 expect(attachResult.cmp.isAttached()).toBeTruthy();
                 done();
@@ -238,7 +238,7 @@ describe('AttachResult', () => {
             expect(attachResult.cmp.element.querySelector('.coveo-caption-for-icon').innerHTML).toBe('attach me');
         });
 
-        it('should trigger the detach event', done => {
+        it('should trigger the detach event', (done) => {
             Coveo.$$(attachResult.env.root).on(AttachResultEvents.Detach, (evt: Event, args: IAttachResultEventArgs) => {
                 expect(args.queryResult).not.toBeNull();
                 done();

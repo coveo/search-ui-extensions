@@ -8,7 +8,7 @@ import {
     HtmlTemplate,
     QueryUtils,
     l,
-    get
+    get,
 } from 'coveo-search-ui';
 import { UserProfileModel, UserAction } from '../../models/UserProfileModel';
 import { ExpandableList } from './ExpandableList';
@@ -64,10 +64,10 @@ export class ClickedDocumentList extends Component {
     static readonly options: IClickedDocumentList = {
         numberOfItems: ComponentOptions.buildNumberOption({
             defaultValue: 4,
-            min: 1
+            min: 1,
         }),
         listLabel: ComponentOptions.buildStringOption({
-            defaultValue: 'Recent Clicked Documents'
+            defaultValue: 'Recent Clicked Documents',
         }),
         userId: ComponentOptions.buildStringOption({ required: true }),
         template: ComponentOptions.buildTemplateOption({
@@ -77,10 +77,10 @@ export class ClickedDocumentList extends Component {
                     <a class="CoveoResultLink"/a>
                 </div>`,
                 {
-                    layout: 'list'
+                    layout: 'list',
                 }
-            )
-        })
+            ),
+        }),
     };
 
     private userProfileModel: UserProfileModel;
@@ -105,13 +105,13 @@ export class ClickedDocumentList extends Component {
 
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
 
-        this.userProfileModel.getActions(this.options.userId).then(actions => {
+        this.userProfileModel.getActions(this.options.userId).then((actions) => {
             this.sortedDocumentsList = actions
-                .filter(action => action.document && action.type === UserActionType.Click)
+                .filter((action) => action.document && action.type === UserActionType.Click)
                 .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
                 .reverse()
                 .reduce(this.filterDuplicatesClickAction, [])
-                .map(action => {
+                .map((action) => {
                     action.document.searchInterface = this.searchInterface;
                     return action.document;
                 });
@@ -120,22 +120,22 @@ export class ClickedDocumentList extends Component {
     }
 
     private filterDuplicatesClickAction(accumulator: UserAction[], action: UserAction): UserAction[] {
-        return !accumulator.find(existing => existing.raw.uri_hash === action.raw.uri_hash) ? [...accumulator, action] : accumulator;
+        return !accumulator.find((existing) => existing.raw.uri_hash === action.raw.uri_hash) ? [...accumulator, action] : accumulator;
     }
 
     private render() {
         new ExpandableList<IQueryResult>(this.element, this.sortedDocumentsList, {
             maximumItemsShown: this.sortedDocumentsList.length,
             minimumItemsShown: this.options.numberOfItems,
-            transform: result => {
+            transform: (result) => {
                 QueryUtils.setStateObjectOnQueryResult(this.queryStateModel.get(), result);
                 QueryUtils.setSearchInterfaceObjectOnQueryResult(this.searchInterface, result);
                 return (<Promise<HTMLElement>>this.options.template.instantiateToElement(result, {
                     wrapInDiv: true,
                     checkCondition: true,
                     currentLayout: 'list',
-                    responsiveComponents: this.searchInterface.responsiveComponents
-                })).then(element => {
+                    responsiveComponents: this.searchInterface.responsiveComponents,
+                })).then((element) => {
                     Initialization.automaticallyCreateComponentsInsideResult(element, result);
                     return element;
                 });
@@ -143,7 +143,7 @@ export class ClickedDocumentList extends Component {
             listLabel: this.options.listLabel,
             messageWhenEmpty: l(`${ClickedDocumentList.ID}_no_clicked_documents`),
             showMoreMessage: l(`${ClickedDocumentList.ID}_more`),
-            showLessMessage: l(`${ClickedDocumentList.ID}_less`)
+            showLessMessage: l(`${ClickedDocumentList.ID}_less`),
         });
     }
 }

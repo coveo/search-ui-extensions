@@ -20,13 +20,13 @@ describe('UserProfilingModel', () => {
                 c_contentidkey: '@sysurihash',
                 c_contentidvalue: 'headphones-gaming',
                 event_type: 'addPurchase',
-                event_value: 'headphones-gaming'
-            }
+                event_value: 'headphones-gaming',
+            },
         },
         {
             name: UserActionType.Search,
             time: 1550509200357,
-            value: { cause: 'searchboxSubmit', query_expression: 'Best product', origin_level_1: 'originLevel1' }
+            value: { cause: 'searchboxSubmit', query_expression: 'Best product', origin_level_1: 'originLevel1' },
         },
         {
             name: UserActionType.Click,
@@ -35,22 +35,22 @@ describe('UserProfilingModel', () => {
                 uri_hash: 'product1',
                 c_contentidkey: '@sysurihash',
                 c_contentidvalue: 'product1',
-                origin_level_1: 'originLevel1'
-            }
+                origin_level_1: 'originLevel1',
+            },
         },
         {
             name: UserActionType.PageView,
             time: 1547571617714,
-            value: { content_id_key: '@sysurihash', origin_level_1: 'originLevel1', content_id_value: 'product1' }
-        }
+            value: { content_id_key: '@sysurihash', origin_level_1: 'originLevel1', content_id_value: 'product1' },
+        },
     ];
 
     const FAKE_SEARCH_ACTION = {
         name: UserActionType.Search,
         time: 1550509200357,
-        value: { cause: 'searchboxSubmit', query_expression: 'Best product', origin_level_1: 'originLevel1' }
+        value: { cause: 'searchboxSubmit', query_expression: 'Best product', origin_level_1: 'originLevel1' },
     };
-    const FAKE_USER_ACTIONS = FAKE_HISTORY_ACTIONS.map(action => new UserAction(action.name, new Date(action.time), action.value));
+    const FAKE_USER_ACTIONS = FAKE_HISTORY_ACTIONS.map((action) => new UserAction(action.name, new Date(action.time), action.value));
     const FAKE_ACTIONS_WITH_URI_HASH = [
         {
             name: UserActionType.Click,
@@ -59,8 +59,8 @@ describe('UserProfilingModel', () => {
                 uri_hash: TEST_URI_HASH,
                 c_contentidkey: '@sysurihash',
                 c_contentidvalue: 'product1',
-                origin_level_1: 'originLevel1'
-            }
+                origin_level_1: 'originLevel1',
+            },
         },
         {
             name: UserActionType.Click,
@@ -69,8 +69,8 @@ describe('UserProfilingModel', () => {
                 uri_hash: 'nodoc',
                 c_contentidkey: '@sysurihash',
                 c_contentidvalue: 'product1',
-                origin_level_1: 'originLevel1'
-            }
+                origin_level_1: 'originLevel1',
+            },
         },
         {
             name: UserActionType.Click,
@@ -79,9 +79,9 @@ describe('UserProfilingModel', () => {
                 uri_hash: TEST_URI_HASH,
                 c_contentidkey: '@sysurihash',
                 c_contentidvalue: 'product1',
-                origin_level_1: 'originLevel1'
-            }
-        }
+                origin_level_1: 'originLevel1',
+            },
+        },
     ];
 
     let sandbox: sinon.SinonSandbox;
@@ -118,13 +118,13 @@ describe('UserProfilingModel', () => {
             get: () => {
                 wasAccessed = true;
                 return buildAccessToken('toto');
-            }
+            },
         });
 
         new UserProfileModel(document.createElement('div'), {
             organizationId: TEST_ORGANIZATION,
             restUri: TEST_REST_URI,
-            searchEndpoint: endpoint
+            searchEndpoint: endpoint,
         });
 
         expect(wasAccessed).toBe(true);
@@ -142,7 +142,7 @@ describe('UserProfilingModel', () => {
                 organizationId: TEST_ORGANIZATION,
                 restUri: TEST_REST_URI,
                 accessToken: TEST_TOKEN,
-                searchEndpoint: endpoint
+                searchEndpoint: endpoint,
             });
 
             const actionsPromise = model.getActions(TEST_USER);
@@ -153,13 +153,13 @@ describe('UserProfilingModel', () => {
             );
 
             const actions = await actionsPromise;
-            const actionsWithDocument = actions.filter(action => action.document);
-            const uniqueUriHashes = FAKE_ACTIONS_WITH_URI_HASH.map(x => x.value.uri_hash).filter((x, i, l) => l.indexOf(x) === i);
+            const actionsWithDocument = actions.filter((action) => action.document);
+            const uniqueUriHashes = FAKE_ACTIONS_WITH_URI_HASH.map((x) => x.value.uri_hash).filter((x, i, l) => l.indexOf(x) === i);
 
             expect(((endpoint.search.args[0][0] as unknown) as QueryBuilder).numberOfResults).toEqual(uniqueUriHashes.length);
             expect(actionsWithDocument.length).toBeGreaterThanOrEqual(documentResults.results.length);
             actionsWithDocument.forEach((action, i) => {
-                const matchingDocument = documentResults.results.find(document => document.raw.urihash === action.document.raw.urihash);
+                const matchingDocument = documentResults.results.find((document) => document.raw.urihash === action.document.raw.urihash);
 
                 expect(matchingDocument).toBeDefined();
                 expect(action.document.title).toEqual(matchingDocument.title);
@@ -174,7 +174,7 @@ describe('UserProfilingModel', () => {
                 organizationId: TEST_ORGANIZATION,
                 restUri: TEST_REST_URI,
                 accessToken: TEST_TOKEN,
-                searchEndpoint: endpoint
+                searchEndpoint: endpoint,
             });
 
             const actionsPromise = model.getActions(TEST_USER);
@@ -186,7 +186,7 @@ describe('UserProfilingModel', () => {
             );
 
             const actions = await actionsPromise;
-            expect(actions.filter(action => action.document).length).toEqual(0);
+            expect(actions.filter((action) => action.document).length).toEqual(0);
         });
 
         it('should attach no documents on click actions when the search call for documents details fails', async () => {
@@ -197,7 +197,7 @@ describe('UserProfilingModel', () => {
                 organizationId: TEST_ORGANIZATION,
                 restUri: TEST_REST_URI,
                 accessToken: TEST_TOKEN,
-                searchEndpoint: endpoint
+                searchEndpoint: endpoint,
             });
 
             const actionsPromise = model.getActions(TEST_USER);
@@ -209,7 +209,7 @@ describe('UserProfilingModel', () => {
             );
 
             const actions = await actionsPromise;
-            expect(actions.filter(action => action.document).length).toEqual(0);
+            expect(actions.filter((action) => action.document).length).toEqual(0);
         });
 
         it('should not fetch documents when there is no event with an urihash', async () => {
@@ -220,7 +220,7 @@ describe('UserProfilingModel', () => {
                 organizationId: TEST_ORGANIZATION,
                 restUri: TEST_REST_URI,
                 accessToken: TEST_TOKEN,
-                searchEndpoint: endpoint
+                searchEndpoint: endpoint,
             });
 
             const actionsPromise = model.getActions(TEST_USER);
@@ -232,7 +232,7 @@ describe('UserProfilingModel', () => {
             );
 
             const actions = await actionsPromise;
-            expect(actions.filter(action => action.document).length).toEqual(0);
+            expect(actions.filter((action) => action.document).length).toEqual(0);
         });
 
         it('should fetch all actions from a user', async () => {
@@ -243,7 +243,7 @@ describe('UserProfilingModel', () => {
                 organizationId: TEST_ORGANIZATION,
                 restUri: TEST_REST_URI,
                 accessToken: TEST_TOKEN,
-                searchEndpoint: endpoint
+                searchEndpoint: endpoint,
             });
 
             model.registerNewAttribute(TEST_USER, FAKE_USER_ACTIONS);
@@ -272,7 +272,7 @@ describe('UserProfilingModel', () => {
                     organizationId: TEST_ORGANIZATION,
                     restUri: TEST_REST_URI,
                     accessToken: TEST_TOKEN,
-                    searchEndpoint: endpoint
+                    searchEndpoint: endpoint,
                 });
 
                 const actionsPromise = model.getActions(TEST_USER);
@@ -307,7 +307,7 @@ describe('UserProfilingModel', () => {
                     organizationId: TEST_ORGANIZATION,
                     restUri: TEST_REST_URI,
                     accessToken: TEST_TOKEN,
-                    searchEndpoint: endpoint
+                    searchEndpoint: endpoint,
                 });
 
                 // Do a first call, it should do a callout.
@@ -345,7 +345,7 @@ describe('UserProfilingModel', () => {
                     organizationId: TEST_ORGANIZATION,
                     restUri: TEST_REST_URI,
                     accessToken: TEST_TOKEN,
-                    searchEndpoint: endpoint
+                    searchEndpoint: endpoint,
                 });
 
                 const actionsPromise = model.getActions(TEST_USER);
@@ -382,14 +382,18 @@ describe('UserProfilingModel', () => {
                     organizationId: TEST_ORGANIZATION,
                     restUri: TEST_REST_URI,
                     accessToken: TEST_TOKEN,
-                    searchEndpoint: endpoint
+                    searchEndpoint: endpoint,
                 });
 
                 // Store some actions beforehand.
-                model.set(TEST_USER, FAKE_HISTORY_ACTIONS.map(x => new UserAction(x.name, new Date(x.time), x.value)), {
-                    silent: true,
-                    customAttribute: true
-                });
+                model.set(
+                    TEST_USER,
+                    FAKE_HISTORY_ACTIONS.map((x) => new UserAction(x.name, new Date(x.time), x.value)),
+                    {
+                        silent: true,
+                        customAttribute: true,
+                    }
+                );
 
                 const actionsPromise = model.getActions(TEST_USER);
 
@@ -418,7 +422,7 @@ describe('UserProfilingModel', () => {
                     organizationId: TEST_ORGANIZATION,
                     restUri: TEST_REST_URI,
                     accessToken: TEST_TOKEN,
-                    searchEndpoint: endpoint
+                    searchEndpoint: endpoint,
                 });
 
                 model.deleteActions(TEST_USER);
@@ -434,7 +438,7 @@ describe('UserProfilingModel', () => {
                     organizationId: TEST_ORGANIZATION,
                     restUri: TEST_REST_URI,
                     accessToken: TEST_TOKEN,
-                    searchEndpoint: endpoint
+                    searchEndpoint: endpoint,
                 });
 
                 model.getActions(TEST_USER);
@@ -453,13 +457,17 @@ describe('UserProfilingModel', () => {
                     organizationId: TEST_ORGANIZATION,
                     restUri: TEST_REST_URI,
                     accessToken: TEST_TOKEN,
-                    searchEndpoint: endpoint
+                    searchEndpoint: endpoint,
                 });
 
-                model.set(TEST_USER, FAKE_HISTORY_ACTIONS.map(x => new UserAction(x.name, new Date(x.time), x.value)), {
-                    silent: true,
-                    customAttribute: true
-                });
+                model.set(
+                    TEST_USER,
+                    FAKE_HISTORY_ACTIONS.map((x) => new UserAction(x.name, new Date(x.time), x.value)),
+                    {
+                        silent: true,
+                        customAttribute: true,
+                    }
+                );
 
                 model.deleteActions(TEST_USER);
 
@@ -475,7 +483,7 @@ describe('UserProfilingModel', () => {
                     organizationId: TEST_ORGANIZATION,
                     restUri: TEST_REST_URI,
                     accessToken: TEST_TOKEN,
-                    searchEndpoint: endpoint
+                    searchEndpoint: endpoint,
                 });
 
                 const actions1 = model.getActions(TEST_USER);

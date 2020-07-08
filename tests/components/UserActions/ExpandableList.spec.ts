@@ -38,7 +38,7 @@ describe('ExpandableList', () => {
 
     it('should render a button with "Show More" as text', () => {
         const list = new ExpandableList(document.createElement('div'), TEST_ITEM_LIST, {
-            transform: spanItemGenerator
+            transform: spanItemGenerator,
         });
 
         return delay(() => {
@@ -73,7 +73,7 @@ describe('ExpandableList', () => {
             const list = new ExpandableList(document.createElement('div'), TEST_ITEM_LIST, {
                 transform: spanItemGenerator,
                 maximumItemsShown: 10,
-                minimumItemsShown: 5
+                minimumItemsShown: 5,
             });
 
             return delay(() => {
@@ -89,7 +89,7 @@ describe('ExpandableList', () => {
             const list = new ExpandableList(document.createElement('div'), TEST_ITEM_LIST, {
                 transform: spanItemGenerator,
                 maximumItemsShown: 5,
-                minimumItemsShown: 5
+                minimumItemsShown: 5,
             });
 
             const el = list.element.querySelector<HTMLElement>('.coveo-more-less');
@@ -103,7 +103,7 @@ describe('ExpandableList', () => {
             const list = new ExpandableList(document.createElement('div'), TEST_ITEM_LIST, {
                 transform: spanItemGenerator,
                 maximumItemsShown: 10,
-                minimumItemsShown: 5
+                minimumItemsShown: 5,
             });
 
             const el = list.element.querySelector<HTMLElement>('.coveo-more-less');
@@ -121,7 +121,7 @@ describe('ExpandableList', () => {
             const list = new ExpandableList(document.createElement('div'), TEST_ITEM_LIST, {
                 transform: spanItemGenerator,
                 maximumItemsShown: TEST_ITEM_LIST.length,
-                minimumItemsShown: 5
+                minimumItemsShown: 5,
             });
 
             const el = list.element.querySelector<HTMLElement>('.coveo-more-less');
