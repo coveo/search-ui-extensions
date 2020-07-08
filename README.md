@@ -9,7 +9,7 @@ This repository contains new components meant to be used in conjunction with the
 
 ## Setup
 
-Requires Node JS >= 8.0.
+Requires Node JS >= 10.13.0.
 
 1. `npm install`
 
