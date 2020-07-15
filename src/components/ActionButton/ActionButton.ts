@@ -15,6 +15,8 @@ export interface IActionButtonOptions {
  * ```
  */
 export class ActionButton extends Component {
+    private static readonly CoveoDisabledClass = 'coveo-disabled';
+
     static ID = 'ActionButton';
 
     /**
@@ -87,8 +89,28 @@ export class ActionButton extends Component {
         }
 
         if (this.options.click) {
-            Coveo.$$(element).on('click', () => this.options.click());
+            Coveo.$$(element).on('click', () => {
+                if (!this.disabled) {
+                    this.options.click();
+                }
+            });
         }
+    }
+
+    /**
+     * Disable the button.
+     */
+    public disable() {
+        super.disable();
+        this.element.classList.add(ActionButton.CoveoDisabledClass);
+    }
+
+    /**
+     * Enable the button.
+     */
+    public enable() {
+        super.enable();
+        this.element.classList.remove(ActionButton.CoveoDisabledClass);
     }
 
     /**

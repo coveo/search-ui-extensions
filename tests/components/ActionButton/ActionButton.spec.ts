@@ -4,6 +4,8 @@ import { ActionButton, IActionButtonOptions } from '../../../src/components/Acti
 import * as icons from '../../../src/utils/icons';
 
 describe('ActionButton', () => {
+    const CoveoDisabledClass = 'coveo-disabled';
+
     let sandbox: SinonSandbox;
     let options: IActionButtonOptions;
     let testSubject: ActionButton;
@@ -64,10 +66,28 @@ describe('ActionButton', () => {
             testSubject = createActionButton(options);
         });
 
-        it('should call the handler when clicking the button', () => {
-            testSubject.element.dispatchEvent(new Event('click', {}));
+        describe('if disabled', () => {
+            beforeEach(() => {
+                testSubject.disabled = true;
+            });
 
-            expect(clickHandlerSpy.called).toBeTrue();
+            it('should not call the handler when clicking the button', () => {
+                testSubject.element.dispatchEvent(new Event('click', {}));
+
+                expect(clickHandlerSpy.called).toBeFalse();
+            });
+        });
+
+        describe('if enabled', () => {
+            beforeEach(() => {
+                testSubject.disabled = false;
+            });
+
+            it('should call the handler when clicking the button', () => {
+                testSubject.element.dispatchEvent(new Event('click', {}));
+
+                expect(clickHandlerSpy.called).toBeTrue();
+            });
         });
     });
 
@@ -171,6 +191,30 @@ describe('ActionButton', () => {
                 const actual = testSubject.element.querySelector(testCase.expectedSelector);
                 expect(actual).toBeDefined();
             });
+        });
+    });
+
+    describe('disable', () => {
+        it(`should add the CSS class ${CoveoDisabledClass} and set the property disabled to true`, () => {
+            testSubject.disabled = false;
+            testSubject.element.classList.remove(CoveoDisabledClass);
+
+            testSubject.disable();
+
+            expect(testSubject.disabled).toBeTrue();
+            expect(testSubject.element.classList.contains(CoveoDisabledClass)).toBeTrue();
+        });
+    });
+
+    describe('enable', () => {
+        it(`should add the CSS class ${CoveoDisabledClass} and set the property disabled to true`, () => {
+            testSubject.disabled = true;
+            testSubject.element.classList.add(CoveoDisabledClass);
+
+            testSubject.enable();
+
+            expect(testSubject.disabled).toBeFalse();
+            expect(testSubject.element.classList.contains(CoveoDisabledClass)).toBeFalse();
         });
     });
 });
