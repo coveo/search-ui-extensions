@@ -15,17 +15,6 @@ button.CoveoActionButton.coveo-actionbutton {
     align-items: center;
     justify-content: center;
     white-space: nowrap;
-
-    &.coveo-disabled {
-        color: $primary-color-light;
-
-        .coveo-actionbutton_icon svg {
-            fill: $primary-color-light;
-        }
-        &:hover {
-            background-color: $primary-color-lightest;
-        }
-    }
 }
 
 .CoveoActionButton {

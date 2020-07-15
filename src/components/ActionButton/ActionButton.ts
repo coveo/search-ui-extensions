@@ -87,9 +87,7 @@ export class ActionButton extends Component {
         }
 
         if (this.options.click) {
-            Coveo.$$(element).on('click', () => {
-                this.options.click();
-            });
+            Coveo.$$(element).on('click', () => this.options.click());
         }
     }
 
