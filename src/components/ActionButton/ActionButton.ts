@@ -103,6 +103,7 @@ export class ActionButton extends Component {
     public disable() {
         super.disable();
         this.element.classList.add(ActionButton.CoveoDisabledClass);
+        this.element.setAttribute('disabled', '');
     }
 
     /**
@@ -111,6 +112,7 @@ export class ActionButton extends Component {
     public enable() {
         super.enable();
         this.element.classList.remove(ActionButton.CoveoDisabledClass);
+        this.element.removeAttribute('disabled');
     }
 
     /**

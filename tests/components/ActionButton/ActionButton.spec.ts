@@ -202,6 +202,7 @@ describe('ActionButton', () => {
             testSubject.disable();
 
             expect(testSubject.disabled).toBeTrue();
+            expect(testSubject.element.hasAttribute('disabled')).toBeTrue();
             expect(testSubject.element.classList.contains(CoveoDisabledClass)).toBeTrue();
         });
     });
@@ -214,6 +215,7 @@ describe('ActionButton', () => {
             testSubject.enable();
 
             expect(testSubject.disabled).toBeFalse();
+            expect(testSubject.element.hasAttribute('disabled')).toBeFalse();
             expect(testSubject.element.classList.contains(CoveoDisabledClass)).toBeFalse();
         });
     });
