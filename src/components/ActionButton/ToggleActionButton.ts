@@ -1,57 +1,12 @@
 import { ComponentOptions, IResultsComponentBindings, Component, Initialization } from 'coveo-search-ui';
+import { ToggleActivatedState, ToggleDeactivatedState, IToggleableButton, IToggleableButtonOptions } from './ToggleableButton';
 import { StatefulActionButtonState, StatefulActionButton } from './StatefulActionButton';
 
-export interface IToggleActionButtonOptions {
-    activateIcon: string;
-    activateTooltip: string;
-    deactivateIcon: string;
-    deactivateTooltip: string;
-    click?: () => void;
-    activate?: () => void;
-    deactivate?: () => void;
-}
-
-export class ToggleActionButton extends Component {
-    /**
-     * Create the deactivated state for a given ToggleActionButton
-     * @param button {ToggleActionButton}
-     */
-    static generateDeactivatedStateInstance(button: ToggleActionButton): StatefulActionButtonState {
-        return {
-            name: 'DeactivatedState',
-            icon: button.options.activateIcon,
-            tooltip: button.options.activateTooltip,
-            click: () => button.onClick(),
-        };
-    }
-
-    /**
-     * Create the activated state for a given ToggleActionButton
-     * @param button {ToggleActionButton}
-     */
-    static generateActivatedStateInstance(button: ToggleActionButton): StatefulActionButtonState {
-        return {
-            onStateEntry: function () {
-                this.element.classList.add(ToggleActionButton.ACTIVATED_CLASS_NAME);
-                this.element.setAttribute('aria-pressed', 'true');
-                button.options.activate?.apply(button);
-            },
-            onStateExit: function () {
-                this.element.classList.remove(ToggleActionButton.ACTIVATED_CLASS_NAME);
-                this.element.setAttribute('aria-pressed', 'false');
-                button.options.deactivate?.apply(button);
-            },
-            name: 'ActivatedState',
-            click: () => button.onClick(),
-            icon: button.options.deactivateIcon,
-            tooltip: button.options.deactivateTooltip,
-        };
-    }
-
+export class ToggleActionButton extends Component implements IToggleableButton {
     static ID = 'ToggleActionButton';
     static ACTIVATED_CLASS_NAME = 'coveo-toggleactionbutton-activated';
 
-    static options: IToggleActionButtonOptions = {
+    static options: IToggleableButtonOptions = {
         /**
          * Specifies the button SVG icon displayed to activate the button.
          * Note: The SVG markup has to be HTML encoded when set using the HTML attributes.
@@ -145,7 +100,7 @@ export class ToggleActionButton extends Component {
     private activatedState: StatefulActionButtonState;
     private deactivatedState: StatefulActionButtonState;
 
-    constructor(public element: HTMLElement, public options: IToggleActionButtonOptions, public bindings?: IResultsComponentBindings) {
+    constructor(public element: HTMLElement, public options: IToggleableButtonOptions, public bindings?: IResultsComponentBindings) {
         super(element, ToggleActionButton.ID, bindings);
         this.options = ComponentOptions.initComponentOptions(element, ToggleActionButton, options);
 
@@ -169,7 +124,7 @@ export class ToggleActionButton extends Component {
         }
     }
 
-    protected onClick(): void {
+    public onClick(): void {
         this.setActivated(!this.isActivated());
 
         if (this.options.click) {
@@ -178,8 +133,8 @@ export class ToggleActionButton extends Component {
     }
 
     private createInnerButton(bindings?: IResultsComponentBindings): void {
-        this.activatedState = ToggleActionButton.generateActivatedStateInstance(this);
-        this.deactivatedState = ToggleActionButton.generateDeactivatedStateInstance(this);
+        this.deactivatedState = new ToggleDeactivatedState(this);
+        this.activatedState = new ToggleActivatedState(this);
 
         this.innerStatefulActionButton = new StatefulActionButton(
             this.element,

@@ -1,0 +1,15 @@
+@import './ActionButton.scss';
+@import '../../sass/Variables.scss';
+
+$disable-color: $primary-color-light;
+
+button.CoveoActionButton.coveo-actionbutton.coveo-actionbutton-disabled {
+    background-color: $activated-color;
+    border-color: $disable-color;
+
+    .coveo-actionbutton_icon {
+        svg {
+            fill: $disable-color;
+        }
+    }
+}
