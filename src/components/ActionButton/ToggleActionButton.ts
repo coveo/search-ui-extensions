@@ -29,21 +29,19 @@ export class ToggleActionButton extends Component {
      * @param button {ToggleActionButton}
      */
     static generateActivatedStateInstance(button: ToggleActionButton): IStatefulActionButtonState {
-        const activate = button.options.activate?.bind(this);
-        const deactivate = button.options.activate?.bind(this);
         return {
             onStateEntry: function () {
                 this.element.classList.add(ToggleActionButton.ACTIVATED_CLASS_NAME);
                 this.element.setAttribute('aria-pressed', 'true');
-                if (activate) {
-                    activate();
+                if (button.options.activate) {
+                    button.options.activate.apply(button);
                 }
             },
             onStateExit: function () {
                 this.element.classList.remove(ToggleActionButton.ACTIVATED_CLASS_NAME);
                 this.element.setAttribute('aria-pressed', 'false');
-                if (deactivate) {
-                    deactivate();
+                if (button.options.deactivate) {
+                    button.options.deactivate.apply(this);
                 }
             },
             click: () => button.onClick(),
