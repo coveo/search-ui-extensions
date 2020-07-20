@@ -4,9 +4,13 @@ import { ActionButton, IActionButtonOptions } from './ActionButton';
 /**
  * Represent a state that can be used by a StatefulActionButton.
  */
-export type IStatefulActionButtonState = IActionButtonOptions & IStatefulActionButtonStateFunctions;
+export type IStatefulActionButtonState = IActionButtonOptions & IStatefulActionButtonStateFunctionsAndUtils;
 
-interface IStatefulActionButtonStateFunctions {
+interface IStatefulActionButtonStateFunctionsAndUtils {
+    /**
+     * Optional argument that could be used for logging purposes in the StatefulActionButton.
+     */
+    loggingName?: string;
     /**
      * Called when this state is set as the current state.
      * Called after the onStateExit of the previous state if any.
@@ -74,7 +78,7 @@ export class StatefulActionButton {
      */
     public switchTo(state: IStatefulActionButtonState) {
         if (!this.isTransitionAllowed(state)) {
-            console.warn('This state is not allowed on this StatefulActionButton.');
+            console.warn(`${state.loggingName ?? 'This state'} is not allowed on this StatefulActionButton.`);
             return;
         }
         this.currentState.onStateExit?.apply(this);

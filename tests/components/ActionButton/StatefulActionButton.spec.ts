@@ -132,6 +132,25 @@ describe('StatefulActionButton', () => {
             });
         });
 
+        describe('if a state cannot be switched to and have a loggingName', () => {
+            let namedState: IStatefulActionButtonState;
+            beforeEach(() => {
+                namedState = {
+                    loggingName: 'some state name',
+                    title: 'foo',
+                };
+                testSubject = new StatefulActionButton(document.createElement('div'), {
+                    states: [initialState],
+                    initalState: initialState,
+                });
+            });
+
+            it('should log a warning with the name of the test', () => {
+                testSubject.switchTo(namedState);
+                expect(spyConsoleWarn.calledWithExactly('some state name is not allowed on this StatefulActionButton.'));
+            });
+        });
+
         describe('if the state given in parameter is in options.state but the transition is not allowed', () => {
             beforeEach(() => {
                 let [notTargetState] = createSpiedState();
