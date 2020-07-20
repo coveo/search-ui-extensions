@@ -4,7 +4,9 @@ import { ActionButton, IActionButtonOptions } from './ActionButton';
 /**
  * Represent a state that can be used by a StatefulActionButton.
  */
-export interface IStatefulActionButtonState extends IActionButtonOptions {
+export type IStatefulActionButtonState = IActionButtonOptions & IStatefulActionButtonStateFunctions;
+
+interface IStatefulActionButtonStateFunctions {
     /**
      * Called when this state is set as the current state.
      * Called after the onStateExit of the previous state if any.
@@ -34,7 +36,7 @@ export interface IStatefulActionButtonOptions {
      * If `switchTo` is called with an unknown state, a warning will be emited
      * and the transition will not occur.
      */
-    states: IStatefulActionButtonState[];
+    states: [IStatefulActionButtonState, ...IStatefulActionButtonState[]];
     /**
      * An array containing all the state transitions allowed on the StatefulActionButton instance.
      * If `switchTo` is called with an illegal transitions , a warning will be emited
@@ -62,6 +64,7 @@ export class StatefulActionButton {
             return;
         }
         this.currentState = this.options.initalState;
+        this.currentState.onStateEntry?.apply(this);
         this.innerActionButton = new ActionButton(element, { ...this.options.initalState, click: this.handleClick.bind(this) }, bindings);
     }
 
@@ -117,8 +120,9 @@ export class StatefulActionButton {
      */
     private isTransitionAllowed(state: IStatefulActionButtonState) {
         return (
-            !this.options.allowedTransitions ||
-            this.options.allowedTransitions.some((transition) => transition.from === this.currentState && transition.to === state)
+            this.options.states.indexOf(state) > -1 &&
+            (!this.options.allowedTransitions ||
+                this.options.allowedTransitions.some((transition) => transition.from === this.currentState && transition.to === state))
         );
     }
 

@@ -1,8 +1,18 @@
 import { Component, ComponentOptions, IResultsComponentBindings, Initialization } from 'coveo-search-ui';
 
-export interface IActionButtonOptions {
+export type IActionButtonOptions = IActionButtonOptionsWithTitle | IActionButtonOptionsWithIcon;
+
+interface IActionButtonOptionsWithTitle extends IActionButtonBaseOptions {
+    title: string;
     icon?: string;
+}
+
+interface IActionButtonOptionsWithIcon extends IActionButtonBaseOptions {
     title?: string;
+    icon: string;
+}
+
+interface IActionButtonBaseOptions {
     tooltip?: string;
     click?: () => void;
 }
