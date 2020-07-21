@@ -1,4 +1,4 @@
-import { IStatefulActionButtonState, StatefulActionButton } from './StatefulActionButton';
+import { StatefulActionButton, IStatefulActionButtonOptionsWithIcon } from './StatefulActionButton';
 
 export interface IDisableableButtonOptions {
     disabledIcon: string;
@@ -12,13 +12,14 @@ export interface IDisableableButton {
     options: IDisableableButtonOptions;
 }
 
-export class DisabledState implements IStatefulActionButtonState {
+export class DisabledState implements IStatefulActionButtonOptionsWithIcon {
     static DISABLED_CLASS_NAME = 'coveo-actionbutton-disabled';
     public onStateEntry: (this: StatefulActionButton) => void;
     public onStateExit: (this: StatefulActionButton) => void;
     public click: () => void;
     public icon: string;
     public tooltip: string;
+    public readonly loggingName = 'DisabledState';
 
     constructor(disabledButton: IDisableableButton) {
         this.onStateEntry = function () {
