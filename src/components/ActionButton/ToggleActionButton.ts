@@ -34,16 +34,12 @@ export class ToggleActionButton extends Component {
             onStateEntry: function () {
                 this.element.classList.add(ToggleActionButton.ACTIVATED_CLASS_NAME);
                 this.element.setAttribute('aria-pressed', 'true');
-                if (button.options.activate) {
-                    button.options.activate.apply(button);
-                }
+                button.options.activate?.apply(button);
             },
             onStateExit: function () {
                 this.element.classList.remove(ToggleActionButton.ACTIVATED_CLASS_NAME);
                 this.element.setAttribute('aria-pressed', 'false');
-                if (button.options.deactivate) {
-                    button.options.deactivate.apply(this);
-                }
+                button.options.deactivate?.apply(button);
             },
             name: 'ActivatedState',
             click: () => button.onClick(),
