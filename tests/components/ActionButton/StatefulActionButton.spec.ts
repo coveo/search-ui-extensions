@@ -132,11 +132,11 @@ describe('StatefulActionButton', () => {
             });
         });
 
-        describe('if a state cannot be switched to and have a loggingName', () => {
+        describe('if a state cannot be switched to and have a name', () => {
             let namedState: IStatefulActionButtonState;
             beforeEach(() => {
                 namedState = {
-                    loggingName: 'some state name',
+                    name: 'some state name',
                     title: 'foo',
                 };
                 testSubject = new StatefulActionButton(document.createElement('div'), {

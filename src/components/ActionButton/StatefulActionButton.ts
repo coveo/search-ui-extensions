@@ -10,7 +10,7 @@ interface IStatefulActionButtonStateFunctionsAndUtils {
     /**
      * Optional argument that could be used for logging purposes in the StatefulActionButton.
      */
-    loggingName?: string;
+    name: string;
     /**
      * Called when this state is set as the current state.
      * Called after the onStateExit of the previous state if any.
@@ -37,19 +37,19 @@ export interface IStatefulActionButtonTransition {
 export interface IStatefulActionButtonOptions {
     /**
      * An array containing all states used by the StatefulActionButton instance.
-     * If `switchTo` is called with an unknown state, a warning will be emited
+     * If `switchTo` is called with an unknown state, a warning will be emitted
      * and the transition will not occur.
      */
     states: [IStatefulActionButtonState, ...IStatefulActionButtonState[]];
     /**
      * An array containing all the state transitions allowed on the StatefulActionButton instance.
-     * If `switchTo` is called with an illegal transitions , a warning will be emited
+     * If `switchTo` is called with an illegal transitions , a warning will be emitted
      * and the transition will not occur.
      */
     allowedTransitions?: IStatefulActionButtonTransition[];
     /**
      * The initial state to be used by the StatefulActionButton instance.
-     * If nullish or missing from the states array, a warning will be emited,
+     * If nullish or missing from the states array, a warning will be emitted,
      * no ActionButton will be constructed and the element will be hidden
      */
     initalState: IStatefulActionButtonState;
@@ -78,7 +78,9 @@ export class StatefulActionButton {
      */
     public switchTo(state: IStatefulActionButtonState) {
         if (!this.isTransitionAllowed(state)) {
-            console.warn(`${state.loggingName ?? 'This state'} is not allowed on this StatefulActionButton.`);
+            console.warn(
+                `State '${state.name}' is not allowed on this StatefulActionButton.\nEnsure to use the object references used at the instantiation`
+            );
             return;
         }
         this.currentState.onStateExit?.apply(this);
@@ -115,7 +117,28 @@ export class StatefulActionButton {
             Coveo.$$(this.element).hide();
             return false;
         }
+        return !this.options.allowedTransitions || this.areTransitionsValid();
+    }
+
+    private areTransitionsValid(): boolean {
+        for (let index = 0; index < this.options.allowedTransitions.length; index++) {
+            const transition = this.options.allowedTransitions[index];
+            if (this.options.states.indexOf(transition.from) == -1) {
+                console.warn(this.generateInvalidTransitionMessage(index, true));
+                return false;
+            }
+            if (this.options.states.indexOf(transition.from) == -1) {
+                console.warn(this.generateInvalidTransitionMessage(index, false));
+                return false;
+            }
+        }
         return true;
+    }
+
+    private generateInvalidTransitionMessage(transitionNumber: number, isOrigin: boolean) {
+        return `The stateful action button cannot render if its origin is not in the list of states:\n\t${
+            isOrigin ? 'Origin' : 'Destination'
+        } of Transition #${transitionNumber} is not in the list of states. Ensure to use the same object reference as in the options.states.`;
     }
 
     /**
