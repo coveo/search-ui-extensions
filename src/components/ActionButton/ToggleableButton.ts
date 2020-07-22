@@ -17,9 +17,9 @@ export interface IToggleableButton {
 
 export class ToggleDeactivatedState implements IStatefulActionButtonOptionsWithIcon {
     public readonly loggingName = 'ToggleDeactivatedState';
-    public icon: string;
-    public tooltip: string;
-    public click: { (): void; (): void; (): void };
+    public readonly icon: string;
+    public readonly tooltip: string;
+    public readonly click: { (): void; (): void; (): void };
     constructor(toggleableButton: IToggleableButton) {
         this.icon = toggleableButton.options.activateIcon;
         this.tooltip = toggleableButton.options.activateTooltip;
@@ -30,11 +30,11 @@ export class ToggleDeactivatedState implements IStatefulActionButtonOptionsWithI
 export class ToggleActivatedState implements IStatefulActionButtonOptionsWithIcon {
     static ACTIVATED_CLASS_NAME = 'coveo-toggleactionbutton-activated';
     public readonly loggingName = 'ToggleActivatedState';
-    public onStateEntry: (this: StatefulActionButton) => void;
-    public onStateExit: (this: StatefulActionButton) => void;
-    public click: () => void;
-    public icon: string;
-    public tooltip: string;
+    public readonly onStateEntry: (this: StatefulActionButton) => void;
+    public readonly onStateExit: (this: StatefulActionButton) => void;
+    public readonly click: () => void;
+    public readonly icon: string;
+    public readonly tooltip: string;
     constructor(toggleableButton: IToggleableButton) {
         this.onStateEntry = function () {
             this.element.classList.add(ToggleActivatedState.ACTIVATED_CLASS_NAME);

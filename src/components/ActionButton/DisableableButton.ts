@@ -3,9 +3,6 @@ import { StatefulActionButton, IStatefulActionButtonOptionsWithIcon } from './St
 export interface IDisableableButtonOptions {
     disabledIcon: string;
     disabledTooltip: string;
-    click?: () => void;
-    activate?: () => void;
-    deactivate?: () => void;
 }
 
 export interface IDisableableButton {
@@ -14,27 +11,21 @@ export interface IDisableableButton {
 
 export class DisabledState implements IStatefulActionButtonOptionsWithIcon {
     static DISABLED_CLASS_NAME = 'coveo-actionbutton-disabled';
-    public onStateEntry: (this: StatefulActionButton) => void;
-    public onStateExit: (this: StatefulActionButton) => void;
-    public click: () => void;
-    public icon: string;
-    public tooltip: string;
+    public readonly onStateEntry: (this: StatefulActionButton) => void;
+    public readonly onStateExit: (this: StatefulActionButton) => void;
+    public readonly click: () => void;
+    public readonly icon: string;
+    public readonly tooltip: string;
     public readonly loggingName = 'DisabledState';
 
     constructor(disabledButton: IDisableableButton) {
         this.onStateEntry = function () {
             this.element.classList.add(DisabledState.DISABLED_CLASS_NAME);
             this.element.setAttribute('disabled', '');
-            if (disabledButton.options.activate) {
-                disabledButton.options.activate.apply(disabledButton);
-            }
         };
         this.onStateExit = function () {
             this.element.classList.remove(DisabledState.DISABLED_CLASS_NAME);
             this.element.removeAttribute('disabled');
-            if (disabledButton.options.deactivate) {
-                disabledButton.options.deactivate.apply(disabledButton);
-            }
         };
         this.click = () => {};
         this.icon = disabledButton.options.disabledIcon;
