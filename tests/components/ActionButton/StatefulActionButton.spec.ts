@@ -1,14 +1,15 @@
-import { StatefulActionButton, IStatefulActionButtonState } from '../../../src/components/ActionButton/StatefulActionButton';
+import { StatefulActionButton, StatefulActionButtonState } from '../../../src/components/ActionButton/StatefulActionButton';
 import { createSandbox, SinonSpy, SinonSandbox } from 'sinon';
 
 describe('StatefulActionButton', () => {
     let testSubject: StatefulActionButton;
     let sandbox: SinonSandbox;
     let spyConsoleWarn: SinonSpy;
-    const createSpiedState: () => [IStatefulActionButtonState, SinonSpy, SinonSpy] = () => {
+    const createSpiedState: (stateName: string) => [StatefulActionButtonState, SinonSpy, SinonSpy] = (stateName: string) => {
         const stateEntrySpy = sandbox.spy();
         const stateExitSpy = sandbox.spy();
-        const state: IStatefulActionButtonState = {
+        const state: StatefulActionButtonState = {
+            name: stateName,
             icon: 'foo',
             title: 'bar',
             onStateEntry: stateEntrySpy,
@@ -31,47 +32,90 @@ describe('StatefulActionButton', () => {
     });
 
     describe('constructor', () => {
-        let initialState: IStatefulActionButtonState;
+        let initialState: StatefulActionButtonState;
         let initialOnEntrySpy: SinonSpy;
 
         beforeEach(() => {
-            [initialState, initialOnEntrySpy] = createSpiedState();
+            [initialState, initialOnEntrySpy] = createSpiedState('initialState');
         });
 
         [
             {
                 describe: 'if states is not defined',
                 beforeEach: () => {
-                    testSubject = new StatefulActionButton(document.createElement('div'), { states: undefined, initalState: initialState });
+                    testSubject = new StatefulActionButton(document.createElement('div'), { states: undefined, initialState: initialState });
                 },
+                expectedWarningMessage: 'The stateful action button cannot render if no states are defined.',
             },
             {
                 describe: 'if states is empty',
                 beforeEach: () => {
-                    testSubject = new StatefulActionButton(document.createElement('div'), { states: [] as any, initalState: initialState });
+                    testSubject = new StatefulActionButton(document.createElement('div'), { states: [] as any, initialState: initialState });
                 },
+                expectedWarningMessage: 'The stateful action button cannot render if no states are defined.',
             },
             {
                 describe: 'if initialState is not defined',
                 beforeEach: () => {
-                    testSubject = new StatefulActionButton(document.createElement('div'), { states: [initialState], initalState: undefined });
+                    testSubject = new StatefulActionButton(document.createElement('div'), { states: [initialState], initialState: undefined });
                 },
+                expectedWarningMessage: 'The stateful action button cannot render if the initial states is not defined.',
             },
             {
                 describe: 'if states does not include initialState',
                 beforeEach: () => {
                     testSubject = new StatefulActionButton(document.createElement('div'), {
-                        states: [createSpiedState()[0]],
-                        initalState: initialState,
+                        states: [createSpiedState('notInitialState')[0]],
+                        initialState: initialState,
                     });
                 },
+                expectedWarningMessage: 'The stateful action button cannot render if the initial state is not in the list of states.',
+            },
+            {
+                describe: 'if first allowedTransitions contains a transition with a origin state not included in options.state',
+                beforeEach: () => {
+                    testSubject = new StatefulActionButton(document.createElement('div'), {
+                        states: [initialState],
+                        initialState: initialState,
+                        allowedTransitions: [{ from: createSpiedState('someState')[0], to: initialState }],
+                    });
+                },
+                expectedWarningMessage:
+                    'The stateful action button cannot render if one of its transition used a state that is not in the list of states:\n\tOrigin of Transition #0 is not in the list of states. Ensure to use the same object reference as in the options.states.',
+            },
+            {
+                describe: 'if second allowedTransitions contains a transition with a origin state not included in options.state',
+                beforeEach: () => {
+                    testSubject = new StatefulActionButton(document.createElement('div'), {
+                        states: [initialState],
+                        initialState: initialState,
+                        allowedTransitions: [
+                            { from: initialState, to: initialState },
+                            { from: createSpiedState('someState')[0], to: initialState },
+                        ],
+                    });
+                },
+                expectedWarningMessage:
+                    'The stateful action button cannot render if one of its transition used a state that is not in the list of states:\n\tOrigin of Transition #1 is not in the list of states. Ensure to use the same object reference as in the options.states.',
+            },
+            {
+                describe: 'if first allowedTransitions contains a transition with a destination state not included in options.state',
+                beforeEach: () => {
+                    testSubject = new StatefulActionButton(document.createElement('div'), {
+                        states: [initialState],
+                        initialState: initialState,
+                        allowedTransitions: [{ from: initialState, to: createSpiedState('someState')[0] }],
+                    });
+                },
+                expectedWarningMessage:
+                    'The stateful action button cannot render if one of its transition used a state that is not in the list of states:\n\tDestination of Transition #0 is not in the list of states. Ensure to use the same object reference as in the options.states.',
             },
         ].forEach((testCase) => {
             describe(testCase.describe, () => {
                 beforeEach(testCase.beforeEach);
 
                 it(`should hide the button, log an appropriate warning and not complete the initialization`, () => {
-                    spyConsoleWarn.calledWithExactly('The stateful action button cannot render if no states are defined.');
+                    expect(spyConsoleWarn.calledWithExactly(testCase.expectedWarningMessage)).toBeTrue();
                     expect(testSubject.getCurrentState()).toBeUndefined();
                     expect(initialOnEntrySpy.called).toBeFalse();
                 });
@@ -80,8 +124,8 @@ describe('StatefulActionButton', () => {
 
         describe('if the options are valid', () => {
             beforeEach(() => {
-                [initialState, initialOnEntrySpy] = createSpiedState();
-                testSubject = new StatefulActionButton(document.createElement('div'), { states: [initialState], initalState: initialState });
+                [initialState, initialOnEntrySpy] = createSpiedState('initialState');
+                testSubject = new StatefulActionButton(document.createElement('div'), { states: [initialState], initialState: initialState });
             });
 
             it('should complete the initialization', () => {
@@ -93,13 +137,12 @@ describe('StatefulActionButton', () => {
     });
 
     describe('switchTo', () => {
-        let initialState: IStatefulActionButtonState;
-        let targetState: IStatefulActionButtonState;
+        let initialState: StatefulActionButtonState;
+        let targetState: StatefulActionButtonState;
         let onInitialStateExitSpy: SinonSpy;
         let onTargetStateEntrySpy: SinonSpy;
 
-        function expectOnlyWarning() {
-            expect(spyConsoleWarn.calledWithExactly('This state is not allowed on this StatefulActionButton.'));
+        function expectUnsuccesfulTransition() {
             expect(testSubject.getCurrentState()).toBe(initialState);
             expect(onInitialStateExitSpy.called).toBeFalse();
             expect(onTargetStateEntrySpy.called).toBeFalse();
@@ -113,50 +156,36 @@ describe('StatefulActionButton', () => {
         }
 
         beforeEach(() => {
-            [initialState, , onInitialStateExitSpy] = createSpiedState();
-            [targetState, onTargetStateEntrySpy] = createSpiedState();
+            [initialState, , onInitialStateExitSpy] = createSpiedState('initialState');
+            [targetState, onTargetStateEntrySpy] = createSpiedState('targetState');
         });
 
         describe('if the state given in parameter is not in the options.state', () => {
             beforeEach(() => {
                 testSubject = new StatefulActionButton(document.createElement('div'), {
                     states: [initialState],
-                    initalState: initialState,
+                    initialState: initialState,
                 });
             });
 
             it('should log a warning and do nothing else', () => {
                 testSubject.switchTo(targetState);
 
-                expectOnlyWarning();
-            });
-        });
-
-        describe('if a state cannot be switched to and have a name', () => {
-            let namedState: IStatefulActionButtonState;
-            beforeEach(() => {
-                namedState = {
-                    name: 'some state name',
-                    title: 'foo',
-                };
-                testSubject = new StatefulActionButton(document.createElement('div'), {
-                    states: [initialState],
-                    initalState: initialState,
-                });
-            });
-
-            it('should log a warning with the name of the test', () => {
-                testSubject.switchTo(namedState);
-                expect(spyConsoleWarn.calledWithExactly('some state name is not allowed on this StatefulActionButton.'));
+                expect(
+                    spyConsoleWarn.calledWithExactly(
+                        "State 'targetState' does not exist on this StatefulActionButton\nEnsure to use the object references used at the instantiation."
+                    )
+                ).toBeTrue();
+                expectUnsuccesfulTransition();
             });
         });
 
         describe('if the state given in parameter is in options.state but the transition is not allowed', () => {
             beforeEach(() => {
-                let [notTargetState] = createSpiedState();
+                let [notTargetState] = createSpiedState('notTargetState');
                 testSubject = new StatefulActionButton(document.createElement('div'), {
-                    states: [initialState, targetState],
-                    initalState: initialState,
+                    states: [initialState, targetState, notTargetState],
+                    initialState: initialState,
                     allowedTransitions: [{ from: initialState, to: notTargetState }],
                 });
             });
@@ -164,7 +193,12 @@ describe('StatefulActionButton', () => {
             it('should log a warning and do nothing else', () => {
                 testSubject.switchTo(targetState);
 
-                expectOnlyWarning();
+                expect(
+                    spyConsoleWarn.calledWithExactly(
+                        "Transition from State 'initialState' to State 'targetState' is not allowed on this StatefulActionButton.\nEnsure to use the object references used at the instantiation."
+                    )
+                ).toBeTrue();
+                expectUnsuccesfulTransition();
             });
         });
 
@@ -175,7 +209,7 @@ describe('StatefulActionButton', () => {
                 beforeEach(() => {
                     testSubject = new StatefulActionButton(document.createElement('div'), {
                         states: [initialState, targetState],
-                        initalState: initialState,
+                        initialState: initialState,
                         allowedTransitions: allowedTransitionsValue,
                     });
                 });
@@ -192,7 +226,7 @@ describe('StatefulActionButton', () => {
             beforeEach(() => {
                 testSubject = new StatefulActionButton(document.createElement('div'), {
                     states: [initialState, targetState],
-                    initalState: initialState,
+                    initialState: initialState,
                     allowedTransitions: [{ from: initialState, to: targetState }],
                 });
             });

@@ -1,14 +1,14 @@
 import { IResultsComponentBindings } from 'coveo-search-ui';
-import { ActionButton, IActionButtonOptions } from './ActionButton';
+import { ActionButton, ActionButtonOptions } from './ActionButton';
 
 /**
  * Represent a state that can be used by a StatefulActionButton.
  */
-export type IStatefulActionButtonState = IActionButtonOptions & IStatefulActionButtonStateFunctionsAndUtils;
+export type StatefulActionButtonState = ActionButtonOptions & IStateOptions;
 
-interface IStatefulActionButtonStateFunctionsAndUtils {
+export interface IStateOptions {
     /**
-     * Optional argument that could be used for logging purposes in the StatefulActionButton.
+     * The name of the state. Used by StatefulActionButton for logging.
      */
     name: string;
     /**
@@ -27,8 +27,8 @@ interface IStatefulActionButtonStateFunctionsAndUtils {
  * Represent a transition from one `IStatefulActionButtonState` to another.
  */
 export interface IStatefulActionButtonTransition {
-    from: IStatefulActionButtonState;
-    to: IStatefulActionButtonState;
+    from: StatefulActionButtonState;
+    to: StatefulActionButtonState;
 }
 
 /**
@@ -40,7 +40,7 @@ export interface IStatefulActionButtonOptions {
      * If `switchTo` is called with an unknown state, a warning will be emitted
      * and the transition will not occur.
      */
-    states: [IStatefulActionButtonState, ...IStatefulActionButtonState[]];
+    states: [StatefulActionButtonState, ...StatefulActionButtonState[]];
     /**
      * An array containing all the state transitions allowed on the StatefulActionButton instance.
      * If `switchTo` is called with an illegal transitions , a warning will be emitted
@@ -52,7 +52,7 @@ export interface IStatefulActionButtonOptions {
      * If nullish or missing from the states array, a warning will be emitted,
      * no ActionButton will be constructed and the element will be hidden
      */
-    initalState: IStatefulActionButtonState;
+    initialState: StatefulActionButtonState;
 }
 
 /**
@@ -60,26 +60,32 @@ export interface IStatefulActionButtonOptions {
  */
 export class StatefulActionButton {
     static ID = 'StatefulActionButton';
-    private currentState: IStatefulActionButtonState;
+    private currentState: StatefulActionButtonState;
     private innerActionButton: ActionButton;
 
     constructor(public element: HTMLElement, public options: IStatefulActionButtonOptions, public bindings?: IResultsComponentBindings) {
         if (!this.areOptionsValid()) {
             return;
         }
-        this.currentState = this.options.initalState;
+        this.currentState = this.options.initialState;
         this.currentState.onStateEntry?.apply(this);
-        this.innerActionButton = new ActionButton(element, { ...this.options.initalState, click: this.handleClick.bind(this) }, bindings);
+        this.innerActionButton = new ActionButton(element, { ...this.options.initialState, click: this.handleClick.bind(this) }, bindings);
     }
 
     /**
      * Switch the state of the instance if the state and the transition between the current and new state are allowed.
      * @param state a state to try to switch to
      */
-    public switchTo(state: IStatefulActionButtonState) {
+    public switchTo(state: StatefulActionButtonState) {
+        if (this.options.states.indexOf(state) === -1) {
+            console.warn(
+                `State '${state.name}' does not exist on this StatefulActionButton\nEnsure to use the object references used at the instantiation.`
+            );
+            return;
+        }
         if (!this.isTransitionAllowed(state)) {
             console.warn(
-                `State '${state.name}' is not allowed on this StatefulActionButton.\nEnsure to use the object references used at the instantiation`
+                `Transition from State '${this.currentState.name}' to State '${state.name}' is not allowed on this StatefulActionButton.\nEnsure to use the object references used at the instantiation.`
             );
             return;
         }
@@ -107,12 +113,12 @@ export class StatefulActionButton {
             Coveo.$$(this.element).hide();
             return false;
         }
-        if (!this.options.initalState) {
-            console.warn('The stateful action button cannot render if the inital states is not defined.');
+        if (!this.options.initialState) {
+            console.warn('The stateful action button cannot render if the initial states is not defined.');
             Coveo.$$(this.element).hide();
             return false;
         }
-        if (this.options.states.indexOf(this.options.initalState) < 0) {
+        if (this.options.states.indexOf(this.options.initialState) < 0) {
             console.warn('The stateful action button cannot render if the initial state is not in the list of states.');
             Coveo.$$(this.element).hide();
             return false;
@@ -123,11 +129,11 @@ export class StatefulActionButton {
     private areTransitionsValid(): boolean {
         for (let index = 0; index < this.options.allowedTransitions.length; index++) {
             const transition = this.options.allowedTransitions[index];
-            if (this.options.states.indexOf(transition.from) == -1) {
+            if (this.options.states.indexOf(transition.from) === -1) {
                 console.warn(this.generateInvalidTransitionMessage(index, true));
                 return false;
             }
-            if (this.options.states.indexOf(transition.from) == -1) {
+            if (this.options.states.indexOf(transition.to) === -1) {
                 console.warn(this.generateInvalidTransitionMessage(index, false));
                 return false;
             }
@@ -136,7 +142,7 @@ export class StatefulActionButton {
     }
 
     private generateInvalidTransitionMessage(transitionNumber: number, isOrigin: boolean) {
-        return `The stateful action button cannot render if its origin is not in the list of states:\n\t${
+        return `The stateful action button cannot render if one of its transition used a state that is not in the list of states:\n\t${
             isOrigin ? 'Origin' : 'Destination'
         } of Transition #${transitionNumber} is not in the list of states. Ensure to use the same object reference as in the options.states.`;
     }
@@ -145,12 +151,11 @@ export class StatefulActionButton {
      * Check if a transition from the current state to @param state is allowed.
      * @param state the destination of the transition
      */
-    private isTransitionAllowed(state: IStatefulActionButtonState) {
-        return (
-            this.options.states.indexOf(state) > -1 &&
-            (!this.options.allowedTransitions ||
-                this.options.allowedTransitions.some((transition) => transition.from === this.currentState && transition.to === state))
-        );
+    private isTransitionAllowed(state: StatefulActionButtonState) {
+        if (!this.options.allowedTransitions) {
+            return true;
+        }
+        return this.options.allowedTransitions.some((transition) => transition.from === this.currentState && transition.to === state);
     }
 
     /**

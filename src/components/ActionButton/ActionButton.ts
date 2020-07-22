@@ -1,13 +1,13 @@
 import { Component, ComponentOptions, IResultsComponentBindings, Initialization } from 'coveo-search-ui';
 
-export type IActionButtonOptions = IActionButtonOptionsWithTitle | IActionButtonOptionsWithIcon;
+export type ActionButtonOptions = IActionButtonOptionsWithTitle | IActionButtonOptionsWithIcon;
 
-interface IActionButtonOptionsWithTitle extends IActionButtonBaseOptions {
+export interface IActionButtonOptionsWithTitle extends IActionButtonBaseOptions {
     title: string;
     icon?: string;
 }
 
-interface IActionButtonOptionsWithIcon extends IActionButtonBaseOptions {
+export interface IActionButtonOptionsWithIcon extends IActionButtonBaseOptions {
     title?: string;
     icon: string;
 }
@@ -31,7 +31,7 @@ export class ActionButton extends Component {
      * The possible options for _ActionButton_.
      * @componentOptions
      */
-    static options: IActionButtonOptions = {
+    static options: ActionButtonOptions = {
         /**
          * Specifies the button label. The text is displayed on a single line, next to the icon.
          *
@@ -84,7 +84,7 @@ export class ActionButton extends Component {
         click: ComponentOptions.buildCustomOption((s) => null, { required: true }),
     };
 
-    constructor(public element: HTMLElement, public options: IActionButtonOptions, public bindings?: IResultsComponentBindings) {
+    constructor(public element: HTMLElement, public options: ActionButtonOptions, public bindings?: IResultsComponentBindings) {
         super(element, ActionButton.ID, bindings);
 
         this.options = ComponentOptions.initComponentOptions(element, ActionButton, options);

@@ -1,5 +1,5 @@
 import { ComponentOptions, IResultsComponentBindings, Component, Initialization } from 'coveo-search-ui';
-import { IStatefulActionButtonState, StatefulActionButton } from './StatefulActionButton';
+import { StatefulActionButtonState, StatefulActionButton } from './StatefulActionButton';
 
 export interface IToggleActionButtonOptions {
     activateIcon: string;
@@ -16,8 +16,9 @@ export class ToggleActionButton extends Component {
      * Create the deactivated state for a given ToggleActionButton
      * @param button {ToggleActionButton}
      */
-    static generateDeactivatedStateInstance(button: ToggleActionButton): IStatefulActionButtonState {
+    static generateDeactivatedStateInstance(button: ToggleActionButton): StatefulActionButtonState {
         return {
+            name: 'DeactivatedState',
             icon: button.options.activateIcon,
             tooltip: button.options.activateTooltip,
             click: () => button.onClick(),
@@ -28,7 +29,7 @@ export class ToggleActionButton extends Component {
      * Create the activated state for a given ToggleActionButton
      * @param button {ToggleActionButton}
      */
-    static generateActivatedStateInstance(button: ToggleActionButton): IStatefulActionButtonState {
+    static generateActivatedStateInstance(button: ToggleActionButton): StatefulActionButtonState {
         return {
             onStateEntry: function () {
                 this.element.classList.add(ToggleActionButton.ACTIVATED_CLASS_NAME);
@@ -44,6 +45,7 @@ export class ToggleActionButton extends Component {
                     button.options.deactivate.apply(this);
                 }
             },
+            name: 'ActivatedState',
             click: () => button.onClick(),
             icon: button.options.deactivateIcon,
             tooltip: button.options.deactivateTooltip,
@@ -144,8 +146,8 @@ export class ToggleActionButton extends Component {
     };
 
     private innerStatefulActionButton: StatefulActionButton;
-    private activatedState: IStatefulActionButtonState;
-    private deactivatedState: IStatefulActionButtonState;
+    private activatedState: StatefulActionButtonState;
+    private deactivatedState: StatefulActionButtonState;
 
     constructor(public element: HTMLElement, public options: IToggleActionButtonOptions, public bindings?: IResultsComponentBindings) {
         super(element, ToggleActionButton.ID, bindings);
@@ -186,7 +188,7 @@ export class ToggleActionButton extends Component {
         this.innerStatefulActionButton = new StatefulActionButton(
             this.element,
             {
-                initalState: this.deactivatedState,
+                initialState: this.deactivatedState,
                 states: [this.deactivatedState, this.activatedState],
                 allowedTransitions: [
                     { from: this.deactivatedState, to: this.activatedState },
