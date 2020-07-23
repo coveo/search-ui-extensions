@@ -45,21 +45,21 @@ describe('StatefulActionButton', () => {
                 beforeEach: () => {
                     testSubject = new StatefulActionButton(document.createElement('div'), { states: undefined, initialState: initialState });
                 },
-                expectedWarningMessage: 'The stateful action button cannot render if no states are defined.',
+                expectedWarningMessage: 'Cannot render the stateful action button because options are invalid.\n\tStates is not defined or empty.',
             },
             {
                 describe: 'if states is empty',
                 beforeEach: () => {
                     testSubject = new StatefulActionButton(document.createElement('div'), { states: [] as any, initialState: initialState });
                 },
-                expectedWarningMessage: 'The stateful action button cannot render if no states are defined.',
+                expectedWarningMessage: 'Cannot render the stateful action button because options are invalid.\n\tStates is not defined or empty.',
             },
             {
                 describe: 'if initialState is not defined',
                 beforeEach: () => {
                     testSubject = new StatefulActionButton(document.createElement('div'), { states: [initialState], initialState: undefined });
                 },
-                expectedWarningMessage: 'The stateful action button cannot render if the initial states is not defined.',
+                expectedWarningMessage: 'Cannot render the stateful action button because options are invalid.\n\tInitialState is not defined.',
             },
             {
                 describe: 'if states does not include initialState',
@@ -69,10 +69,11 @@ describe('StatefulActionButton', () => {
                         initialState: initialState,
                     });
                 },
-                expectedWarningMessage: 'The stateful action button cannot render if the initial state is not in the list of states.',
+                expectedWarningMessage:
+                    'Cannot render the stateful action button because options are invalid.\n\tInitialState is not in the list of state.',
             },
             {
-                describe: 'if first allowedTransitions contains a transition with a origin state not included in options.state',
+                describe: 'if an allowedTransitions contains a transition with a origin state not included in options.state',
                 beforeEach: () => {
                     testSubject = new StatefulActionButton(document.createElement('div'), {
                         states: [initialState],
@@ -81,25 +82,10 @@ describe('StatefulActionButton', () => {
                     });
                 },
                 expectedWarningMessage:
-                    'The stateful action button cannot render if one of its transition used a state that is not in the list of states:\n\tOrigin of Transition #0 is not in the list of states. Ensure to use the same object reference as in the options.states.',
+                    'Cannot render the stateful action button because options are invalid.\n\tOrigin of Transition #0 is not in the list of states. Ensure to use the same object reference as in the options.states.',
             },
             {
-                describe: 'if second allowedTransitions contains a transition with a origin state not included in options.state',
-                beforeEach: () => {
-                    testSubject = new StatefulActionButton(document.createElement('div'), {
-                        states: [initialState],
-                        initialState: initialState,
-                        allowedTransitions: [
-                            { from: initialState, to: initialState },
-                            { from: createSpiedState('someState')[0], to: initialState },
-                        ],
-                    });
-                },
-                expectedWarningMessage:
-                    'The stateful action button cannot render if one of its transition used a state that is not in the list of states:\n\tOrigin of Transition #1 is not in the list of states. Ensure to use the same object reference as in the options.states.',
-            },
-            {
-                describe: 'if first allowedTransitions contains a transition with a destination state not included in options.state',
+                describe: 'if an allowedTransitions contains a transition with a destination state not included in options.state',
                 beforeEach: () => {
                     testSubject = new StatefulActionButton(document.createElement('div'), {
                         states: [initialState],
@@ -108,7 +94,7 @@ describe('StatefulActionButton', () => {
                     });
                 },
                 expectedWarningMessage:
-                    'The stateful action button cannot render if one of its transition used a state that is not in the list of states:\n\tDestination of Transition #0 is not in the list of states. Ensure to use the same object reference as in the options.states.',
+                    'Cannot render the stateful action button because options are invalid.\n\tDestination of Transition #0 is not in the list of states. Ensure to use the same object reference as in the options.states.',
             },
         ].forEach((testCase) => {
             describe(testCase.describe, () => {

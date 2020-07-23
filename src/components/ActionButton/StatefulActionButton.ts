@@ -64,7 +64,9 @@ export class StatefulActionButton {
     private innerActionButton: ActionButton;
 
     constructor(public element: HTMLElement, public options: IStatefulActionButtonOptions, public bindings?: IResultsComponentBindings) {
-        if (!this.areOptionsValid()) {
+        const optionsValidity = this.checkOptionsValidity();
+        if (!optionsValidity.areValid) {
+            console.warn(`Cannot render the stateful action button because options are invalid.\n\t${optionsValidity.errorMessage}`);
             return;
         }
         this.currentState = this.options.initialState;
@@ -107,42 +109,34 @@ export class StatefulActionButton {
      * Check if the options given to the constructor are valid.
      * If not, it will also display the appropriate warning.
      */
-    private areOptionsValid(): boolean {
+    private checkOptionsValidity(): { areValid: boolean; errorMessage?: string } {
         if (!this.options.states?.length) {
-            console.warn('The stateful action button cannot render if no states are defined.');
-            Coveo.$$(this.element).hide();
-            return false;
+            return { areValid: false, errorMessage: 'States is not defined or empty.' };
         }
         if (!this.options.initialState) {
-            console.warn('The stateful action button cannot render if the initial states is not defined.');
-            Coveo.$$(this.element).hide();
-            return false;
+            return { areValid: false, errorMessage: 'InitialState is not defined.' };
         }
         if (this.options.states.indexOf(this.options.initialState) < 0) {
-            console.warn('The stateful action button cannot render if the initial state is not in the list of states.');
-            Coveo.$$(this.element).hide();
-            return false;
+            return { areValid: false, errorMessage: 'InitialState is not in the list of state.' };
         }
-        return !this.options.allowedTransitions || this.areTransitionsValid();
+        return !this.options.allowedTransitions ? { areValid: true } : this.areTransitionsValid();
     }
 
-    private areTransitionsValid(): boolean {
+    private areTransitionsValid(): { areValid: boolean; errorMessage?: string } {
         for (let index = 0; index < this.options.allowedTransitions.length; index++) {
             const transition = this.options.allowedTransitions[index];
             if (this.options.states.indexOf(transition.from) === -1) {
-                console.warn(this.generateInvalidTransitionMessage(index, true));
-                return false;
+                return { areValid: false, errorMessage: this.generateInvalidTransitionMessage(index, true) };
             }
             if (this.options.states.indexOf(transition.to) === -1) {
-                console.warn(this.generateInvalidTransitionMessage(index, false));
-                return false;
+                return { areValid: false, errorMessage: this.generateInvalidTransitionMessage(index, false) };
             }
         }
-        return true;
+        return { areValid: true };
     }
 
     private generateInvalidTransitionMessage(transitionNumber: number, isOrigin: boolean) {
-        return `The stateful action button cannot render if one of its transition used a state that is not in the list of states:\n\t${
+        return `${
             isOrigin ? 'Origin' : 'Destination'
         } of Transition #${transitionNumber} is not in the list of states. Ensure to use the same object reference as in the options.states.`;
     }
