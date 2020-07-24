@@ -31,7 +31,7 @@ describe('StatefulActionButton', () => {
         sandbox.restore();
     });
 
-    describe('constructor', () => { 
+    describe('constructor', () => {
         let initialState: StatefulActionButtonState;
         let initialOnEntrySpy: SinonSpy;
 
