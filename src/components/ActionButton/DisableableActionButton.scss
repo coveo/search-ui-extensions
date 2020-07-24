@@ -4,7 +4,7 @@
 $disable-color: $primary-color-light;
 
 button.CoveoActionButton.coveo-actionbutton.coveo-actionbutton-disabled {
-    background-color: $activated-color;
+    background-color: $primary-color-lightest;
     border-color: $disable-color;
 
     .coveo-actionbutton_icon {

@@ -117,4 +117,4 @@ export class DisableableToggleActionButton extends Component implements ITogglea
     }
 }
 
-Initialization.registerAutoCreateComponent(ToggleActionButton);
+Initialization.registerAutoCreateComponent(DisableableToggleActionButton);
