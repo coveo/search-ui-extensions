@@ -1,11 +1,11 @@
 import { createSandbox, SinonSandbox, SinonSpy, spy } from 'sinon';
 import { Mock } from 'coveo-search-ui-tests';
-import { ActionButton, IActionButtonOptions } from '../../../src/components/ActionButton/ActionButton';
+import { ActionButton, ActionButtonOptions } from '../../../src/components/ActionButton/ActionButton';
 import * as icons from '../../../src/utils/icons';
 
 describe('ActionButton', () => {
     let sandbox: SinonSandbox;
-    let options: IActionButtonOptions;
+    let options: ActionButtonOptions;
     let testSubject: ActionButton;
     let consoleWarnSpy: SinonSpy;
 
@@ -30,7 +30,7 @@ describe('ActionButton', () => {
         sandbox.restore();
     });
 
-    function createActionButton(options: IActionButtonOptions) {
+    function createActionButton(options: ActionButtonOptions) {
         const element = document.createElement('button');
         const componentSetup = Mock.advancedComponentSetup<ActionButton>(ActionButton, new Mock.AdvancedComponentSetupOptions(element, options));
         return componentSetup.cmp;

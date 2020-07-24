@@ -1,5 +1,5 @@
 import { ComponentOptions, IResultsComponentBindings, Component, Initialization } from 'coveo-search-ui';
-import { ActionButton } from './ActionButton';
+import { StatefulActionButtonState, StatefulActionButton } from './StatefulActionButton';
 
 export interface IToggleActionButtonOptions {
     activateIcon: string;
@@ -12,6 +12,42 @@ export interface IToggleActionButtonOptions {
 }
 
 export class ToggleActionButton extends Component {
+    /**
+     * Create the deactivated state for a given ToggleActionButton
+     * @param button {ToggleActionButton}
+     */
+    static generateDeactivatedStateInstance(button: ToggleActionButton): StatefulActionButtonState {
+        return {
+            name: 'DeactivatedState',
+            icon: button.options.activateIcon,
+            tooltip: button.options.activateTooltip,
+            click: () => button.onClick(),
+        };
+    }
+
+    /**
+     * Create the activated state for a given ToggleActionButton
+     * @param button {ToggleActionButton}
+     */
+    static generateActivatedStateInstance(button: ToggleActionButton): StatefulActionButtonState {
+        return {
+            onStateEntry: function () {
+                this.element.classList.add(ToggleActionButton.ACTIVATED_CLASS_NAME);
+                this.element.setAttribute('aria-pressed', 'true');
+                button.options.activate?.apply(button);
+            },
+            onStateExit: function () {
+                this.element.classList.remove(ToggleActionButton.ACTIVATED_CLASS_NAME);
+                this.element.setAttribute('aria-pressed', 'false');
+                button.options.deactivate?.apply(button);
+            },
+            name: 'ActivatedState',
+            click: () => button.onClick(),
+            icon: button.options.deactivateIcon,
+            tooltip: button.options.deactivateTooltip,
+        };
+    }
+
     static ID = 'ToggleActionButton';
     static ACTIVATED_CLASS_NAME = 'coveo-toggleactionbutton-activated';
 
@@ -105,8 +141,9 @@ export class ToggleActionButton extends Component {
         deactivate: ComponentOptions.buildCustomOption((s) => null),
     };
 
-    private _isActivated: boolean = false;
-    private innerActionButton: ActionButton;
+    private innerStatefulActionButton: StatefulActionButton;
+    private activatedState: StatefulActionButtonState;
+    private deactivatedState: StatefulActionButtonState;
 
     constructor(public element: HTMLElement, public options: IToggleActionButtonOptions, public bindings?: IResultsComponentBindings) {
         super(element, ToggleActionButton.ID, bindings);
@@ -119,7 +156,7 @@ export class ToggleActionButton extends Component {
      * Indicates whether the toggle button is in the activated state.
      */
     public isActivated(): boolean {
-        return this._isActivated;
+        return this.innerStatefulActionButton.getCurrentState() === this.activatedState;
     }
 
     /**
@@ -128,15 +165,7 @@ export class ToggleActionButton extends Component {
      */
     public setActivated(activated: boolean): void {
         if (activated !== this.isActivated()) {
-            this._isActivated = activated;
-            this.updateButton();
-
-            if (this._isActivated && this.options.activate) {
-                this.options.activate();
-            }
-            if (!this._isActivated && this.options.deactivate) {
-                this.options.deactivate();
-            }
+            this.innerStatefulActionButton.switchTo(activated ? this.activatedState : this.deactivatedState);
         }
     }
 
@@ -149,33 +178,21 @@ export class ToggleActionButton extends Component {
     }
 
     private createInnerButton(bindings?: IResultsComponentBindings): void {
-        this.innerActionButton = new ActionButton(
+        this.activatedState = ToggleActionButton.generateActivatedStateInstance(this);
+        this.deactivatedState = ToggleActionButton.generateDeactivatedStateInstance(this);
+
+        this.innerStatefulActionButton = new StatefulActionButton(
             this.element,
             {
-                icon: this.options.activateIcon,
-                tooltip: this.options.activateTooltip,
-                click: () => this.onClick(),
+                initialState: this.deactivatedState,
+                states: [this.deactivatedState, this.activatedState],
+                allowedTransitions: [
+                    { from: this.deactivatedState, to: this.activatedState },
+                    { from: this.activatedState, to: this.deactivatedState },
+                ],
             },
             bindings
         );
-
-        this.updateButton();
-    }
-
-    private updateButton() {
-        if (this._isActivated) {
-            this.element.classList.add(ToggleActionButton.ACTIVATED_CLASS_NAME);
-            this.element.setAttribute('aria-pressed', 'true');
-
-            this.innerActionButton.updateIcon(this.options.deactivateIcon);
-            this.innerActionButton.updateTooltip(this.options.deactivateTooltip);
-        } else {
-            this.element.classList.remove(ToggleActionButton.ACTIVATED_CLASS_NAME);
-            this.element.setAttribute('aria-pressed', 'false');
-
-            this.innerActionButton.updateIcon(this.options.activateIcon);
-            this.innerActionButton.updateTooltip(this.options.activateTooltip);
-        }
     }
 }
 
