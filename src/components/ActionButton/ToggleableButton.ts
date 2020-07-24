@@ -15,8 +15,8 @@ export interface IToggleableButton {
     onClick: () => void;
 }
 
-export class ToggleUnactivatedState implements IStatefulActionButtonOptionsWithIcon {
-    public readonly name = 'ToggleUnactivatedState';
+export class ToggleDeactivatedState implements IStatefulActionButtonOptionsWithIcon {
+    public readonly name = 'ToggleDeactivatedState';
     public readonly icon: string;
     public readonly tooltip: string;
     public readonly click: { (): void; (): void; (): void };

@@ -1,5 +1,5 @@
 import {
-    ToggleUnactivatedState,
+    ToggleDeactivatedState,
     IToggleableButtonOptions,
     ToggleActivatedState,
     IToggleableButton,
@@ -33,10 +33,10 @@ describe('ToggleStates', () => {
         sandbox.restore();
     });
 
-    describe('ToggleUnactivatedState', () => {
-        let testSubject: ToggleUnactivatedState;
+    describe('ToggleDeactivatedState', () => {
+        let testSubject: ToggleDeactivatedState;
         beforeEach(() => {
-            testSubject = new ToggleUnactivatedState({
+            testSubject = new ToggleDeactivatedState({
                 options: toggleStateOptions,
                 onClick: onClickSpy,
             });

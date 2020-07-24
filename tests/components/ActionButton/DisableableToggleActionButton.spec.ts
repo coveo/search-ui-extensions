@@ -7,7 +7,7 @@ import * as icons from '../../../src/utils/icons';
 
 import { Mock } from 'coveo-search-ui-tests';
 import { StatefulActionButton } from '../../../src/components/ActionButton/StatefulActionButton';
-import { ToggleUnactivatedState, ToggleActivatedState } from '../../../src/components/ActionButton/ToggleableButton';
+import { ToggleDeactivatedState, ToggleActivatedState } from '../../../src/components/ActionButton/ToggleableButton';
 import { DisabledState } from '../../../src/components/ActionButton/DisableableButton';
 
 describe('DisableableToggleActionButton', () => {
@@ -108,7 +108,7 @@ describe('DisableableToggleActionButton', () => {
 
             it('should call switchTo with the deactivatedState', () => {
                 expect(switchToSpy.calledOnce).toBeTrue();
-                expect(switchToSpy.firstCall.args[0] instanceof ToggleUnactivatedState).toBeTrue();
+                expect(switchToSpy.firstCall.args[0] instanceof ToggleDeactivatedState).toBeTrue();
             });
         });
 
@@ -127,7 +127,7 @@ describe('DisableableToggleActionButton', () => {
                 testSubject.setActivated(false);
 
                 expect(switchToSpy.calledOnce).toBeTrue();
-                expect(switchToSpy.firstCall.args[0] instanceof ToggleUnactivatedState).toBeTrue();
+                expect(switchToSpy.firstCall.args[0] instanceof ToggleDeactivatedState).toBeTrue();
             });
 
             it('should do nothing if called with true', () => {
@@ -138,7 +138,7 @@ describe('DisableableToggleActionButton', () => {
         });
     });
 
-    describe('when unactivated', () => {
+    describe('when Deactivated', () => {
         it('isActivated should return false', () => {
             expect(testSubject.isActivated()).toBeFalse();
         });
@@ -286,9 +286,9 @@ describe('DisableableToggleActionButton', () => {
                 testSubject.disable();
             });
 
-            it('should call switchTo with the unactivatedState and then with the disabledState', () => {
+            it('should call switchTo with the DeactivatedState and then with the disabledState', () => {
                 expect(switchToSpy.calledTwice).toBeTrue();
-                expect(switchToSpy.firstCall.args[0] instanceof ToggleUnactivatedState).toBeTrue();
+                expect(switchToSpy.firstCall.args[0] instanceof ToggleDeactivatedState).toBeTrue();
                 expect(switchToSpy.secondCall.args[0] instanceof DisabledState).toBeTrue();
             });
         });
@@ -300,11 +300,11 @@ describe('DisableableToggleActionButton', () => {
                 expect(switchToSpy.called).toBeFalse();
             });
 
-            it('should switch to unactivated if called with false', () => {
+            it('should switch to Deactivated if called with false', () => {
                 testSubject.setActivated(false);
 
                 expect(switchToSpy.calledOnce).toBeTrue();
-                expect(switchToSpy.firstCall.args[0] instanceof ToggleUnactivatedState).toBeTrue();
+                expect(switchToSpy.firstCall.args[0] instanceof ToggleDeactivatedState).toBeTrue();
             });
         });
     });
