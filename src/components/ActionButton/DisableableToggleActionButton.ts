@@ -2,7 +2,7 @@ import { ComponentOptions, IResultsComponentBindings, Component, Initialization 
 import { StatefulActionButton } from './StatefulActionButton';
 import {
     ToggleActivatedState as ActivatedState,
-    ToggleDeactivatedState as DeactivatedState,
+    ToggleUnactivatedState as UnactivatedState,
     IToggleableButton,
     IToggleableButtonOptions,
 } from './ToggleableButton';
@@ -17,7 +17,7 @@ export class DisableableToggleActionButton extends Component implements ITogglea
 
     private innerStatefulActionButton: StatefulActionButton;
     private activatedState: ActivatedState;
-    private deactivatedState: DeactivatedState;
+    private deactivatedState: UnactivatedState;
     private disabledState: DisabledState;
 
     static options: IDisableableToggleActionButtonOptions = {
@@ -96,14 +96,14 @@ export class DisableableToggleActionButton extends Component implements ITogglea
     }
 
     private createInnerButton(bindings?: IResultsComponentBindings): void {
-        this.deactivatedState = new DeactivatedState(this);
+        this.deactivatedState = new UnactivatedState(this);
         this.disabledState = new DisabledState(this);
         this.activatedState = new ActivatedState(this);
 
         this.innerStatefulActionButton = new StatefulActionButton(
             this.element,
             {
-                initalState: this.deactivatedState,
+                initialState: this.deactivatedState,
                 states: [this.deactivatedState, this.activatedState, this.disabledState],
                 allowedTransitions: [
                     { from: this.deactivatedState, to: this.disabledState },

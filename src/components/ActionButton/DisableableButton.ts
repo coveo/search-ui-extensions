@@ -16,7 +16,7 @@ export class DisabledState implements IStatefulActionButtonOptionsWithIcon {
     public readonly click: () => void;
     public readonly icon: string;
     public readonly tooltip: string;
-    public readonly loggingName = 'DisabledState';
+    public readonly name = 'DisabledState';
 
     constructor(disabledButton: IDisableableButton) {
         this.onStateEntry = function () {

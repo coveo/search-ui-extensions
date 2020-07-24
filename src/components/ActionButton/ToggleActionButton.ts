@@ -1,5 +1,5 @@
 import { ComponentOptions, IResultsComponentBindings, Component, Initialization } from 'coveo-search-ui';
-import { ToggleActivatedState, ToggleDeactivatedState, IToggleableButton, IToggleableButtonOptions } from './ToggleableButton';
+import { ToggleActivatedState, ToggleUnactivatedState, IToggleableButton, IToggleableButtonOptions } from './ToggleableButton';
 import { StatefulActionButtonState, StatefulActionButton } from './StatefulActionButton';
 
 export class ToggleActionButton extends Component implements IToggleableButton {
@@ -133,7 +133,7 @@ export class ToggleActionButton extends Component implements IToggleableButton {
     }
 
     private createInnerButton(bindings?: IResultsComponentBindings): void {
-        this.deactivatedState = new ToggleDeactivatedState(this);
+        this.deactivatedState = new ToggleUnactivatedState(this);
         this.activatedState = new ToggleActivatedState(this);
 
         this.innerStatefulActionButton = new StatefulActionButton(

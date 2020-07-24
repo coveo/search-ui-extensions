@@ -15,8 +15,8 @@ export interface IToggleableButton {
     onClick: () => void;
 }
 
-export class ToggleDeactivatedState implements IStatefulActionButtonOptionsWithIcon {
-    public readonly loggingName = 'ToggleDeactivatedState';
+export class ToggleUnactivatedState implements IStatefulActionButtonOptionsWithIcon {
+    public readonly name = 'ToggleUnactivatedState';
     public readonly icon: string;
     public readonly tooltip: string;
     public readonly click: { (): void; (): void; (): void };
@@ -29,7 +29,7 @@ export class ToggleDeactivatedState implements IStatefulActionButtonOptionsWithI
 
 export class ToggleActivatedState implements IStatefulActionButtonOptionsWithIcon {
     static ACTIVATED_CLASS_NAME = 'coveo-toggleactionbutton-activated';
-    public readonly loggingName = 'ToggleActivatedState';
+    public readonly name = 'ToggleActivatedState';
     public readonly onStateEntry: (this: StatefulActionButton) => void;
     public readonly onStateExit: (this: StatefulActionButton) => void;
     public readonly click: () => void;
@@ -39,16 +39,12 @@ export class ToggleActivatedState implements IStatefulActionButtonOptionsWithIco
         this.onStateEntry = function () {
             this.element.classList.add(ToggleActivatedState.ACTIVATED_CLASS_NAME);
             this.element.setAttribute('aria-pressed', 'true');
-            if (toggleableButton.options.activate) {
-                toggleableButton.options.activate.apply(toggleableButton);
-            }
+            toggleableButton.options.activate?.apply(toggleableButton);
         };
         this.onStateExit = function () {
             this.element.classList.remove(ToggleActivatedState.ACTIVATED_CLASS_NAME);
             this.element.setAttribute('aria-pressed', 'false');
-            if (toggleableButton.options.deactivate) {
-                toggleableButton.options.deactivate.apply(toggleableButton);
-            }
+            toggleableButton.options.deactivate?.apply(toggleableButton);
         };
         this.click = () => toggleableButton.onClick();
         this.icon = toggleableButton.options.deactivateIcon;

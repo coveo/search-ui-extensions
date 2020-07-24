@@ -8,7 +8,6 @@ export type StatefulActionButtonState = ActionButtonOptions & IStateOptions;
 export interface IStatefulActionButtonOptionsWithTitle extends IActionButtonOptionsWithTitle, IStateOptions {}
 export interface IStatefulActionButtonOptionsWithIcon extends IActionButtonOptionsWithIcon, IStateOptions {}
 
-
 export interface IStateOptions {
     /**
      * The name of the state. Used by StatefulActionButton for logging.
