@@ -1,13 +1,14 @@
 import { SinonSandbox, createSandbox, SinonSpy } from 'sinon';
 import { Mock } from 'coveo-search-ui-tests';
-import { IToggleActionButtonOptions, ToggleActionButton } from '../../../src/components/ActionButton/ToggleActionButton';
+import { ToggleActionButton } from '../../../src/components/ActionButton/ToggleActionButton';
 import * as icons from '../../../src/utils/icons';
 import { ActionButton } from '../../../src/components/ActionButton/ActionButton';
 import { IComponentOptions } from 'coveo-search-ui';
+import { IToggleableButtonOptions } from '../../../src/components/ActionButton/ToggleableButton';
 
 describe('ToggleActionButton', () => {
     let sandbox: SinonSandbox;
-    let options: IToggleActionButtonOptions;
+    let options: IToggleableButtonOptions;
     let testSubject: ToggleActionButton;
 
     let clickSpy: SinonSpy;
@@ -44,7 +45,7 @@ describe('ToggleActionButton', () => {
         sandbox.reset();
     });
 
-    function createToggleButton(options: IToggleActionButtonOptions) {
+    function createToggleButton(options: IToggleableButtonOptions) {
         const element = document.createElement('button');
         const componentSetup = Mock.advancedComponentSetup<ToggleActionButton>(
             ToggleActionButton,

@@ -1,10 +1,12 @@
 import { IResultsComponentBindings } from 'coveo-search-ui';
-import { ActionButton, ActionButtonOptions } from './ActionButton';
+import { ActionButton, ActionButtonOptions, IActionButtonOptionsWithTitle, IActionButtonOptionsWithIcon } from './ActionButton';
 
 /**
  * Represent a state that can be used by a StatefulActionButton.
  */
 export type StatefulActionButtonState = ActionButtonOptions & IStateOptions;
+export interface IStatefulActionButtonOptionsWithTitle extends IActionButtonOptionsWithTitle, IStateOptions {}
+export interface IStatefulActionButtonOptionsWithIcon extends IActionButtonOptionsWithIcon, IStateOptions {}
 
 export interface IStateOptions {
     /**
