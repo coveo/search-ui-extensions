@@ -93,11 +93,12 @@ export class StatefulActionButton {
             );
             return;
         }
-        this.currentState.onStateExit?.apply(this);
-        state.onStateEntry?.apply(this);
+        const [oldStateExit, newStateEntry] = [this.currentState.onStateExit, state.onStateEntry];
         this.innerActionButton.updateIcon(state.icon);
         this.innerActionButton.updateTooltip(state.tooltip);
         this.currentState = state;
+        oldStateExit?.call(this);
+        newStateEntry?.call(this);
     }
 
     /**
