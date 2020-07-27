@@ -192,5 +192,44 @@ describe('ToggleActionButton', () => {
                 });
             });
         });
+
+        describe(`if deactivated triggers an event that would deactivate the button. `, () => {
+            const deactivateEvent = 'deactivate-event';
+            beforeEach(() => {
+                const deactivateWithEvent: (this: ToggleActionButton) => void = function () {
+                    this.element.dispatchEvent(new CustomEvent(deactivateEvent));
+                };
+                activateSpy = sandbox.spy(deactivateWithEvent);
+                options.deactivate = deactivateWithEvent;
+                testSubject = createToggleButton(options);
+                testSubject.element.addEventListener(deactivateEvent, () => {
+                    testSubject.setActivated(false);
+                });
+            });
+
+            describe('if already deactivated', () => {
+                beforeEach(() => {
+                    testSubject.setActivated(false);
+                    sandbox.reset();
+                });
+
+                it('should not call switchTo when setActivated is called with false', () => {
+                    testSubject.setActivated(false);
+                    expect(switchToSpy.called).toBeFalse();
+                });
+            });
+
+            describe('if activated', () => {
+                beforeEach(() => {
+                    testSubject.setActivated(true);
+                    sandbox.reset();
+                });
+
+                it('should call switchTo only once when setActivated is called with false', () => {
+                    testSubject.setActivated(false);
+                    expect(switchToSpy.calledOnce).toBeTrue();
+                });
+            });
+        });
     });
 });
