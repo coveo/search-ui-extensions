@@ -6,6 +6,7 @@ import { ActionButton } from '../../../src/components/ActionButton/ActionButton'
 import { IComponentOptions } from 'coveo-search-ui';
 import { IToggleableButtonOptions } from '../../../src/components/ActionButton/ToggleableButton';
 import { StatefulActionButton } from '../../../src/components/ActionButton/StatefulActionButton';
+import { defer } from '../../utils';
 
 describe('ToggleActionButton', () => {
     let sandbox: SinonSandbox;
@@ -153,18 +154,28 @@ describe('ToggleActionButton', () => {
                 expect(option.alias).toContain(legacy);
             });
         });
+    });
+
+    describe('event-loop test', () => {
+        let eventCompletionPromises: Array<Promise<void>>;
+        beforeEach(() => {
+            eventCompletionPromises = [];
+        });
 
         describe(`if activated triggers an event that would activate the button. `, () => {
             const activateEvent = 'activate-event';
+
             beforeEach(() => {
                 const activateWithEvent: (this: ToggleActionButton) => void = function () {
-                    this.element.dispatchEvent(new CustomEvent(activateEvent));
+                    const deferred = defer();
+                    eventCompletionPromises.push(deferred.promise);
+                    this.element.dispatchEvent(new CustomEvent(activateEvent, { detail: deferred.resolve }));
                 };
-                activateSpy = sandbox.spy(activateWithEvent);
                 options.activate = activateWithEvent;
                 testSubject = createToggleButton(options);
-                testSubject.element.addEventListener(activateEvent, () => {
+                testSubject.element.addEventListener(activateEvent, (e: CustomEvent<() => void>) => {
                     testSubject.setActivated(true);
+                    e.detail();
                 });
             });
 
@@ -174,8 +185,11 @@ describe('ToggleActionButton', () => {
                     sandbox.reset();
                 });
 
-                it('should not call switchTo when setActivated is called with true', () => {
+                it('should not call switchTo when setActivated is called with true', async () => {
                     testSubject.setActivated(true);
+                    for (let index = 0; index < eventCompletionPromises.length; index++) {
+                        await eventCompletionPromises[index];
+                    }
                     expect(switchToSpy.called).toBeFalse();
                 });
             });
@@ -186,8 +200,11 @@ describe('ToggleActionButton', () => {
                     sandbox.reset();
                 });
 
-                it('should call switchTo only once when setActivated is called with true', () => {
+                it('should call switchTo only once when setActivated is called with true', async () => {
                     testSubject.setActivated(true);
+                    for (let index = 0; index < eventCompletionPromises.length; index++) {
+                        await eventCompletionPromises[index];
+                    }
                     expect(switchToSpy.calledOnce).toBeTrue();
                 });
             });
@@ -197,13 +214,15 @@ describe('ToggleActionButton', () => {
             const deactivateEvent = 'deactivate-event';
             beforeEach(() => {
                 const deactivateWithEvent: (this: ToggleActionButton) => void = function () {
-                    this.element.dispatchEvent(new CustomEvent(deactivateEvent));
+                    const deferred = defer();
+                    eventCompletionPromises.push(deferred.promise);
+                    this.element.dispatchEvent(new CustomEvent(deactivateEvent, { detail: deferred.resolve }));
                 };
-                activateSpy = sandbox.spy(deactivateWithEvent);
                 options.deactivate = deactivateWithEvent;
                 testSubject = createToggleButton(options);
-                testSubject.element.addEventListener(deactivateEvent, () => {
+                testSubject.element.addEventListener(deactivateEvent, (e: CustomEvent<() => void>) => {
                     testSubject.setActivated(false);
+                    e.detail();
                 });
             });
 
@@ -213,8 +232,11 @@ describe('ToggleActionButton', () => {
                     sandbox.reset();
                 });
 
-                it('should not call switchTo when setActivated is called with false', () => {
+                it('should not call switchTo when setActivated is called with false', async () => {
                     testSubject.setActivated(false);
+                    for (let index = 0; index < eventCompletionPromises.length; index++) {
+                        await eventCompletionPromises[index];
+                    }
                     expect(switchToSpy.called).toBeFalse();
                 });
             });
@@ -225,8 +247,11 @@ describe('ToggleActionButton', () => {
                     sandbox.reset();
                 });
 
-                it('should call switchTo only once when setActivated is called with false', () => {
+                it('should call switchTo only once when setActivated is called with false', async () => {
                     testSubject.setActivated(false);
+                    for (let index = 0; index < eventCompletionPromises.length; index++) {
+                        await eventCompletionPromises[index];
+                    }
                     expect(switchToSpy.calledOnce).toBeTrue();
                 });
             });
