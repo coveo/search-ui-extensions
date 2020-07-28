@@ -5,6 +5,7 @@ import * as icons from '../../../src/utils/icons';
 import { ActionButton } from '../../../src/components/ActionButton/ActionButton';
 import { IComponentOptions } from 'coveo-search-ui';
 import { IToggleableButtonOptions } from '../../../src/components/ActionButton/ToggleableButton';
+import { StatefulActionButton } from '../../../src/components/ActionButton/StatefulActionButton';
 
 describe('ToggleActionButton', () => {
     let sandbox: SinonSandbox;
@@ -16,6 +17,7 @@ describe('ToggleActionButton', () => {
     let deactivateSpy: SinonSpy;
     let updateIconSpy: SinonSpy;
     let updateTooltipSpy: SinonSpy;
+    let switchToSpy: SinonSpy;
 
     beforeAll(() => {
         sandbox = createSandbox();
@@ -25,6 +27,7 @@ describe('ToggleActionButton', () => {
         deactivateSpy = sandbox.spy();
         updateIconSpy = sandbox.spy(<any>ActionButton.prototype, 'updateIcon');
         updateTooltipSpy = sandbox.spy(<any>ActionButton.prototype, 'updateTooltip');
+        switchToSpy = sandbox.spy(<any>StatefulActionButton.prototype, 'switchTo');
     });
 
     beforeEach(() => {
@@ -148,6 +151,84 @@ describe('ToggleActionButton', () => {
                 const option = getOption(current);
 
                 expect(option.alias).toContain(legacy);
+            });
+        });
+
+        describe(`if activated triggers an event that would activate the button. `, () => {
+            const activateEvent = 'activate-event';
+            beforeEach(() => {
+                const activateWithEvent: (this: ToggleActionButton) => void = function () {
+                    this.element.dispatchEvent(new CustomEvent(activateEvent));
+                };
+                activateSpy = sandbox.spy(activateWithEvent);
+                options.activate = activateWithEvent;
+                testSubject = createToggleButton(options);
+                testSubject.element.addEventListener(activateEvent, () => {
+                    testSubject.setActivated(true);
+                });
+            });
+
+            describe('if already activated', () => {
+                beforeEach(() => {
+                    testSubject.setActivated(true);
+                    sandbox.reset();
+                });
+
+                it('should not call switchTo when setActivated is called with true', () => {
+                    testSubject.setActivated(true);
+                    expect(switchToSpy.called).toBeFalse();
+                });
+            });
+
+            describe('if not activated', () => {
+                beforeEach(() => {
+                    testSubject.setActivated(false);
+                    sandbox.reset();
+                });
+
+                it('should call switchTo only once when setActivated is called with true', () => {
+                    testSubject.setActivated(true);
+                    expect(switchToSpy.calledOnce).toBeTrue();
+                });
+            });
+        });
+
+        describe(`if deactivated triggers an event that would deactivate the button. `, () => {
+            const deactivateEvent = 'deactivate-event';
+            beforeEach(() => {
+                const deactivateWithEvent: (this: ToggleActionButton) => void = function () {
+                    this.element.dispatchEvent(new CustomEvent(deactivateEvent));
+                };
+                activateSpy = sandbox.spy(deactivateWithEvent);
+                options.deactivate = deactivateWithEvent;
+                testSubject = createToggleButton(options);
+                testSubject.element.addEventListener(deactivateEvent, () => {
+                    testSubject.setActivated(false);
+                });
+            });
+
+            describe('if already deactivated', () => {
+                beforeEach(() => {
+                    testSubject.setActivated(false);
+                    sandbox.reset();
+                });
+
+                it('should not call switchTo when setActivated is called with false', () => {
+                    testSubject.setActivated(false);
+                    expect(switchToSpy.called).toBeFalse();
+                });
+            });
+
+            describe('if activated', () => {
+                beforeEach(() => {
+                    testSubject.setActivated(true);
+                    sandbox.reset();
+                });
+
+                it('should call switchTo only once when setActivated is called with false', () => {
+                    testSubject.setActivated(false);
+                    expect(switchToSpy.calledOnce).toBeTrue();
+                });
             });
         });
     });

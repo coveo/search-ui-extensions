@@ -1,19 +1,36 @@
 import { StatefulActionButton, StatefulActionButtonState } from '../../../src/components/ActionButton/StatefulActionButton';
 import { createSandbox, SinonSpy, SinonSandbox } from 'sinon';
+import { ActionButton } from '../../../src/components/ActionButton/ActionButton';
 
 describe('StatefulActionButton', () => {
     let testSubject: StatefulActionButton;
     let sandbox: SinonSandbox;
     let spyConsoleWarn: SinonSpy;
-    const createSpiedState: (stateName: string) => [StatefulActionButtonState, SinonSpy, SinonSpy] = (stateName: string) => {
-        const stateEntrySpy = sandbox.spy();
-        const stateExitSpy = sandbox.spy();
+    const createSpiedState: (
+        stateName: string,
+        onStateEntry?: (this: StatefulActionButton) => void,
+        onStateExit?: (this: StatefulActionButton) => void
+    ) => [StatefulActionButtonState, SinonSpy, SinonSpy] = (
+        stateName: string,
+        onStateEntry?: (this: StatefulActionButton) => void,
+        onStateExit?: (this: StatefulActionButton) => void
+    ) => {
+        const stateEntrySpy = onStateEntry ? sandbox.spy(onStateEntry) : sandbox.spy();
+        const stateExitSpy = onStateExit ? sandbox.spy(onStateExit) : sandbox.spy();
         const state: StatefulActionButtonState = {
             name: stateName,
             icon: 'foo',
             title: 'bar',
-            onStateEntry: stateEntrySpy,
-            onStateExit: stateExitSpy,
+            onStateEntry:
+                onStateEntry ??
+                function () {
+                    stateEntrySpy();
+                },
+            onStateExit:
+                onStateExit ??
+                function () {
+                    stateExitSpy();
+                },
         };
 
         return [state, stateEntrySpy, stateExitSpy];
@@ -127,23 +144,31 @@ describe('StatefulActionButton', () => {
         let targetState: StatefulActionButtonState;
         let onInitialStateExitSpy: SinonSpy;
         let onTargetStateEntrySpy: SinonSpy;
+        let updateIconSpy: SinonSpy;
+        let updateTooltipSpy: SinonSpy;
 
         function expectUnsuccesfulTransition() {
             expect(testSubject.getCurrentState()).toBe(initialState);
             expect(onInitialStateExitSpy.called).toBeFalse();
             expect(onTargetStateEntrySpy.called).toBeFalse();
+            expect(updateIconSpy.called).toBeFalse();
+            expect(updateTooltipSpy.called).toBeFalse();
         }
 
         function expectSuccesfulTransition() {
             expect(spyConsoleWarn.called).toBeFalse();
             expect(testSubject.getCurrentState()).toBe(targetState);
-            expect(onInitialStateExitSpy.called).toBeTrue();
-            expect(onTargetStateEntrySpy.called).toBeTrue();
+            expect(updateIconSpy.called).toBeTrue();
+            expect(updateTooltipSpy.called).toBeTrue();
+            expect(onInitialStateExitSpy.calledAfter(updateTooltipSpy)).toBeTrue();
+            expect(onTargetStateEntrySpy.calledAfter(onInitialStateExitSpy)).toBeTrue();
         }
 
         beforeEach(() => {
             [initialState, , onInitialStateExitSpy] = createSpiedState('initialState');
             [targetState, onTargetStateEntrySpy] = createSpiedState('targetState');
+            updateIconSpy = sandbox.spy(ActionButton.prototype, 'updateIcon');
+            updateTooltipSpy = sandbox.spy(ActionButton.prototype, 'updateTooltip');
         });
 
         describe('if the state given in parameter is not in the options.state', () => {
