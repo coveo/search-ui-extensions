@@ -3,7 +3,7 @@ import { Mock, Fake } from 'coveo-search-ui-tests';
 import { ClickedDocumentList } from '../../../src/components/UserActions/ClickedDocumentList';
 import { UserProfileModel, UserAction } from '../../../src/models/UserProfileModel';
 import { Logger, Initialization } from 'coveo-search-ui';
-import { delay, generate, fakeUserProfileModel } from '../../utils';
+import { generate, fakeUserProfileModel, waitForPromiseCompletion } from '../../utils';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 
 describe('ClickedDocumentList', () => {
@@ -35,131 +35,124 @@ describe('ClickedDocumentList', () => {
         Logger.enable();
     });
 
-    it('should show a text when there is no document clicked', () => {
+    it('should show a text when there is no document clicked', async () => {
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([]));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve([]));
                 return env;
             })
         );
+        await waitForPromiseCompletion();
 
-        return delay(() => {
-            const emptyElement = mock.cmp.element.querySelector<HTMLLIElement>('.coveo-empty');
-            expect(emptyElement).not.toBeNull();
-            expect(emptyElement.innerText).toBe('No document clicked by this user');
-        });
+        const emptyElement = mock.cmp.element.querySelector<HTMLLIElement>('.coveo-empty');
+        expect(emptyElement).not.toBeNull();
+        expect(emptyElement.innerText).toBe('No document clicked by this user');
     });
 
-    it('should show "Documents Clicked" as title', () => {
+    it('should show "Documents Clicked" as title', async () => {
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(TEST_CLICKS));
                 return env;
             })
         );
+        await waitForPromiseCompletion();
 
-        return delay(() => {
-            expect(mock.cmp.element.querySelector('.coveo-title').innerHTML).toMatch('Recent Clicked Documents');
-        });
+        expect(mock.cmp.element.querySelector('.coveo-title').innerHTML).toMatch('Recent Clicked Documents');
     });
 
-    it('should show the title specified in "listLabel" option', () => {
+    it('should show the title specified in "listLabel" option', async () => {
         const customTitle = 'Custom Title';
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', listLabel: customTitle }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(TEST_CLICKS));
                 return env;
             })
         );
+        await waitForPromiseCompletion();
 
-        return delay(() => {
-            expect(mock.cmp.element.querySelector('.coveo-title').innerHTML).toMatch(customTitle);
-        });
+        expect(mock.cmp.element.querySelector('.coveo-title').innerHTML).toMatch(customTitle);
     });
 
-    it('should show 4 documents by default', () => {
+    it('should show 4 documents by default', async () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(TEST_CLICKS));
                 return env;
             })
         );
+        await waitForPromiseCompletion();
 
-        return delay(() => {
-            const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
+        const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
 
-            expect(list.childElementCount).toBe(4);
-        });
+        expect(list.childElementCount).toBe(4);
     });
 
-    it('should show a number of documents equal to the "numberOfItems" option', () => {
+    it('should show a number of documents equal to the "numberOfItems" option', async () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(TEST_CLICKS));
                 return env;
             })
         );
+        await waitForPromiseCompletion();
 
-        return delay(() => {
-            const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
+        const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
 
-            expect(list.childElementCount).toBe(10);
-        });
+        expect(list.childElementCount).toBe(10);
     });
 
-    it('should display an icon beside every list item', () => {
+    it('should display an icon beside every list item', async () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', numberOfItems: 10 }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(TEST_CLICKS));
                 return env;
             })
         );
+        await waitForPromiseCompletion();
 
-        return delay(() => {
-            const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
+        const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
 
-            for (let i = 0; i < 4; i++) {
-                const icon = list.children.item(i).querySelector<HTMLElement>('svg');
-                expect(icon).toBeDefined;
-            }
-        });
+        for (let i = 0; i < 4; i++) {
+            const icon = list.children.item(i).querySelector<HTMLElement>('svg');
+            expect(icon).toBeDefined;
+        }
     });
 
-    it('should show all documents when expanded', () => {
+    it('should show all documents when expanded', async () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(TEST_CLICKS));
                 return env;
             })
         );
+        await waitForPromiseCompletion();
 
-        return delay(() => {
-            const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
-            const button = mock.env.element.querySelector<HTMLButtonElement>('.coveo-more-less');
-            button.click();
+        const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
+        const button = mock.env.element.querySelector<HTMLButtonElement>('.coveo-more-less');
+        button.click();
 
-            return delay(() => {
-                expect(list.childElementCount).toBe(TEST_CLICKS.length);
-            });
-        });
+        await waitForPromiseCompletion();
+
+        expect(list.childElementCount).toBe(TEST_CLICKS.length);
     });
 
-    it('should not show the same query twice', () => {
+    it('should not show the same query twice', async () => {
         // Setup.
         const createComponentInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
@@ -176,80 +169,78 @@ describe('ClickedDocumentList', () => {
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(CLICK_EVENTS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(CLICK_EVENTS));
                 return env;
             })
         );
+        await waitForPromiseCompletion();
 
         // Validation.
-        return delay(() => {
-            const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
-            expect(list.childElementCount).toBe(SORTED_AND_TRIMMED_CLICK_EVENTS.length);
+        const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
+        expect(list.childElementCount).toBe(SORTED_AND_TRIMMED_CLICK_EVENTS.length);
 
-            // Check that the order is respected.
-            list.childNodes.forEach((node: HTMLElement, i) => {
-                expect(node.innerHTML).toMatch('CoveoResultLink');
-                expect(createComponentInsideStub.calledWith(node.firstChild as HTMLElement, SORTED_AND_TRIMMED_CLICK_EVENTS[i].document)).toBe(true);
-            });
+        // Check that the order is respected.
+        list.childNodes.forEach((node: HTMLElement, i) => {
+            expect(node.innerHTML).toMatch('CoveoResultLink');
+            expect(createComponentInsideStub.calledWith(node.firstChild as HTMLElement, SORTED_AND_TRIMMED_CLICK_EVENTS[i].document)).toBe(true);
         });
     });
 
-    it('should render the a list of document clicked by a user as a list of ResultLink and put the most recent document click on top', () => {
+    it('should render the a list of document clicked by a user as a list of ResultLink and put the most recent document click on top', async () => {
         const createComponentInside = sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(TEST_CLICKS));
                 return env;
             })
         );
+        await waitForPromiseCompletion();
 
         const sortedClick = TEST_CLICKS.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()).reverse();
 
-        return delay(() => {
-            const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
+        const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
 
-            list.childNodes.forEach((node: HTMLElement, i) => {
-                expect(node.innerHTML).toMatch('CoveoResultLink');
-                expect(createComponentInside.calledWith(node.firstChild as HTMLElement, sortedClick[i].document)).toBe(true);
-            });
+        list.childNodes.forEach((node: HTMLElement, i) => {
+            expect(node.innerHTML).toMatch('CoveoResultLink');
+            expect(createComponentInside.calledWith(node.firstChild as HTMLElement, sortedClick[i].document)).toBe(true);
         });
     });
 
-    it('should fetch the list of document clicked by a user from the model', () => {
+    it('should fetch the list of document clicked by a user from the model', async () => {
         let model = sandbox.createStubInstance(UserProfileModel);
 
         Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 model = fakeUserProfileModel(env.root, sandbox);
-                model.getActions.returns(Promise.resolve(TEST_CLICKS));
+                model.getActions.callsFake(() => Promise.resolve(TEST_CLICKS));
                 return env;
             })
         );
+        await waitForPromiseCompletion();
 
         expect(model.getActions.called).toBe(true);
     });
 
-    it("should log an error message when the component can't fetch the list of document clicked by a user from the model", () => {
+    it("should log an error message when the component can't fetch the list of document clicked by a user from the model", async () => {
         const errorLoggerStub = sandbox.stub(Logger.prototype, 'error');
 
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.reject());
                 return env;
             })
         );
+        await waitForPromiseCompletion();
 
-        return delay(() => {
-            expect(mock.cmp.element.childElementCount).toBe(0);
-            expect(errorLoggerStub.called).toBe(true);
-        });
+        expect(mock.cmp.element.childElementCount).toBe(0);
+        expect(errorLoggerStub.called).toBe(true);
     });
 
-    it('Should disable itself when the userId is falsey', () => {
+    it('Should disable itself when the userId is falsey', async () => {
         let getActionStub: SinonStub<[HTMLElement, ClickedDocumentList], void>;
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
@@ -258,13 +249,13 @@ describe('ClickedDocumentList', () => {
                 return env;
             })
         );
-        return delay(() => {
-            expect(getActionStub.called).toBe(false);
-            expect(mock.cmp.disabled).toBe(true);
-        });
+        await waitForPromiseCompletion();
+
+        expect(getActionStub.called).toBe(false);
+        expect(mock.cmp.disabled).toBe(true);
     });
 
-    it('Should disable itself when the userId is empty string', () => {
+    it('Should disable itself when the userId is empty string', async () => {
         let getActionStub: SinonStub<[HTMLElement, ClickedDocumentList], void>;
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
             ClickedDocumentList,
@@ -273,16 +264,16 @@ describe('ClickedDocumentList', () => {
                 return env;
             })
         );
-        return delay(() => {
-            expect(getActionStub.called).toBe(false);
-            expect(mock.cmp.disabled).toBe(true);
-        });
+        await waitForPromiseCompletion();
+
+        expect(getActionStub.called).toBe(false);
+        expect(mock.cmp.disabled).toBe(true);
     });
 
     describe('template', () => {
-        it('should use the given template in options', () => {
+        it('should use the given template in options', async () => {
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
-            const instantiateToElementStub = sandbox.stub().returns(Promise.resolve(document.createElement('div')));
+            const instantiateToElementStub = sandbox.stub().callsFake(() => Promise.resolve(document.createElement('div')));
 
             Mock.advancedComponentSetup<ClickedDocumentList>(
                 ClickedDocumentList,
@@ -297,19 +288,18 @@ describe('ClickedDocumentList', () => {
                         },
                     },
                     (env) => {
-                        fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(TEST_CLICKS));
+                        fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(TEST_CLICKS));
                         return env;
                     }
                 )
             );
+            await waitForPromiseCompletion();
 
             const sortedClick = TEST_CLICKS.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()).reverse();
 
-            return delay(() => {
-                expect(instantiateToElementStub.callCount).toBe(TEST_CLICKS.length);
-                sortedClick.forEach((userAction, i) => {
-                    expect(instantiateToElementStub.args[i][0]).toBe(userAction.document);
-                });
+            expect(instantiateToElementStub.callCount).toBe(TEST_CLICKS.length);
+            sortedClick.forEach((userAction, i) => {
+                expect(instantiateToElementStub.args[i][0]).toBe(userAction.document);
             });
         });
     });

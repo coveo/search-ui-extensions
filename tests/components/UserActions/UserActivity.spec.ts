@@ -3,8 +3,9 @@ import { UserAction } from '../../../src/models/UserProfileModel';
 import { Mock, Fake } from 'coveo-search-ui-tests';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 import { UserActivity } from '../../../src/Index';
-import { delay, fakeUserProfileModel } from '../../utils';
+import { fakeUserProfileModel } from '../../utils';
 import { formatDate, formatTime, formatDateAndTime, formatDateAndTimeShort, formatTimeInterval } from '../../../src/utils/time';
+
 describe('UserActivity', () => {
     const TEST_DATE_STRING = 'December 17, 1995 1:00:00 AM';
     const ACTIVITY_SELECTOR = '.coveo-activity';
@@ -89,17 +90,22 @@ describe('UserActivity', () => {
         }),
     ];
 
-    const getMockComponent = (returnedActions: UserAction | UserAction[]) => {
-        return Mock.advancedComponentSetup<UserActivity>(
+    const getMockComponent = async (returnedActions: UserAction | UserAction[], element = document.createElement('div')) => {
+        const mock = Mock.advancedComponentSetup<UserActivity>(
             UserActivity,
-            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(returnedActions));
+            new Mock.AdvancedComponentSetupOptions(element, { userId: 'testuserId' }, (env) => {
+                env.element = element;
+                getActionsPromise = Promise.resolve(returnedActions);
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => getActionsPromise);
                 return env;
             })
         );
+        await getActionsPromise;
+        return mock;
     };
 
     let sandbox: SinonSandbox;
+    let getActionsPromise: Promise<any>;
 
     beforeAll(() => {
         sandbox = createSandbox();
@@ -109,77 +115,65 @@ describe('UserActivity', () => {
         sandbox.restore();
     });
 
-    it('should show the starting date and time of the user action session', () => {
-        const mock = getMockComponent(FAKE_USER_ACTIONS);
+    it('should show the starting date and time of the user action session', async () => {
+        const mock = await getMockComponent(FAKE_USER_ACTIONS);
         const timestamps = FAKE_USER_ACTIONS.map((action) => action.timestamp).sort();
 
-        return delay(() => {
-            const firstAction = timestamps[0];
+        const firstAction = timestamps[0];
 
-            expect(mock.cmp.element.innerHTML).toMatch(formatDate(firstAction));
-            expect(mock.cmp.element.innerHTML).toMatch(formatTime(firstAction));
-        });
+        expect(mock.cmp.element.innerHTML).toMatch(formatDate(firstAction));
+        expect(mock.cmp.element.innerHTML).toMatch(formatTime(firstAction));
     });
 
-    it('should duration of the user action session', () => {
-        const mock = getMockComponent(FAKE_USER_ACTIONS);
+    it('should duration of the user action session', async () => {
+        const mock = await getMockComponent(FAKE_USER_ACTIONS);
         const timestamps = FAKE_USER_ACTIONS.map((action) => action.timestamp).sort();
 
-        return delay(() => {
-            expect(mock.cmp.element.innerHTML).toMatch(formatTimeInterval(timestamps[timestamps.length - 1].getTime() - timestamps[0].getTime()));
+        expect(mock.cmp.element.innerHTML).toMatch(formatTimeInterval(timestamps[timestamps.length - 1].getTime() - timestamps[0].getTime()));
+    });
+
+    it('should fold each actions that are tagged as not meaningful', async () => {
+        const mock = await getMockComponent([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]);
+
+        IRRELEVANT_ACTIONS.forEach((action) => {
+            expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).not.toMatch(action.raw.origin_level_1);
         });
     });
 
-    it('should fold each actions that are tagged as not meaningful', () => {
-        const mock = getMockComponent([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]);
+    it('should show each actions that are tagged as meaningful', async () => {
+        const mock = await getMockComponent([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]);
 
-        return delay(() => {
-            IRRELEVANT_ACTIONS.forEach((action) => {
-                expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).not.toMatch(action.raw.origin_level_1);
-            });
+        FAKE_USER_ACTIONS.forEach((action) => {
+            expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).toMatch(action.raw.origin_level_1);
         });
     });
 
-    it('should show each actions that are tagged as meaningful', () => {
-        const mock = getMockComponent([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]);
+    it('should show all actions when no action are tagged as meaningful', async () => {
+        const mock = await getMockComponent(IRRELEVANT_ACTIONS);
 
-        return delay(() => {
-            FAKE_USER_ACTIONS.forEach((action) => {
-                expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).toMatch(action.raw.origin_level_1);
-            });
-        });
-    });
-
-    it('should show all actions when no action are tagged as meaningful', () => {
-        const mock = getMockComponent(IRRELEVANT_ACTIONS);
-
-        return delay(() => {
-            IRRELEVANT_ACTIONS.forEach((action) => {
-                expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).toMatch(action.raw.origin_level_1);
-            });
+        IRRELEVANT_ACTIONS.forEach((action) => {
+            expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).toMatch(action.raw.origin_level_1);
         });
     });
 
     describe('folded events', () => {
-        it('should unfold on click', () => {
-            const mock = getMockComponent([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]);
+        it('should unfold on click', async () => {
+            const mock = await getMockComponent([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]);
 
-            return delay(() => {
-                const folded = mock.cmp.element.querySelector<HTMLElement>('.coveo-folded');
+            const folded = mock.cmp.element.querySelector<HTMLElement>('.coveo-folded');
 
-                expect(folded).not.toBeNull();
-                folded.click();
-                IRRELEVANT_ACTIONS.forEach((action) => {
-                    expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).toMatch(action.raw.origin_level_1);
-                });
+            expect(folded).not.toBeNull();
+            folded.click();
+            IRRELEVANT_ACTIONS.forEach((action) => {
+                expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).toMatch(action.raw.origin_level_1);
             });
         });
     });
 
     describe('search event', () => {
         ['omniboxAnalytics', 'userActionsSubmit', 'omniboxFromLink', 'searchboxAsYouType', 'searchboxSubmit', 'searchFromLink'].map((cause) => {
-            it(`should display the "User Query" as event title when there is a query expression and the cause is ${cause}`, () => {
-                const mock = getMockComponent([
+            it(`should display the "User Query" as event title when there is a query expression and the cause is ${cause}`, async () => {
+                const mock = await getMockComponent([
                     new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
                         origin_level_1: 'relevant' + Math.random(),
                         query_expression: 'someSearch' + Math.random(),
@@ -187,279 +181,259 @@ describe('UserActivity', () => {
                     }),
                 ]);
 
-                return delay(async () => {
-                    const clickElement = mock.cmp.element.querySelector('.coveo-search');
-
-                    const action = await mock.cmp['userProfileModel'].getActions('');
-
-                    expect(action[0].raw.cause).toBe(cause);
-                    expect(clickElement).not.toBeNull();
-                    expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('User Query');
-                });
-            });
-        });
-
-        it('should display the "Query" as event title', () => {
-            const mock = getMockComponent([FAKE_SEARCH_EVENT]);
-
-            return delay(() => {
                 const clickElement = mock.cmp.element.querySelector('.coveo-search');
 
+                const action = await mock.cmp['userProfileModel'].getActions('');
+
+                expect(action[0].raw.cause).toBe(cause);
                 expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('Query');
+                expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('User Query');
             });
         });
 
-        it('should display the query made by the user as event data', () => {
-            const mock = getMockComponent([FAKE_USER_SEARCH_EVENT]);
+        it('should display the "Query" as event title', async () => {
+            const mock = await getMockComponent([FAKE_SEARCH_EVENT]);
 
-            return delay(() => {
-                const clickElement = mock.cmp.element.querySelector('.coveo-search');
+            const clickElement = mock.cmp.element.querySelector('.coveo-search');
 
-                expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>('.coveo-data').innerText).toBe(FAKE_USER_SEARCH_EVENT.query);
-            });
+            expect(clickElement).not.toBeNull();
+            expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('Query');
         });
 
-        it('should display the time of the event', () => {
-            const mock = getMockComponent([FAKE_SEARCH_EVENT]);
+        it('should display the query made by the user as event data', async () => {
+            const mock = await getMockComponent([FAKE_USER_SEARCH_EVENT]);
 
-            return delay(() => {
-                const searchElement = mock.cmp.element.querySelector('.coveo-search');
+            const clickElement = mock.cmp.element.querySelector('.coveo-search');
 
-                expect(searchElement).not.toBeNull();
-                expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                    formatDateAndTimeShort(FAKE_SEARCH_EVENT.timestamp)
-                );
-            });
+            expect(clickElement).not.toBeNull();
+            expect(clickElement.querySelector<HTMLElement>('.coveo-data').innerText).toBe(FAKE_USER_SEARCH_EVENT.query);
         });
 
-        it('should display the time of the event in long format if in a wider interface', () => {
-            const mock = getMockComponent([FAKE_SEARCH_EVENT]);
+        it('should display the time of the event', async () => {
+            const mock = await getMockComponent([FAKE_SEARCH_EVENT]);
 
-            Object.defineProperty(mock.cmp.element, 'offsetWidth', { value: 500 });
+            const searchElement = mock.cmp.element.querySelector('.coveo-search');
 
-            return delay(() => {
-                const searchElement = mock.cmp.element.querySelector('.coveo-search');
-
-                expect(searchElement).not.toBeNull();
-                expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                    formatDateAndTime(FAKE_SEARCH_EVENT.timestamp)
-                );
-            });
+            expect(searchElement).not.toBeNull();
+            expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
+                formatDateAndTimeShort(FAKE_SEARCH_EVENT.timestamp)
+            );
         });
 
-        it('should display the originLevel1 as event footer', () => {
-            const mock = getMockComponent([FAKE_SEARCH_EVENT]);
-
-            return delay(() => {
-                const clickElement = mock.cmp.element.querySelector('.coveo-search');
-
-                expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(FAKE_SEARCH_EVENT.raw.origin_level_1);
+        it('should display the time of the event in long format if in a wider interface', async () => {
+            const element = document.createElement('div');
+            Object.defineProperties(element, {
+                offsetWidth: {
+                    get() {
+                        return '500';
+                    },
+                },
             });
+
+            const mock = await getMockComponent([FAKE_SEARCH_EVENT], element);
+
+            const searchElement = mock.cmp.element.querySelector('.coveo-search');
+            expect(searchElement).not.toBeNull();
+            expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
+                formatDateAndTime(FAKE_SEARCH_EVENT.timestamp)
+            );
+        });
+
+        it('should display the originLevel1 as event footer', async () => {
+            const mock = await getMockComponent([FAKE_SEARCH_EVENT]);
+
+            const clickElement = mock.cmp.element.querySelector('.coveo-search');
+
+            expect(clickElement).not.toBeNull();
+            expect(clickElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(FAKE_SEARCH_EVENT.raw.origin_level_1);
         });
     });
 
     describe('click event', () => {
-        it('should display the "Clicked Document" as event title', () => {
-            const mock = getMockComponent([FAKE_CLICK_EVENT]);
+        it('should display the "Clicked Document" as event title', async () => {
+            const mock = await getMockComponent([FAKE_CLICK_EVENT]);
 
-            return delay(() => {
-                const clickElement = mock.cmp.element.querySelector('.coveo-click');
+            const clickElement = mock.cmp.element.querySelector('.coveo-click');
 
-                expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('Clicked Document');
-            });
+            expect(clickElement).not.toBeNull();
+            expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('Clicked Document');
         });
 
-        it('should display a link to the clicked document as event data', () => {
-            const mock = getMockComponent([FAKE_CLICK_EVENT]);
+        it('should display a link to the clicked document as event data', async () => {
+            const mock = await getMockComponent([FAKE_CLICK_EVENT]);
 
-            return delay(() => {
-                const clickElement = mock.cmp.element.querySelector('.coveo-click');
+            const clickElement = mock.cmp.element.querySelector('.coveo-click');
 
-                expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLAnchorElement>('.coveo-data') instanceof HTMLAnchorElement).toBe(true);
-                expect(clickElement.querySelector<HTMLAnchorElement>('.coveo-data').innerText).toBe(FAKE_CLICK_EVENT.document.title);
-                expect(clickElement.querySelector<HTMLAnchorElement>('.coveo-data').href).toMatch(FAKE_CLICK_EVENT.document.clickUri);
-            });
+            expect(clickElement).not.toBeNull();
+            expect(clickElement.querySelector<HTMLAnchorElement>('.coveo-data') instanceof HTMLAnchorElement).toBe(true);
+            expect(clickElement.querySelector<HTMLAnchorElement>('.coveo-data').innerText).toBe(FAKE_CLICK_EVENT.document.title);
+            expect(clickElement.querySelector<HTMLAnchorElement>('.coveo-data').href).toMatch(FAKE_CLICK_EVENT.document.clickUri);
         });
-        it('should display the time of the event', () => {
-            const mock = getMockComponent([FAKE_CLICK_EVENT]);
+        it('should display the time of the event', async () => {
+            const mock = await getMockComponent([FAKE_CLICK_EVENT]);
 
-            return delay(() => {
-                const clickElement = mock.cmp.element.querySelector('.coveo-click');
+            const clickElement = mock.cmp.element.querySelector('.coveo-click');
 
-                expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                    formatDateAndTimeShort(FAKE_CLICK_EVENT.timestamp)
-                );
-            });
+            expect(clickElement).not.toBeNull();
+            expect(clickElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
+                formatDateAndTimeShort(FAKE_CLICK_EVENT.timestamp)
+            );
         });
 
-        it('should display the time of the event in long format if in a wider interface', () => {
-            const mock = getMockComponent([FAKE_CLICK_EVENT]);
-
-            Object.defineProperty(mock.cmp.element, 'offsetWidth', { value: 500 });
-
-            return delay(() => {
-                const searchElement = mock.cmp.element.querySelector('.coveo-click');
-
-                expect(searchElement).not.toBeNull();
-                expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                    formatDateAndTime(FAKE_CLICK_EVENT.timestamp)
-                );
+        it('should display the time of the event in long format if in a wider interface', async () => {
+            const element = document.createElement('div');
+            Object.defineProperties(element, {
+                offsetWidth: {
+                    get() {
+                        return '500';
+                    },
+                },
             });
+
+            const mock = await getMockComponent([FAKE_CLICK_EVENT], element);
+
+            const searchElement = mock.cmp.element.querySelector('.coveo-click');
+            expect(searchElement).not.toBeNull();
+            expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
+                formatDateAndTime(FAKE_CLICK_EVENT.timestamp)
+            );
         });
 
-        it('should display the originLevel1 as event footer', () => {
-            const mock = getMockComponent([FAKE_CLICK_EVENT]);
+        it('should display the originLevel1 as event footer', async () => {
+            const mock = await getMockComponent([FAKE_CLICK_EVENT]);
 
-            return delay(() => {
-                const clickElement = mock.cmp.element.querySelector('.coveo-click');
+            const clickElement = mock.cmp.element.querySelector('.coveo-click');
 
-                expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(FAKE_CLICK_EVENT.raw.origin_level_1);
-            });
+            expect(clickElement).not.toBeNull();
+            expect(clickElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(FAKE_CLICK_EVENT.raw.origin_level_1);
         });
     });
 
     describe('page view event', () => {
-        it('should display the "Page View" as event title', () => {
-            const mock = getMockComponent([FAKE_VIEW_EVENT]);
+        it('should display the "Page View" as event title', async () => {
+            const mock = await getMockComponent([FAKE_VIEW_EVENT]);
 
-            return delay(() => {
-                const viewElement = mock.cmp.element.querySelector('.coveo-view');
+            const viewElement = mock.cmp.element.querySelector('.coveo-view');
 
-                expect(viewElement).not.toBeNull();
-                expect(viewElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('Page View');
-            });
+            expect(viewElement).not.toBeNull();
+            expect(viewElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('Page View');
         });
 
-        it('should display the content id key and value as event data', () => {
-            const mock = getMockComponent([FAKE_VIEW_EVENT]);
+        it('should display the content id key and value as event data', async () => {
+            const mock = await getMockComponent([FAKE_VIEW_EVENT]);
 
-            return delay(() => {
-                const viewElement = mock.cmp.element.querySelector('.coveo-view');
+            const viewElement = mock.cmp.element.querySelector('.coveo-view');
 
-                expect(viewElement).not.toBeNull();
-                expect(viewElement.querySelector<HTMLElement>('.coveo-data').innerText).toMatch(FAKE_VIEW_EVENT.raw.content_id_key);
-                expect(viewElement.querySelector<HTMLElement>('.coveo-data').innerText).toMatch(FAKE_VIEW_EVENT.raw.content_id_value);
-            });
+            expect(viewElement).not.toBeNull();
+            expect(viewElement.querySelector<HTMLElement>('.coveo-data').innerText).toMatch(FAKE_VIEW_EVENT.raw.content_id_key);
+            expect(viewElement.querySelector<HTMLElement>('.coveo-data').innerText).toMatch(FAKE_VIEW_EVENT.raw.content_id_value);
         });
 
-        it('should display the time of the event', () => {
-            const mock = getMockComponent([FAKE_VIEW_EVENT]);
+        it('should display the time of the event', async () => {
+            const mock = await getMockComponent([FAKE_VIEW_EVENT]);
 
-            return delay(() => {
-                const viewElement = mock.cmp.element.querySelector('.coveo-view');
+            const viewElement = mock.cmp.element.querySelector('.coveo-view');
 
-                expect(viewElement).not.toBeNull();
-                expect(viewElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                    formatDateAndTimeShort(FAKE_VIEW_EVENT.timestamp)
-                );
-            });
+            expect(viewElement).not.toBeNull();
+            expect(viewElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
+                formatDateAndTimeShort(FAKE_VIEW_EVENT.timestamp)
+            );
         });
 
-        it('should display the time of the event in long format if in a wider interface', () => {
-            const mock = getMockComponent([FAKE_VIEW_EVENT]);
-
-            Object.defineProperty(mock.cmp.element, 'offsetWidth', { value: 500 });
-
-            return delay(() => {
-                const searchElement = mock.cmp.element.querySelector('.coveo-view');
-
-                expect(searchElement).not.toBeNull();
-                expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                    formatDateAndTime(FAKE_VIEW_EVENT.timestamp)
-                );
+        it('should display the time of the event in long format if in a wider interface', async () => {
+            const element = document.createElement('div');
+            Object.defineProperties(element, {
+                offsetWidth: {
+                    get() {
+                        return '500';
+                    },
+                },
             });
+
+            const mock = await getMockComponent([FAKE_VIEW_EVENT], element);
+
+            const searchElement = mock.cmp.element.querySelector('.coveo-view');
+            expect(searchElement).not.toBeNull();
+            expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
+                formatDateAndTime(FAKE_VIEW_EVENT.timestamp)
+            );
         });
 
-        it('should display the originLevel1 as event footer', () => {
-            const mock = getMockComponent([FAKE_VIEW_EVENT]);
+        it('should display the originLevel1 as event footer', async () => {
+            const mock = await getMockComponent([FAKE_VIEW_EVENT]);
 
-            return delay(() => {
-                const viewElement = mock.cmp.element.querySelector('.coveo-view');
+            const viewElement = mock.cmp.element.querySelector('.coveo-view');
 
-                expect(viewElement).not.toBeNull();
-                expect(viewElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(FAKE_VIEW_EVENT.raw.origin_level_1);
-            });
+            expect(viewElement).not.toBeNull();
+            expect(viewElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(FAKE_VIEW_EVENT.raw.origin_level_1);
         });
     });
 
     describe('custom event', () => {
-        it('should display the event type as event title', () => {
-            const mock = getMockComponent([FAKE_CUSTOM_EVENT]);
+        it('should display the event type as event title', async () => {
+            const mock = await getMockComponent([FAKE_CUSTOM_EVENT]);
 
-            return delay(() => {
-                const clickElement = mock.cmp.element.querySelector('.coveo-custom');
+            const clickElement = mock.cmp.element.querySelector('.coveo-custom');
 
-                expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe(FAKE_CUSTOM_EVENT.raw.event_type);
-            });
+            expect(clickElement).not.toBeNull();
+            expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe(FAKE_CUSTOM_EVENT.raw.event_type);
         });
 
-        it('should display "Custom Action" as event title when the event type is unavailable', () => {
-            const mock = getMockComponent([FAKE_CUSTOM_EVENT_WITHOUT_TYPE]);
+        it('should display "Custom Action" as event title when the event type is unavailable', async () => {
+            const mock = await getMockComponent([FAKE_CUSTOM_EVENT_WITHOUT_TYPE]);
 
-            return delay(() => {
-                const clickElement = mock.cmp.element.querySelector('.coveo-custom');
+            const clickElement = mock.cmp.element.querySelector('.coveo-custom');
 
-                expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('Custom Action');
-            });
+            expect(clickElement).not.toBeNull();
+            expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('Custom Action');
         });
 
-        it('should display the event value as event data', () => {
-            const mock = getMockComponent([FAKE_CUSTOM_EVENT]);
+        it('should display the event value as event data', async () => {
+            const mock = await getMockComponent([FAKE_CUSTOM_EVENT]);
 
-            return delay(() => {
-                const clickElement = mock.cmp.element.querySelector('.coveo-custom');
+            const clickElement = mock.cmp.element.querySelector('.coveo-custom');
 
-                expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>('.coveo-data').innerText).toBe(FAKE_CUSTOM_EVENT.raw.event_value);
-            });
+            expect(clickElement).not.toBeNull();
+            expect(clickElement.querySelector<HTMLElement>('.coveo-data').innerText).toBe(FAKE_CUSTOM_EVENT.raw.event_value);
         });
 
-        it('should display the time of the event', () => {
-            const mock = getMockComponent([FAKE_CUSTOM_EVENT]);
+        it('should display the time of the event', async () => {
+            const mock = await getMockComponent([FAKE_CUSTOM_EVENT]);
 
-            return delay(() => {
-                const clickElement = mock.cmp.element.querySelector('.coveo-custom');
+            const clickElement = mock.cmp.element.querySelector('.coveo-custom');
 
-                expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                    formatDateAndTimeShort(FAKE_CUSTOM_EVENT.timestamp)
-                );
-            });
+            expect(clickElement).not.toBeNull();
+            expect(clickElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
+                formatDateAndTimeShort(FAKE_CUSTOM_EVENT.timestamp)
+            );
         });
 
-        it('should display the time of the event in long format if in a wider interface', () => {
-            const mock = getMockComponent([FAKE_CUSTOM_EVENT]);
-
-            Object.defineProperty(mock.cmp.element, 'offsetWidth', { value: 500 });
-
-            return delay(() => {
-                const searchElement = mock.cmp.element.querySelector('.coveo-custom');
-
-                expect(searchElement).not.toBeNull();
-                expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                    formatDateAndTime(FAKE_CUSTOM_EVENT.timestamp)
-                );
+        it('should display the time of the event in long format if in a wider interface', async () => {
+            const element = document.createElement('div');
+            Object.defineProperties(element, {
+                offsetWidth: {
+                    get() {
+                        return '500';
+                    },
+                },
             });
+
+            const mock = await getMockComponent([FAKE_CUSTOM_EVENT], element);
+
+            const searchElement = mock.cmp.element.querySelector('.coveo-custom');
+            expect(searchElement).not.toBeNull();
+            expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
+                formatDateAndTime(FAKE_CUSTOM_EVENT.timestamp)
+            );
         });
 
-        it('should display the originLevel1 as event footer', () => {
-            const mock = getMockComponent([FAKE_CUSTOM_EVENT]);
+        it('should display the originLevel1 as event footer', async () => {
+            const mock = await getMockComponent([FAKE_CUSTOM_EVENT]);
 
-            return delay(() => {
-                const clickElement = mock.cmp.element.querySelector('.coveo-custom');
+            const clickElement = mock.cmp.element.querySelector('.coveo-custom');
 
-                expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(FAKE_CUSTOM_EVENT.raw.origin_level_1);
-            });
+            expect(clickElement).not.toBeNull();
+            expect(clickElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(FAKE_CUSTOM_EVENT.raw.origin_level_1);
         });
 
         it('Should disable itself when the userId is falsey', () => {
@@ -471,10 +445,9 @@ describe('UserActivity', () => {
                     return env;
                 })
             );
-            return delay(() => {
-                expect(getActionStub.called).toBe(false);
-                expect(mock.cmp.disabled).toBe(true);
-            });
+
+            expect(getActionStub.called).toBe(false);
+            expect(mock.cmp.disabled).toBe(true);
         });
 
         it('Should disable itself when the userId is empty string', () => {
@@ -486,10 +459,9 @@ describe('UserActivity', () => {
                     return env;
                 })
             );
-            return delay(() => {
-                expect(getActionStub.called).toBe(false);
-                expect(mock.cmp.disabled).toBe(true);
-            });
+
+            expect(getActionStub.called).toBe(false);
+            expect(mock.cmp.disabled).toBe(true);
         });
     });
 });
