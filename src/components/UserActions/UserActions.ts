@@ -157,9 +157,9 @@ export class UserActions extends Component {
      */
     public hide() {
         if (this.isOpened) {
+            this.isOpened = false;
             (get(this.root, UserProfileModel) as UserProfileModel).deleteActions(this.options.userId);
             this.root.classList.remove(UserActions.USER_ACTION_OPENED);
-            this.isOpened = false;
             this.element.dispatchEvent(new CustomEvent(UserActions.Events.Hide));
         }
     }
@@ -169,10 +169,10 @@ export class UserActions extends Component {
      */
     public async show() {
         if (!this.isOpened) {
+            this.isOpened = true;
             this.element.dispatchEvent(new CustomEvent(UserActions.Events.Show));
             this.bindings.usageAnalytics.logCustomEvent({ name: 'openUserActions', type: 'User Actions' }, {}, this.element);
             this.root.classList.add(UserActions.USER_ACTION_OPENED);
-            this.isOpened = true;
 
             try {
                 const userActions = await (get(this.root, UserProfileModel) as UserProfileModel).getActions(this.options.userId);
