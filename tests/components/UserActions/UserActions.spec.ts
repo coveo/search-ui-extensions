@@ -184,7 +184,7 @@ describe('UserActions', () => {
         expect(detailSection.querySelector('.CoveoUserActivity')).not.toBeNull();
     });
 
-    it('should pass the user id option to each of it sub components', async () => {
+    it('should pass the user id option to each of its sub components', async () => {
         const FAKE_USER_ID = 'someUserId' + Math.random();
 
         const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
@@ -450,7 +450,7 @@ describe('UserActions', () => {
             const spyDispatchEvent = sandbox.spy(mock.cmp.element, 'dispatchEvent');
             await mock.cmp.show();
 
-            expect(spyDispatchEvent.calledOnce);
+            expect(spyDispatchEvent.calledOnce).toBeTrue();
             expect(spyDispatchEvent.firstCall.args.length).toBe(1);
             expect(spyDispatchEvent.firstCall.args[0].type).toBe('userActionsPanelShow');
         });
@@ -514,7 +514,7 @@ describe('UserActions', () => {
 
             mock.cmp.hide();
 
-            expect(spyDispatchEvent.calledOnce);
+            expect(spyDispatchEvent.calledOnce).toBeTrue();
             expect(spyDispatchEvent.firstCall.args.length).toBe(1);
             expect(spyDispatchEvent.firstCall.args[0].type).toBe('userActionsPanelHide');
         });

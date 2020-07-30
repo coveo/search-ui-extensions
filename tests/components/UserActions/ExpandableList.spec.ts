@@ -1,5 +1,5 @@
 import { ExpandableList, IExpandableListOptions } from '../../../src/components/UserActions/ExpandableList';
-import { generate, delay } from '../../utils';
+import { generate, delay, waitForPromiseCompletion } from '../../utils';
 
 describe('ExpandableList', () => {
     const TEST_ITEM_LIST = generate(50, () => `test${Math.random()}`);
@@ -104,12 +104,12 @@ describe('ExpandableList', () => {
             const el = list.element.querySelector<HTMLElement>('.coveo-more-less');
             el.click();
 
-            delay(() => {
-                const listElement = list.element.querySelector<HTMLOListElement>('.coveo-list');
+            await waitForPromiseCompletion();
 
-                expect(el.innerText).toBe('Show Less');
-                expect(listElement.childElementCount).toBe(list.options.maximumItemsShown);
-            });
+            const listElement = list.element.querySelector<HTMLOListElement>('.coveo-list');
+
+            expect(el.innerText).toBe('Show Less');
+            expect(listElement.childElementCount).toBe(list.options.maximumItemsShown);
         });
 
         it('should show less items when the text of the button is "Show Less" and change the button text to "Show More"', async () => {
