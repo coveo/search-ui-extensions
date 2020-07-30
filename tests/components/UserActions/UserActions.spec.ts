@@ -3,7 +3,7 @@ import { UserActions } from '../../../src/components/UserActions/UserActions';
 import { Logger, Initialization, QueryEvents, ResultListEvents, IQueryResult, l } from 'coveo-search-ui';
 import { createSandbox, SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
 import { UserAction, UserProfileModel } from '../../../src/models/UserProfileModel';
-import { delay, fakeUserProfileModel } from '../../utils';
+import { fakeUserProfileModel } from '../../utils';
 import { ClickedDocumentList, QueryList, UserActivity } from '../../../src/Index';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 import { ResponsiveUserActions } from '../../../src/components/UserActions/ResponsiveUserActions';
@@ -63,15 +63,14 @@ describe('UserActions', () => {
             UserActions,
             new Mock.AdvancedComponentSetupOptions(null, { userId: '' }, (env) => {
                 getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
+                getActionStub.callsFake(() => Promise.resolve());
                 return env;
             })
         );
 
-        return delay(() => {
-            expect(getActionStub.called).toBe(false);
-            expect(responsiveComponentStub.called).toBe(false);
-            expect(mock.cmp.disabled).toBe(true);
-        });
+        expect(getActionStub.called).toBe(false);
+        expect(responsiveComponentStub.called).toBe(false);
+        expect(mock.cmp.disabled).toBe(true);
     });
 
     it('should not be displayed if hidden option is true', () => {
@@ -81,15 +80,13 @@ describe('UserActions', () => {
         Mock.advancedComponentSetup<UserActions>(
             UserActions,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', hidden: true }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(ACTIONS));
                 return env;
             })
         );
 
-        return delay(() => {
-            expect(hideSpy.called).toBe(false);
-            expect(responsiveComponentStub.called).toBe(false);
-        });
+        expect(hideSpy.called).toBe(false);
+        expect(responsiveComponentStub.called).toBe(false);
     });
 
     it('should register to the ResponsiveComponentManager by default', () => {
@@ -98,14 +95,12 @@ describe('UserActions', () => {
         Mock.advancedComponentSetup<UserActions>(
             UserActions,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(ACTIONS));
                 return env;
             })
         );
 
-        return delay(() => {
-            expect(responsiveComponentStub.called).toBe(true);
-        });
+        expect(responsiveComponentStub.called).toBe(true);
     });
 
     it('should not register to the ResponsiveComponentManager when useResponsiveManager is false', () => {
@@ -114,14 +109,12 @@ describe('UserActions', () => {
         Mock.advancedComponentSetup<UserActions>(
             UserActions,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId', useResponsiveManager: false }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(ACTIONS));
                 return env;
             })
         );
 
-        return delay(() => {
-            expect(responsiveComponentStub.called).toBe(false);
-        });
+        expect(responsiveComponentStub.called).toBe(false);
     });
 
     it('should be collapsed by defaut', () => {
@@ -130,99 +123,89 @@ describe('UserActions', () => {
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(ACTIONS));
                 return env;
             })
         );
 
-        return delay(() => {
-            expect(mock.cmp.element.classList).not.toContain('coveo-user-actions-opened');
-        });
+        expect(mock.cmp.element.classList).not.toContain('coveo-user-actions-opened');
     });
 
-    it('should show a panel that has as title "Session Summary"', () => {
+    it('should show a panel that has as title "Session Summary"', async () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(ACTIONS));
                 return env;
             })
         );
-        mock.cmp.show();
+        await mock.cmp.show();
 
-        return delay(() => {
-            expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-summary .coveo-accordion-header-title').innerText).toBe('Session Summary');
-        });
+        expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-summary .coveo-accordion-header-title').innerText).toBe('Session Summary');
     });
 
-    it('should show a summary section that have a ClickedDocumentList and a Queries component', () => {
+    it('should show a summary section that have a ClickedDocumentList and a Queries component', async () => {
         const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(ACTIONS));
                 return env;
             })
         );
-        mock.cmp.show();
+        await mock.cmp.show();
 
-        return delay(() => {
-            const summarySection = mock.cmp.element.querySelector('.coveo-summary');
+        const summarySection = mock.cmp.element.querySelector('.coveo-summary');
 
-            expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
-            expect(summarySection.querySelector(`.Coveo${ClickedDocumentList.ID}`)).not.toBeNull();
-            expect(summarySection.querySelector(`.Coveo${QueryList.ID}`)).not.toBeNull();
-        });
+        expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
+        expect(summarySection.querySelector(`.Coveo${ClickedDocumentList.ID}`)).not.toBeNull();
+        expect(summarySection.querySelector(`.Coveo${QueryList.ID}`)).not.toBeNull();
     });
 
-    it('should show a user activity section that have a UserActivity component', () => {
+    it('should show a user activity section that have a UserActivity component', async () => {
         const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(ACTIONS));
                 return env;
             })
         );
-        mock.cmp.show();
+        await mock.cmp.show();
 
-        return delay(() => {
-            const detailSection = mock.cmp.element.querySelector('.coveo-details');
+        const detailSection = mock.cmp.element.querySelector('.coveo-details');
 
-            expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
-            expect(detailSection.querySelector<HTMLElement>('.coveo-accordion-header-title').innerText).toBe("User's Recent Activity");
-            expect(detailSection.querySelector('.CoveoUserActivity')).not.toBeNull();
-        });
+        expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
+        expect(detailSection.querySelector<HTMLElement>('.coveo-accordion-header-title').innerText).toBe("User's Recent Activity");
+        expect(detailSection.querySelector('.CoveoUserActivity')).not.toBeNull();
     });
 
-    it('should pass the user id option to each of it sub components', () => {
+    it('should pass the user id option to each of its sub components', async () => {
         const FAKE_USER_ID = 'someUserId' + Math.random();
 
         const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
-        Mock.advancedComponentSetup<UserActions>(
+        await Mock.advancedComponentSetup<UserActions>(
             UserActions,
             new Mock.AdvancedComponentSetupOptions(null, { userId: FAKE_USER_ID }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(ACTIONS));
                 return env;
             })
         ).cmp.show();
 
-        return delay(() => {
-            expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
+        expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
 
-            [ClickedDocumentList.ID, QueryList.ID, UserActivity.ID].forEach((component) => {
-                expect(automaticallyCreateComponentsInsideStub.args[0][1].options[component]).toBeDefined();
-                expect(automaticallyCreateComponentsInsideStub.args[0][1].options[component].userId).toBe(FAKE_USER_ID);
-            });
+        [ClickedDocumentList.ID, QueryList.ID, UserActivity.ID].forEach((component) => {
+            expect(automaticallyCreateComponentsInsideStub.args[0][1].options[component]).toBeDefined();
+            expect(automaticallyCreateComponentsInsideStub.args[0][1].options[component].userId).toBe(FAKE_USER_ID);
         });
     });
 
-    it('should pass custom init options to each of the sub components', () => {
+    it('should pass custom init options to each of the sub components', async () => {
         const FAKE_USER_ID = 'someUserId' + Math.random();
         const initOptions = {
             QueryList: {
@@ -245,191 +228,173 @@ describe('UserActions', () => {
         const component: UserActions = Mock.advancedComponentSetup<UserActions>(
             UserActions,
             new Mock.AdvancedComponentSetupOptions(null, { userId: FAKE_USER_ID }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(ACTIONS));
                 return env;
             })
         ).cmp;
 
         component.searchInterface.options.originalOptionsObject = initOptions;
-        component.show();
+        await component.show();
 
-        return delay(() => {
-            expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
+        expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
 
-            const actualInitOptions = automaticallyCreateComponentsInsideStub.args[0][1].options;
+        const actualInitOptions = automaticallyCreateComponentsInsideStub.args[0][1].options;
 
-            [QueryList.ID, ClickedDocumentList.ID, UserActivity.ID].forEach((component) => {
-                const actualComponentOptions = actualInitOptions[component];
-                expect(actualComponentOptions).toBeDefined();
-                expect(actualComponentOptions).toEqual(jasmine.objectContaining(initOptions[component]));
-            });
+        [QueryList.ID, ClickedDocumentList.ID, UserActivity.ID].forEach((component) => {
+            const actualComponentOptions = actualInitOptions[component];
+            expect(actualComponentOptions).toBeDefined();
+            expect(actualComponentOptions).toEqual(jasmine.objectContaining(initOptions[component]));
         });
     });
 
-    it('should collapse itself whenever a query is made', () => {
+    it('should collapse itself whenever a query is made', async () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
-
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(ACTIONS));
                 return env;
             })
         );
-        mock.cmp.show();
-
         const hideSpy = sandbox.spy(mock.cmp, 'hide');
 
+        await mock.cmp.show();
         mock.env.root.dispatchEvent(new CustomEvent(QueryEvents.newQuery));
 
         expect(hideSpy.called).toBe(true);
     });
 
-    it('should show a message when user actions is not enabled', () => {
+    it('should show a message when user actions is not enabled', async () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject({ statusCode: 404 }));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.reject({ statusCode: 404 }));
                 return env;
             })
         );
-        mock.cmp.show();
+        await mock.cmp.show();
 
-        return delay(() => {
-            expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-enable-prompt')).not.toBeNull();
-            expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-enable-prompt').innerText).toBe(
-                l(`${UserActions.ID}_enable_prompt`).replace('\n', '')
-            );
-        });
+        expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-enable-prompt')).not.toBeNull();
+        expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-enable-prompt').innerText).toBe(
+            l(`${UserActions.ID}_enable_prompt`).replace('\n', '')
+        );
     });
 
-    it('should show a message when no actions are available', () => {
+    it('should show a message when no actions are available', async () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve([]));
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve([]));
                 return env;
             })
         );
-        mock.cmp.show();
+        await mock.cmp.show();
 
-        return delay(() => {
-            expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions')).not.toBeNull();
-            expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions').innerText).toBe(l(`${UserActions.ID}_no_actions`));
-        });
+        expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions')).not.toBeNull();
+        expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions').innerText).toBe(l(`${UserActions.ID}_no_actions`));
     });
 
-    it('should show a message when actions cannot be gathered', () => {
+    it('should show a message when actions cannot be gathered', async () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
         const mock = Mock.advancedComponentSetup<UserActions>(
             UserActions,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.reject());
                 return env;
             })
         );
-        mock.cmp.show();
+        await mock.cmp.show();
 
-        return delay(() => {
-            expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions').innerText).toBe(l(`${UserActions.ID}_no_actions`));
-        });
+        expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions').innerText).toBe(l(`${UserActions.ID}_no_actions`));
     });
 
     describe('when the accordion header is clicked', () => {
-        it('should fold the accordion section when the accordion section is open', () => {
+        it('should fold the accordion section when the accordion section is open', async () => {
             const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                    fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(ACTIONS));
                     return env;
                 })
             );
-            mock.cmp.show();
+            await mock.cmp.show();
 
-            return delay(() => {
-                const accordionSections = mock.cmp.element.querySelectorAll('.coveo-accordion');
-                expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
+            const accordionSections = mock.cmp.element.querySelectorAll('.coveo-accordion');
+            expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
 
-                accordionSections.forEach((el) => {
-                    el.classList.remove('coveo-folded');
-                    el.querySelector<HTMLElement>('.coveo-accordion-header').click();
-                    expect(el.classList).toContain('coveo-folded');
-                });
+            accordionSections.forEach((el) => {
+                el.classList.remove('coveo-folded');
+                el.querySelector<HTMLElement>('.coveo-accordion-header').click();
+                expect(el.classList).toContain('coveo-folded');
             });
         });
 
-        it('should unfold the accordion section when the accordion section is closed', () => {
+        it('should unfold the accordion section when the accordion section is closed', async () => {
             const automaticallyCreateComponentsInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.resolve(ACTIONS));
+                    fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(ACTIONS));
                     return env;
                 })
             );
-            mock.cmp.show();
+            await mock.cmp.show();
 
-            return delay(() => {
-                const accordionSections = mock.cmp.element.querySelectorAll('.coveo-accordion');
+            const accordionSections = mock.cmp.element.querySelectorAll('.coveo-accordion');
 
-                expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
+            expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
 
-                accordionSections.forEach((el) => {
-                    el.classList.add('coveo-folded');
-                    el.querySelector<HTMLElement>('.coveo-accordion-header').click();
-                    expect(el.classList).not.toContain('coveo-folded');
-                });
+            accordionSections.forEach((el) => {
+                el.classList.add('coveo-folded');
+                el.querySelector<HTMLElement>('.coveo-accordion-header').click();
+                expect(el.classList).not.toContain('coveo-folded');
             });
         });
     });
 
     describe('toggle', () => {
-        it('should open the panel if its not already opened', () => {
+        it('should open the panel if its not already opened', async () => {
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                    fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve([]));
                     return env;
                 })
             );
 
             mock.cmp.hide();
 
-            mock.cmp.toggle();
+            await mock.cmp.toggle();
 
-            return delay(() => {
-                expect(mock.cmp.root.className).toMatch('coveo-user-actions-opened');
-            });
+            expect(mock.cmp.root.className).toMatch('coveo-user-actions-opened');
         });
 
-        it('should collapse the panel if the panel is already opened', () => {
+        it('should collapse the panel if the panel is already opened', async () => {
             sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
 
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                    fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve([]));
                     return env;
                 })
             );
 
-            mock.cmp.show();
+            await mock.cmp.show();
 
-            mock.cmp.toggle();
+            await mock.cmp.toggle();
 
-            return delay(() => {
-                expect(mock.cmp.root.className).not.toMatch('coveo-user-actions-opened');
-            });
+            expect(mock.cmp.root.className).not.toMatch('coveo-user-actions-opened');
         });
     });
 
@@ -445,7 +410,7 @@ describe('UserActions', () => {
                 UserActions,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: someUserId }, (env) => {
                     modelMock = fakeUserProfileModel(env.root, sandbox);
-                    modelMock.getActions.returns(new Promise(() => {}));
+                    modelMock.getActions.callsFake(() => Promise.resolve([]));
                     return env;
                 })
             );
@@ -453,45 +418,41 @@ describe('UserActions', () => {
             sandbox.resetHistory();
         });
 
-        it('should open the panel if it is not already opened', () => {
+        it('should open the panel if it is not already opened', async () => {
             mock.cmp.hide();
-            mock.cmp.show();
+            await mock.cmp.show();
 
-            return delay(() => {
-                expect(mock.cmp.root.className).toMatch('coveo-user-actions-opened');
-            });
+            expect(mock.cmp.root.className).toMatch('coveo-user-actions-opened');
         });
 
-        it('should do nothing if the panel is already opened', () => {
-            mock.cmp.show();
+        it('should do nothing if the panel is already opened', async () => {
+            await mock.cmp.show();
 
             const domMutation = sandbox.stub();
             const observer = new MutationObserver(domMutation);
             observer.observe(mock.cmp.element, { childList: true, subtree: true, attributes: true });
 
-            mock.cmp.show();
+            await mock.cmp.show();
 
-            return delay(() => {
-                expect(domMutation.called).toBe(false);
-                expect(mock.cmp.root.className).toMatch('coveo-user-actions-opened');
-            }).finally(() => {
-                observer.disconnect();
-            });
+            expect(domMutation.called).toBe(false);
+            expect(mock.cmp.root.className).toMatch('coveo-user-actions-opened');
+
+            observer.disconnect();
         });
 
-        it('should fetch all user actions', () => {
-            mock.cmp.show();
+        it('should fetch all user actions', async function () {
+            await mock.cmp.show();
 
-            return delay(() => {
-                expect(modelMock.getActions.calledWithExactly(someUserId)).toBe(true);
-            });
+            expect(modelMock.getActions.calledWithExactly(someUserId)).toBe(true);
         });
 
-        it('should trigger a userActionsShow event', () => {
+        it('should trigger a userActionsShow event', async () => {
             const spyDispatchEvent = sandbox.spy(mock.cmp.element, 'dispatchEvent');
-            mock.cmp.show();
+            await mock.cmp.show();
 
-            expect(spyDispatchEvent.calledOnceWith(new CustomEvent('userActionsPanelHide')));
+            expect(spyDispatchEvent.calledOnce).toBeTrue();
+            expect(spyDispatchEvent.firstCall.args.length).toBe(1);
+            expect(spyDispatchEvent.firstCall.args[0].type).toBe('userActionsPanelShow');
         });
     });
 
@@ -507,7 +468,7 @@ describe('UserActions', () => {
                 UserActions,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: someUserId }, (env) => {
                     modelMock = fakeUserProfileModel(env.root, sandbox);
-                    modelMock.getActions.returns(new Promise(() => {}));
+                    modelMock.getActions.callsFake(() => Promise.resolve([]));
                     return env;
                 })
             );
@@ -515,13 +476,11 @@ describe('UserActions', () => {
             sandbox.resetHistory();
         });
 
-        it('should collapse the panel if the panel is opened', () => {
-            mock.cmp.show();
+        it('should collapse the panel if the panel is opened', async () => {
+            await mock.cmp.show();
             mock.cmp.hide();
 
-            return delay(() => {
-                expect(mock.cmp.root.className).not.toMatch('coveo-user-actions-opened');
-            });
+            expect(mock.cmp.root.className).not.toMatch('coveo-user-actions-opened');
         });
 
         it('should do nothing if the panel is not opened', () => {
@@ -535,30 +494,29 @@ describe('UserActions', () => {
             mock.cmp.hide();
 
             // Tests.
-            return delay(() => {
-                expect(domMutation.called).toBe(false);
-                expect(mock.cmp.root.className).not.toMatch('coveo-user-actions-opened');
-            }).finally(() => {
-                observer.disconnect();
-            });
+
+            expect(domMutation.called).toBe(false);
+            expect(mock.cmp.root.className).not.toMatch('coveo-user-actions-opened');
+
+            observer.disconnect();
         });
 
-        it('should remove all user actions', () => {
-            mock.cmp.show();
+        it('should remove all user actions', async () => {
+            await mock.cmp.show();
             mock.cmp.hide();
 
-            return delay(() => {
-                expect(modelMock.deleteActions.calledWithExactly(someUserId)).toBe(true);
-            });
+            expect(modelMock.deleteActions.calledWithExactly(someUserId)).toBe(true);
         });
 
-        it('should trigger a userActionsHide event', () => {
-            mock.cmp.show();
+        it('should trigger a userActionsHide event', async () => {
+            await mock.cmp.show();
             const spyDispatchEvent = sandbox.spy(mock.cmp.element, 'dispatchEvent');
 
             mock.cmp.hide();
 
-            expect(spyDispatchEvent.calledOnceWith(new CustomEvent('userActionsPanelHide')));
+            expect(spyDispatchEvent.calledOnce).toBeTrue();
+            expect(spyDispatchEvent.firstCall.args.length).toBe(1);
+            expect(spyDispatchEvent.firstCall.args[0].type).toBe('userActionsPanelHide');
         });
     });
 
@@ -567,7 +525,7 @@ describe('UserActions', () => {
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId' }, (env) => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                    fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve([]));
                     return env;
                 })
             );
@@ -577,16 +535,14 @@ describe('UserActions', () => {
             const queryArgs = { e: 'error', args: queryData };
             Coveo.$$(mock.env.root).trigger('buildingQuery', queryArgs);
 
-            return delay(() => {
-                expect(queryData.queryBuilder.userActions.tagViewsOfUser).toBe('testUserId');
-            });
+            expect(queryData.queryBuilder.userActions.tagViewsOfUser).toBe('testUserId');
         });
 
         it('should catch error', () => {
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', record: undefined }, (env) => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                    fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve([]));
                     return env;
                 })
             );
@@ -596,9 +552,7 @@ describe('UserActions', () => {
             const queryArgs = { e: 'error', args: queryData };
             Coveo.$$(mock.env.root).trigger('buildingQuery', queryArgs);
 
-            return delay(() => {
-                expect(loggerSpy.called).toBe(true);
-            });
+            expect(loggerSpy.called).toBe(true);
         });
     });
 
@@ -647,7 +601,7 @@ describe('UserActions', () => {
                     UserActions,
                     new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, (env) => {
                         setResultList(env.root, 'card');
-                        fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                        fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve([]));
                         return env;
                     })
                 );
@@ -655,10 +609,8 @@ describe('UserActions', () => {
                 const resultArgs = { result: result, item: resultElementFrame };
                 Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
 
-                return delay(() => {
-                    expect(mock.cmp.options.viewedByCustomer).toBe(true);
-                    expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
-                });
+                expect(mock.cmp.options.viewedByCustomer).toBe(true);
+                expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
             });
 
             it('should add a ViewedByCustomer Component when the result list layout is list', () => {
@@ -666,7 +618,7 @@ describe('UserActions', () => {
                     UserActions,
                     new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, (env) => {
                         setResultList(env.root, 'list');
-                        fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                        fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve([]));
                         return env;
                     })
                 );
@@ -674,10 +626,8 @@ describe('UserActions', () => {
                 const resultArgs = { result: result, item: resultElementFrame };
                 Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
 
-                return delay(() => {
-                    expect(mock.cmp.options.viewedByCustomer).toBe(true);
-                    expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
-                });
+                expect(mock.cmp.options.viewedByCustomer).toBe(true);
+                expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
             });
 
             it('should not add a ViewedByCustomer Component when the result list layout is table', () => {
@@ -685,7 +635,7 @@ describe('UserActions', () => {
                     UserActions,
                     new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, (env) => {
                         setResultList(env.root, 'table');
-                        fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                        fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve([]));
                         return env;
                     })
                 );
@@ -693,17 +643,15 @@ describe('UserActions', () => {
                 const resultArgs = { result: result, item: resultElementFrame };
                 Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
 
-                return delay(() => {
-                    expect(mock.cmp.options.viewedByCustomer).toBe(true);
-                    expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(0);
-                });
+                expect(mock.cmp.options.viewedByCustomer).toBe(true);
+                expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(0);
             });
 
             it('It should not add a viewedByCustomer if one is already there', () => {
                 const mock = Mock.advancedComponentSetup<UserActions>(
                     UserActions,
                     new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, (env) => {
-                        fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                        fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve([]));
                         return env;
                     })
                 );
@@ -713,9 +661,7 @@ describe('UserActions', () => {
                 const resultArgs = { result: result, item: resultElementFrame };
                 Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
 
-                return delay(() => {
-                    expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
-                });
+                expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
             });
         });
 
@@ -728,7 +674,7 @@ describe('UserActions', () => {
                 const mock = Mock.advancedComponentSetup<UserActions>(
                     UserActions,
                     new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, (env) => {
-                        fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                        fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve([]));
                         return env;
                     })
                 );
@@ -736,17 +682,15 @@ describe('UserActions', () => {
                 const resultArgs = { result: result, item: resultElementFrame };
                 Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
 
-                return delay(() => {
-                    expect(mock.cmp.options.viewedByCustomer).toBe(false);
-                    expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(0);
-                });
+                expect(mock.cmp.options.viewedByCustomer).toBe(false);
+                expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(0);
             });
 
             it('It should not add a viewedByCustomer if one is already there', () => {
                 const mock = Mock.advancedComponentSetup<UserActions>(
                     UserActions,
                     new Mock.AdvancedComponentSetupOptions(null, { userId: 'testUserId', viewedByCustomer: viewedByCustomerOption }, (env) => {
-                        fakeUserProfileModel(env.root, sandbox).getActions.returns(new Promise(() => {}));
+                        fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve([]));
                         return env;
                     })
                 );
@@ -758,9 +702,7 @@ describe('UserActions', () => {
                 const resultArgs = { result: result, item: resultElementFrame };
                 Coveo.$$(mock.env.root).trigger(ResultListEvents.newResultDisplayed, resultArgs);
 
-                return delay(() => {
-                    expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
-                });
+                expect(resultElementFrame.getElementsByClassName('CoveoViewedByCustomer').length).toBe(1);
             });
         });
     });

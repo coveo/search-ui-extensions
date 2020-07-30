@@ -136,7 +136,7 @@ describe('UserProfilingModel', () => {
             documentResults.results[0].raw.urihash = TEST_URI_HASH;
 
             const endpoint = sandbox.createStubInstance(SearchEndpoint);
-            endpoint.search.returns(Promise.resolve(documentResults));
+            endpoint.search.callsFake(() => Promise.resolve(documentResults));
 
             const model = new UserProfileModel(document.createElement('div'), {
                 organizationId: TEST_ORGANIZATION,
@@ -168,7 +168,7 @@ describe('UserProfilingModel', () => {
 
         it('should attach no documents on click actions when no document are available to the searching user', async () => {
             const endpoint = sandbox.createStubInstance(SearchEndpoint);
-            endpoint.search.returns(Promise.resolve(Fake.createFakeResults(0)));
+            endpoint.search.callsFake(() => Promise.resolve(Fake.createFakeResults(0)));
 
             const model = new UserProfileModel(document.createElement('div'), {
                 organizationId: TEST_ORGANIZATION,
@@ -191,7 +191,7 @@ describe('UserProfilingModel', () => {
 
         it('should attach no documents on click actions when the search call for documents details fails', async () => {
             const endpoint = sandbox.createStubInstance(SearchEndpoint);
-            endpoint.search.returns(Promise.reject());
+            endpoint.search.callsFake(() => Promise.reject());
 
             const model = new UserProfileModel(document.createElement('div'), {
                 organizationId: TEST_ORGANIZATION,
@@ -214,7 +214,7 @@ describe('UserProfilingModel', () => {
 
         it('should not fetch documents when there is no event with an urihash', async () => {
             const endpoint = sandbox.createStubInstance(SearchEndpoint);
-            endpoint.search.returns(Promise.resolve(Fake.createFakeResults(5)));
+            endpoint.search.callsFake(() => Promise.resolve(Fake.createFakeResults(5)));
 
             const model = new UserProfileModel(document.createElement('div'), {
                 organizationId: TEST_ORGANIZATION,
@@ -237,7 +237,7 @@ describe('UserProfilingModel', () => {
 
         it('should fetch all actions from a user', async () => {
             const endpoint = sandbox.createStubInstance(SearchEndpoint);
-            endpoint.search.returns(Promise.resolve(Fake.createFakeResults(10)));
+            endpoint.search.callsFake(() => Promise.resolve(Fake.createFakeResults(10)));
 
             const model = new UserProfileModel(document.createElement('div'), {
                 organizationId: TEST_ORGANIZATION,
@@ -266,7 +266,7 @@ describe('UserProfilingModel', () => {
         describe('when no actions are present in the model', () => {
             it('should fetch all actions of a user from the backend', async () => {
                 const endpoint = sandbox.createStubInstance(SearchEndpoint);
-                endpoint.search.returns(Promise.resolve(Fake.createFakeResults(10)));
+                endpoint.search.callsFake(() => Promise.resolve(Fake.createFakeResults(10)));
 
                 const model = new UserProfileModel(document.createElement('div'), {
                     organizationId: TEST_ORGANIZATION,
@@ -301,7 +301,7 @@ describe('UserProfilingModel', () => {
 
             it('should fetch all actions of a user from the backend only once', async () => {
                 const endpoint = sandbox.createStubInstance(SearchEndpoint);
-                endpoint.search.returns(Promise.resolve(Fake.createFakeResults(10)));
+                endpoint.search.callsFake(() => Promise.resolve(Fake.createFakeResults(10)));
 
                 const model = new UserProfileModel(document.createElement('div'), {
                     organizationId: TEST_ORGANIZATION,
@@ -339,7 +339,7 @@ describe('UserProfilingModel', () => {
 
             it('should fetch all actions of a user from the backend even when the search call for document details fails', async () => {
                 const endpoint = sandbox.createStubInstance(SearchEndpoint);
-                endpoint.search.returns(Promise.reject());
+                endpoint.search.callsFake(() => Promise.reject());
 
                 const model = new UserProfileModel(document.createElement('div'), {
                     organizationId: TEST_ORGANIZATION,
@@ -376,7 +376,7 @@ describe('UserProfilingModel', () => {
         describe('when actions are present in the model', () => {
             it('should not fetch all actions of a user from the backend', async () => {
                 const endpoint = sandbox.createStubInstance(SearchEndpoint);
-                endpoint.search.returns(Promise.resolve(Fake.createFakeResults(10)));
+                endpoint.search.callsFake(() => Promise.resolve(Fake.createFakeResults(10)));
 
                 const model = new UserProfileModel(document.createElement('div'), {
                     organizationId: TEST_ORGANIZATION,
@@ -416,7 +416,7 @@ describe('UserProfilingModel', () => {
         describe('when no actions are present in the model', () => {
             it('should have no impact', () => {
                 const endpoint = sandbox.createStubInstance(SearchEndpoint);
-                endpoint.search.returns(Promise.resolve(Fake.createFakeResults(10)));
+                endpoint.search.callsFake(() => Promise.resolve(Fake.createFakeResults(10)));
 
                 const model = new UserProfileModel(document.createElement('div'), {
                     organizationId: TEST_ORGANIZATION,
@@ -432,7 +432,7 @@ describe('UserProfilingModel', () => {
 
             it('should remove pending fetch operation related to a user even when there is a pending fetch operation', () => {
                 const endpoint = sandbox.createStubInstance(SearchEndpoint);
-                endpoint.search.returns(Promise.resolve(Fake.createFakeResults(10)));
+                endpoint.search.callsFake(() => Promise.resolve(Fake.createFakeResults(10)));
 
                 const model = new UserProfileModel(document.createElement('div'), {
                     organizationId: TEST_ORGANIZATION,
@@ -451,7 +451,7 @@ describe('UserProfilingModel', () => {
         describe('when actions are present in the model', () => {
             it('should remove actions related to a user', () => {
                 const endpoint = sandbox.createStubInstance(SearchEndpoint);
-                endpoint.search.returns(Promise.resolve(Fake.createFakeResults(10)));
+                endpoint.search.callsFake(() => Promise.resolve(Fake.createFakeResults(10)));
 
                 const model = new UserProfileModel(document.createElement('div'), {
                     organizationId: TEST_ORGANIZATION,
@@ -477,7 +477,7 @@ describe('UserProfilingModel', () => {
             it('should remove actions related to a user even when there is a pending fetch operation', async () => {
                 const responseBody = JSON.stringify(buildActionHistoryResponse(FAKE_HISTORY_ACTIONS), null, 0);
                 const endpoint = sandbox.createStubInstance(SearchEndpoint);
-                endpoint.search.returns(Promise.resolve(Fake.createFakeResults(10)));
+                endpoint.search.callsFake(() => Promise.resolve(Fake.createFakeResults(10)));
 
                 const model = new UserProfileModel(document.createElement('div'), {
                     organizationId: TEST_ORGANIZATION,

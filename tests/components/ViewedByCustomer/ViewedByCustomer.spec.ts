@@ -72,7 +72,7 @@ describe('ViewedByCustomer', () => {
             // We don't care about the result, it's just to have some stuff at the very least.
             const fakeResult: IQueryResult = { ...Fake.createFakeResult(), isUserActionView: true };
             const testEnvironment = Mock.advancedResultComponentSetup<ViewedByCustomer>(ViewedByCustomer, fakeResult, option).env;
-            const resolveResultStub = sandbox.stub(ViewedByCustomer.prototype, 'resolveResult').returns(fakeResult);
+            const resolveResultStub = sandbox.stub(ViewedByCustomer.prototype, 'resolveResult').callsFake(() => fakeResult);
             new ViewedByCustomer(testEnvironment.element, null, testEnvironment);
             expect(resolveResultStub.called).toBe(true);
         });
@@ -88,7 +88,7 @@ describe('ViewedByCustomer', () => {
         it('should throw if no result is provided to the constructor and none can be resolved', () => {
             const fakeResult: IQueryResult = { ...Fake.createFakeResult(), isUserActionView: true };
             const testEnvironment = Mock.advancedResultComponentSetup<ViewedByCustomer>(ViewedByCustomer, fakeResult, option).env;
-            sandbox.stub(ViewedByCustomer.prototype, 'resolveResult').returns(undefined);
+            sandbox.stub(ViewedByCustomer.prototype, 'resolveResult').callsFake(() => undefined);
             return new Promise((resolve, reject) => {
                 try {
                     new ViewedByCustomer(testEnvironment.element, null, testEnvironment);

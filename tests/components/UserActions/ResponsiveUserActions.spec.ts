@@ -36,7 +36,7 @@ describe('ResponsiveUserActions', () => {
             const userActions = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                    fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.reject());
                     return env;
                 })
             ).cmp;
@@ -62,7 +62,7 @@ describe('ResponsiveUserActions', () => {
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                    fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.reject());
                     return env;
                 })
             );
@@ -88,7 +88,7 @@ describe('ResponsiveUserActions', () => {
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                    fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.reject());
                     return env;
                 })
             );
@@ -121,7 +121,7 @@ describe('ResponsiveUserActions', () => {
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                    fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.reject());
                     return env;
                 })
             );
@@ -150,7 +150,7 @@ describe('ResponsiveUserActions', () => {
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: 'someId', buttonLabel: title }, (env) => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                    fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.reject());
                     return env;
                 })
             );
@@ -174,7 +174,7 @@ describe('ResponsiveUserActions', () => {
             const mock = Mock.advancedComponentSetup<UserActions>(
                 UserActions,
                 new Mock.AdvancedComponentSetupOptions(null, { userId: 'someId' }, (env) => {
-                    fakeUserProfileModel(env.root, sandbox).getActions.returns(Promise.reject());
+                    fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.reject());
                     return env;
                 })
             );

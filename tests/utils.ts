@@ -54,13 +54,15 @@ export function generate<T>(time: number, generator: (i: number) => T): T[] {
  * @param callback The callback to call.
  * @param timemout The timeout to wait.
  */
-export function delay(callback: () => any, timemout = 0) {
-    return new Promise((resolve) => {
+export function delay<T = any>(callback: () => T, timemout = 0) {
+    return new Promise<T>((resolve) => {
         setTimeout(() => {
             resolve(callback());
         }, timemout);
     });
 }
+
+export const waitForPromiseCompletion = () => delay(() => {});
 
 /**
  * Create a fake user profile model instance.
