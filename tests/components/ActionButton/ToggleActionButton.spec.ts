@@ -5,6 +5,8 @@ import * as icons from '../../../src/utils/icons';
 import { ActionButton } from '../../../src/components/ActionButton/ActionButton';
 import { IComponentOptions } from 'coveo-search-ui';
 import { IToggleableButtonOptions } from '../../../src/components/ActionButton/ToggleableButton';
+import { StatefulActionButton } from '../../../src/components/ActionButton/StatefulActionButton';
+import { defer } from '../../utils';
 
 describe('ToggleActionButton', () => {
     let sandbox: SinonSandbox;
@@ -16,6 +18,7 @@ describe('ToggleActionButton', () => {
     let deactivateSpy: SinonSpy;
     let updateIconSpy: SinonSpy;
     let updateTooltipSpy: SinonSpy;
+    let switchToSpy: SinonSpy;
 
     beforeAll(() => {
         sandbox = createSandbox();
@@ -25,6 +28,7 @@ describe('ToggleActionButton', () => {
         deactivateSpy = sandbox.spy();
         updateIconSpy = sandbox.spy(<any>ActionButton.prototype, 'updateIcon');
         updateTooltipSpy = sandbox.spy(<any>ActionButton.prototype, 'updateTooltip');
+        switchToSpy = sandbox.spy(<any>StatefulActionButton.prototype, 'switchTo');
     });
 
     beforeEach(() => {
@@ -148,6 +152,108 @@ describe('ToggleActionButton', () => {
                 const option = getOption(current);
 
                 expect(option.alias).toContain(legacy);
+            });
+        });
+    });
+
+    describe('event-loop test', () => {
+        let eventCompletionPromises: Array<Promise<void>>;
+        beforeEach(() => {
+            eventCompletionPromises = [];
+        });
+
+        describe(`if activated triggers an event that would activate the button. `, () => {
+            const activateEvent = 'activate-event';
+
+            beforeEach(() => {
+                const activateWithEvent: (this: ToggleActionButton) => void = function () {
+                    const deferred = defer();
+                    eventCompletionPromises.push(deferred.promise);
+                    this.element.dispatchEvent(new CustomEvent(activateEvent, { detail: deferred.resolve }));
+                };
+                options.activate = activateWithEvent;
+                testSubject = createToggleButton(options);
+                testSubject.element.addEventListener(activateEvent, (e: CustomEvent<() => void>) => {
+                    testSubject.setActivated(true);
+                    e.detail();
+                });
+            });
+
+            describe('if already activated', () => {
+                beforeEach(() => {
+                    testSubject.setActivated(true);
+                    sandbox.reset();
+                });
+
+                it('should not call switchTo when setActivated is called with true', async () => {
+                    testSubject.setActivated(true);
+                    for (let index = 0; index < eventCompletionPromises.length; index++) {
+                        await eventCompletionPromises[index];
+                    }
+                    expect(switchToSpy.called).toBeFalse();
+                });
+            });
+
+            describe('if not activated', () => {
+                beforeEach(() => {
+                    testSubject.setActivated(false);
+                    sandbox.reset();
+                });
+
+                it('should call switchTo only once when setActivated is called with true', async () => {
+                    testSubject.setActivated(true);
+                    for (let index = 0; index < eventCompletionPromises.length; index++) {
+                        await eventCompletionPromises[index];
+                    }
+                    expect(switchToSpy.calledOnce).toBeTrue();
+                });
+            });
+        });
+
+        describe(`if deactivated triggers an event that would deactivate the button. `, () => {
+            const deactivateEvent = 'deactivate-event';
+            beforeEach(() => {
+                const deactivateWithEvent: (this: ToggleActionButton) => void = function () {
+                    const deferred = defer();
+                    eventCompletionPromises.push(deferred.promise);
+                    this.element.dispatchEvent(new CustomEvent(deactivateEvent, { detail: deferred.resolve }));
+                };
+                options.deactivate = deactivateWithEvent;
+                testSubject = createToggleButton(options);
+                testSubject.element.addEventListener(deactivateEvent, (e: CustomEvent<() => void>) => {
+                    testSubject.setActivated(false);
+                    e.detail();
+                });
+            });
+
+            describe('if already deactivated', () => {
+                beforeEach(() => {
+                    testSubject.setActivated(false);
+                    sandbox.reset();
+                });
+
+                it('should not call switchTo when setActivated is called with false', async () => {
+                    testSubject.setActivated(false);
+                    for (let index = 0; index < eventCompletionPromises.length; index++) {
+                        await eventCompletionPromises[index];
+                    }
+                    expect(switchToSpy.called).toBeFalse();
+                });
+            });
+
+            describe('if activated', () => {
+                beforeEach(() => {
+                    testSubject.setActivated(true);
+                    sandbox.reset();
+                });
+
+                it('should call switchTo only once when setActivated is called with false', async () => {
+                    testSubject.setActivated(false);
+                    for (let index = 0; index < eventCompletionPromises.length; index++) {
+                        await eventCompletionPromises[index];
+                    }
+                    expect(switchToSpy.calledOnce).toBeTrue();
+                });
             });
         });
     });

@@ -73,3 +73,20 @@ export function fakeUserProfileModel(root: HTMLElement, sandbox: SinonSandbox) {
     (root as any)[`Coveo${UserProfileModel.ID}`] = sandbox.createStubInstance(UserProfileModel);
     return (root as any)[`Coveo${UserProfileModel.ID}`];
 }
+
+/**
+ * Create a deferred promise
+ */
+export function defer<T = void>() {
+    let resolve: (arg?: T) => void;
+    let reject: (arg: any) => void;
+    const promise = new Promise<T>((p_resolve, p_reject) => {
+        resolve = p_resolve;
+        reject = p_reject;
+    });
+    return {
+        resolve,
+        reject,
+        promise,
+    };
+}
