@@ -3,7 +3,7 @@ import { UserActions } from '../../../src/components/UserActions/UserActions';
 import { Logger, Initialization, QueryEvents, ResultListEvents, IQueryResult, l } from 'coveo-search-ui';
 import { createSandbox, SinonSandbox, SinonStub, SinonStubbedInstance } from 'sinon';
 import { UserAction, UserProfileModel } from '../../../src/models/UserProfileModel';
-import { fakeUserProfileModel } from '../../utils';
+import { fakeUserProfileModel, waitForPromiseCompletion } from '../../utils';
 import { ClickedDocumentList, QueryList, UserActivity } from '../../../src/Index';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 import { ResponsiveUserActions } from '../../../src/components/UserActions/ResponsiveUserActions';
@@ -454,6 +454,19 @@ describe('UserActions', () => {
             expect(spyDispatchEvent.firstCall.args.length).toBe(1);
             expect(spyDispatchEvent.firstCall.args[0].type).toBe('userActionsPanelShow');
         });
+
+        it('should trigger a single event even if an event listener on userActionsPanelShow call `show`', async () => {
+            mock.cmp.element.addEventListener('userActionsPanelShow', () => {
+                mock.cmp.show();
+            });
+            const spyDispatchEvent = sandbox.spy(mock.cmp.element, 'dispatchEvent');
+
+            await mock.cmp.show();
+            // Because show is asynchronous, the event completion is not awaited. waitForPromiseCompletion ensure everything is settled.
+            await waitForPromiseCompletion();
+
+            expect(spyDispatchEvent.calledOnce).toBeTrue();
+        });
     });
 
     describe('hide', () => {
@@ -517,6 +530,18 @@ describe('UserActions', () => {
             expect(spyDispatchEvent.calledOnce).toBeTrue();
             expect(spyDispatchEvent.firstCall.args.length).toBe(1);
             expect(spyDispatchEvent.firstCall.args[0].type).toBe('userActionsPanelHide');
+        });
+
+        it('should trigger a single event even if an event listener on userActionsPanelHide call `hide`', async () => {
+            await mock.cmp.show();
+            mock.cmp.element.addEventListener('userActionsPanelHide', () => {
+                mock.cmp.hide();
+            });
+
+            const spyDispatchEvent = sandbox.spy(mock.cmp.element, 'dispatchEvent');
+            mock.cmp.hide();
+
+            expect(spyDispatchEvent.calledOnce).toBeTrue();
         });
     });
 
