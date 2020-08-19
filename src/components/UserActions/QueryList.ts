@@ -3,6 +3,7 @@ import { UserProfileModel } from '../../models/UserProfileModel';
 import { ExpandableList } from './ExpandableList';
 import { search } from '../../utils/icons';
 import './Strings';
+import { UserActionEvents } from './Events';
 
 const DEFAULT_TRANSFORMATION = () => (query: string) => {
     const container = document.createElement('div');
@@ -147,7 +148,7 @@ export class QueryList extends Component {
             listItem.addEventListener('click', () => {
                 (get(omniboxElement, Omnibox, true) as Omnibox).setText(query);
 
-                this.usageAnalytics.logSearchEvent({ name: 'userActionsSubmit', type: 'User Actions' }, {});
+                this.usageAnalytics.logSearchEvent(UserActionEvents.submit, {});
                 this.queryController.executeQuery();
             });
 

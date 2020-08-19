@@ -18,6 +18,7 @@ import { UserActivity } from './UserActivity';
 import { UserProfileModel } from '../../Index';
 import './Strings';
 import { ViewedByCustomer } from '../ViewedByCustomer/ViewedByCustomer';
+import { UserActionEvents } from './Events';
 
 enum ResultLayoutType {
     LIST = 'list',
@@ -171,7 +172,7 @@ export class UserActions extends Component {
         if (!this.isOpened) {
             this.isOpened = true;
             this.element.dispatchEvent(new CustomEvent(UserActions.Events.Show));
-            this.bindings.usageAnalytics.logCustomEvent({ name: 'openUserActions', type: 'User Actions' }, {}, this.element);
+            this.bindings.usageAnalytics.logCustomEvent(UserActionEvents.open, {}, this.element);
             this.root.classList.add(UserActions.USER_ACTION_OPENED);
 
             try {
