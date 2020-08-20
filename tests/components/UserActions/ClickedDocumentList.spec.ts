@@ -2,7 +2,7 @@ import { createSandbox, SinonSandbox, SinonStub } from 'sinon';
 import { Mock, Fake } from 'coveo-search-ui-tests';
 import { ClickedDocumentList } from '../../../src/components/UserActions/ClickedDocumentList';
 import { UserProfileModel, UserAction } from '../../../src/models/UserProfileModel';
-import { Logger, Initialization, ResultLink, NoopAnalyticsClient } from 'coveo-search-ui';
+import { Logger, Initialization, ResultLink, NoopAnalyticsClient, QueryUtils } from 'coveo-search-ui';
 import { generate, fakeUserProfileModel, waitForPromiseCompletion } from '../../utils';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 import { UserActionEvents } from '../../../src/components/UserActions/Events';
@@ -280,6 +280,7 @@ describe('ClickedDocumentList', () => {
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(TEST_CLICKS));
                 env.usageAnalytics = new NoopAnalyticsClient();
+                env.withResult();
                 logSearchStub = sandbox.stub(env.usageAnalytics, 'logSearchEvent');
                 logCustomStub = sandbox.stub(env.usageAnalytics, 'logCustomEvent');
                 return env;
@@ -292,7 +293,19 @@ describe('ClickedDocumentList', () => {
 
         expect(openLinkStub.calledWith(false)).toBe(true);
         expect(logSearchStub.called).toBeFalse;
-        expect(logCustomStub.calledWith(UserActionEvents.documentClick)).toBeTrue;
+        expect(
+            logCustomStub.calledWith(
+                UserActionEvents.documentClick,
+                {
+                    documentUrl: mock.env.result.clickUri,
+                    documentTitle: mock.env.result.title,
+                    sourceName: QueryUtils.getSource(mock.env.result),
+                    author: QueryUtils.getAuthor(mock.env.result),
+                },
+                null,
+                mock.env.result
+            )
+        ).toBeTrue;
     });
 
     describe('template', () => {

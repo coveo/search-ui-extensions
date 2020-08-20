@@ -9,7 +9,6 @@ import {
     QueryUtils,
     l,
     get,
-    Result,
     ResultLink,
 } from 'coveo-search-ui';
 import { UserProfileModel, UserAction } from '../../models/UserProfileModel';
@@ -141,7 +140,7 @@ export class ClickedDocumentList extends Component {
                 })).then((element) => {
                     Initialization.automaticallyCreateComponentsInsideResult(element, result, {
                         ResultLink: {
-                            onClick: this.openDocument,
+                            onClick: this.openDocument(result),
                         },
                     });
                     return element;
@@ -154,9 +153,21 @@ export class ClickedDocumentList extends Component {
         });
     }
 
-    private openDocument(this: ResultLink, e: MouseEvent, result: Result) {
-        this.usageAnalytics.logCustomEvent(UserActionEvents.documentClick, {}, this.element);
-        this.openLink(false);
+    private openDocument(result: IQueryResult) {
+        return function (this: ResultLink) {
+            this.usageAnalytics.logCustomEvent(
+                UserActionEvents.documentClick,
+                {
+                    documentUrl: result.clickUri,
+                    documentTitle: result.title,
+                    sourceName: QueryUtils.getSource(result),
+                    author: QueryUtils.getAuthor(result),
+                },
+                this.element,
+                result
+            );
+            this.openLink(false);
+        };
     }
 }
 
