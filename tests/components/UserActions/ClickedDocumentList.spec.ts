@@ -2,9 +2,10 @@ import { createSandbox, SinonSandbox, SinonStub } from 'sinon';
 import { Mock, Fake } from 'coveo-search-ui-tests';
 import { ClickedDocumentList } from '../../../src/components/UserActions/ClickedDocumentList';
 import { UserProfileModel, UserAction } from '../../../src/models/UserProfileModel';
-import { Logger, Initialization } from 'coveo-search-ui';
+import { Logger, Initialization, ResultLink, NoopAnalyticsClient, QueryUtils } from 'coveo-search-ui';
 import { generate, fakeUserProfileModel, waitForPromiseCompletion } from '../../utils';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
+import { UserActionEvents } from '../../../src/components/UserActions/Events';
 
 describe('ClickedDocumentList', () => {
     const BUILD_ACTION = (hash: string, i: number) => {
@@ -268,6 +269,43 @@ describe('ClickedDocumentList', () => {
 
         expect(getActionStub.called).toBe(false);
         expect(mock.cmp.disabled).toBe(true);
+    });
+
+    it('should log a userActionDocumentClick event when a result link in the template is clicked', async () => {
+        let openLinkStub = sandbox.stub(ResultLink.prototype, 'openLink');
+        let logSearchStub: SinonStub;
+        let logCustomStub: SinonStub;
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(TEST_CLICKS));
+                env.usageAnalytics = new NoopAnalyticsClient();
+                env.withResult();
+                logSearchStub = sandbox.stub(env.usageAnalytics, 'logSearchEvent');
+                logCustomStub = sandbox.stub(env.usageAnalytics, 'logCustomEvent');
+                return env;
+            })
+        );
+
+        await waitForPromiseCompletion();
+
+        mock.env.element.querySelector<HTMLOListElement>('.coveo-list .CoveoResultLink').click();
+
+        expect(openLinkStub.calledWith(false)).toBe(true);
+        expect(logSearchStub.called).toBeFalse;
+        expect(
+            logCustomStub.calledWith(
+                UserActionEvents.documentClick,
+                {
+                    documentUrl: mock.env.result.clickUri,
+                    documentTitle: mock.env.result.title,
+                    sourceName: QueryUtils.getSource(mock.env.result),
+                    author: QueryUtils.getAuthor(mock.env.result),
+                },
+                null,
+                mock.env.result
+            )
+        ).toBeTrue;
     });
 
     describe('template', () => {

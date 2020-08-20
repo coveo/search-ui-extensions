@@ -9,12 +9,14 @@ import {
     QueryUtils,
     l,
     get,
+    ResultLink,
 } from 'coveo-search-ui';
 import { UserProfileModel, UserAction } from '../../models/UserProfileModel';
 import { ExpandableList } from './ExpandableList';
 import { UserActionType } from '../../rest/UserProfilingEndpoint';
 import { duplicate } from '../../utils/icons';
 import './Strings';
+import { UserActionEvents } from './Events';
 
 /**
  * Initialization options of the **ClickedDocumentList** class.
@@ -136,7 +138,11 @@ export class ClickedDocumentList extends Component {
                     currentLayout: 'list',
                     responsiveComponents: this.searchInterface.responsiveComponents,
                 })).then((element) => {
-                    Initialization.automaticallyCreateComponentsInsideResult(element, result);
+                    Initialization.automaticallyCreateComponentsInsideResult(element, result, {
+                        ResultLink: {
+                            onClick: this.openDocument(result),
+                        },
+                    });
                     return element;
                 });
             },
@@ -145,6 +151,23 @@ export class ClickedDocumentList extends Component {
             showMoreMessage: l(`${ClickedDocumentList.ID}_more`),
             showLessMessage: l(`${ClickedDocumentList.ID}_less`),
         });
+    }
+
+    private openDocument(result: IQueryResult) {
+        return function (this: ResultLink) {
+            this.usageAnalytics.logCustomEvent(
+                UserActionEvents.documentClick,
+                {
+                    documentUrl: result.clickUri,
+                    documentTitle: result.title,
+                    sourceName: QueryUtils.getSource(result),
+                    author: QueryUtils.getAuthor(result),
+                },
+                this.element,
+                result
+            );
+            this.openLink(false);
+        };
     }
 }
 
