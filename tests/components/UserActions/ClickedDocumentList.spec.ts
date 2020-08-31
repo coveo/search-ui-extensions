@@ -271,6 +271,54 @@ describe('ClickedDocumentList', () => {
         expect(mock.cmp.disabled).toBe(true);
     });
 
+    it('Should open the link in a new tab when alwaysOpenInNewWindow is true', async () => {
+        let openLinkStub = sandbox.stub(ResultLink.prototype, 'openLink');
+        let openInANewTabStub = sandbox.stub(ResultLink.prototype, 'openLinkInNewWindow');
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(TEST_CLICKS));
+                env.componentOptionsModel
+                env.usageAnalytics = new NoopAnalyticsClient();
+                env.withResult();
+                env.searchInterface.options.originalOptionsObject['ResultLink'] = { ...env.searchInterface.options.originalOptionsObject['ResultLink']}
+                env.searchInterface.options.originalOptionsObject['ResultLink']['alwaysOpenInNewWindow'] = true
+                return env;
+            })
+        );
+
+        await waitForPromiseCompletion();
+
+        mock.env.element.querySelector<HTMLOListElement>('.coveo-list .CoveoResultLink').click();
+
+        expect(openLinkStub.calledWith(false)).toBe(false);
+        expect(openInANewTabStub.calledWith(false)).toBe(true);
+    });
+
+    it('Should not open the link in a new tab when alwaysOpenInNewWindow is false', async () => {
+        let openLinkStub = sandbox.stub(ResultLink.prototype, 'openLink');
+        let openInANewTabStub = sandbox.stub(ResultLink.prototype, 'openLinkInNewWindow');
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(TEST_CLICKS));
+                env.componentOptionsModel
+                env.usageAnalytics = new NoopAnalyticsClient();
+                env.withResult();
+                env.searchInterface.options.originalOptionsObject['ResultLink'] = { ...env.searchInterface.options.originalOptionsObject['ResultLink']}
+                env.searchInterface.options.originalOptionsObject['ResultLink']['alwaysOpenInNewWindow'] = false
+                return env;
+            })
+        );
+
+        await waitForPromiseCompletion();
+
+        mock.env.element.querySelector<HTMLOListElement>('.coveo-list .CoveoResultLink').click();
+
+        expect(openLinkStub.calledWith(false)).toBe(true);
+        expect(openInANewTabStub.calledWith(false)).toBe(false);
+    })
+
     it('should log a userActionDocumentClick event when a result link in the template is clicked', async () => {
         let openLinkStub = sandbox.stub(ResultLink.prototype, 'openLink');
         let logSearchStub: SinonStub;
