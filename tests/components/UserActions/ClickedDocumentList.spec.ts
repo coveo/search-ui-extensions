@@ -278,11 +278,13 @@ describe('ClickedDocumentList', () => {
             ClickedDocumentList,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(TEST_CLICKS));
-                env.componentOptionsModel
+                env.componentOptionsModel;
                 env.usageAnalytics = new NoopAnalyticsClient();
                 env.withResult();
-                env.searchInterface.options.originalOptionsObject['ResultLink'] = { ...env.searchInterface.options.originalOptionsObject['ResultLink']}
-                env.searchInterface.options.originalOptionsObject['ResultLink']['alwaysOpenInNewWindow'] = true
+                env.searchInterface.options.originalOptionsObject['ResultLink'] = {
+                    ...env.searchInterface.options.originalOptionsObject['ResultLink'],
+                };
+                env.searchInterface.options.originalOptionsObject['ResultLink']['alwaysOpenInNewWindow'] = true;
                 return env;
             })
         );
@@ -302,11 +304,13 @@ describe('ClickedDocumentList', () => {
             ClickedDocumentList,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
                 fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(TEST_CLICKS));
-                env.componentOptionsModel
+                env.componentOptionsModel;
                 env.usageAnalytics = new NoopAnalyticsClient();
                 env.withResult();
-                env.searchInterface.options.originalOptionsObject['ResultLink'] = { ...env.searchInterface.options.originalOptionsObject['ResultLink']}
-                env.searchInterface.options.originalOptionsObject['ResultLink']['alwaysOpenInNewWindow'] = false
+                env.searchInterface.options.originalOptionsObject['ResultLink'] = {
+                    ...env.searchInterface.options.originalOptionsObject['ResultLink'],
+                };
+                env.searchInterface.options.originalOptionsObject['ResultLink']['alwaysOpenInNewWindow'] = false;
                 return env;
             })
         );
@@ -317,7 +321,7 @@ describe('ClickedDocumentList', () => {
 
         expect(openLinkStub.calledWith(false)).toBe(true);
         expect(openInANewTabStub.calledWith(false)).toBe(false);
-    })
+    });
 
     it('should log a userActionDocumentClick event when a result link in the template is clicked', async () => {
         let openLinkStub = sandbox.stub(ResultLink.prototype, 'openLink');
