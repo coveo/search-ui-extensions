@@ -166,7 +166,12 @@ export class ClickedDocumentList extends Component {
                 this.element,
                 result
             );
-            this.openLink(false);
+
+            if (this.options.alwaysOpenInNewWindow) {
+                this.openLinkInNewWindow(false);
+            } else {
+                this.openLink(false);
+            }
         };
     }
 }
