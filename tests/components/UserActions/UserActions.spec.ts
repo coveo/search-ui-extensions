@@ -443,7 +443,7 @@ describe('UserActions', () => {
         it('should fetch all user actions', async function () {
             await mock.cmp.show();
 
-            expect(modelMock.getActions.calledWithExactly(someUserId)).toBe(true);
+            expect(modelMock.getActions.calledWith(someUserId)).toBe(true);
         });
 
         it('should trigger a userActionsShow event', async () => {

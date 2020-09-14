@@ -176,7 +176,10 @@ export class UserActions extends Component {
             this.root.classList.add(UserActions.USER_ACTION_OPENED);
 
             try {
-                const userActions = await (get(this.root, UserProfileModel) as UserProfileModel).getActions(this.options.userId);
+                const userActions = await (get(this.root, UserProfileModel) as UserProfileModel).getActions(
+                    this.options.userId,
+                    this.logLoadEvent.bind(this)
+                );
                 if (userActions.length > 0) {
                     this.render();
                 } else {
@@ -189,6 +192,12 @@ export class UserActions extends Component {
                     this.renderNoActions();
                 }
             }
+        }
+    }
+
+    private logLoadEvent() {
+        if (this.bindings.usageAnalytics) {
+            this.bindings.usageAnalytics.logSearchEvent(UserActionEvents.load, {});
         }
     }
 

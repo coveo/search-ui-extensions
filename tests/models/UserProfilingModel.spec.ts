@@ -166,6 +166,37 @@ describe('UserProfilingModel', () => {
             });
         });
 
+        it('should call onDocumentFetch hook when document are fetched', async () => {
+            const onDocumentFetch = sandbox.stub();
+
+            const documentResults = Fake.createFakeResults(1);
+            documentResults.results[0].raw.urihash = TEST_URI_HASH;
+
+            const endpoint = sandbox.createStubInstance(SearchEndpoint);
+            endpoint.search.callsFake(() => Promise.resolve(documentResults));
+
+            const model = new UserProfileModel(document.createElement('div'), {
+                organizationId: TEST_ORGANIZATION,
+                restUri: TEST_REST_URI,
+                accessToken: TEST_TOKEN,
+                searchEndpoint: endpoint,
+            });
+
+            const actionsPromise = model.getActions(TEST_USER, onDocumentFetch);
+            requests[requests.length - 1].respond(
+                200,
+                { 'Content-Type': 'application/json' },
+                JSON.stringify(buildActionHistoryResponse(FAKE_ACTIONS_WITH_URI_HASH))
+            );
+
+            const uniqueUriHashes = FAKE_ACTIONS_WITH_URI_HASH.map((x) => x.value.uri_hash).filter((x, i, l) => l.indexOf(x) === i);
+
+            await actionsPromise;
+
+            expect(((endpoint.search.args[0][0] as unknown) as QueryBuilder).numberOfResults).toEqual(uniqueUriHashes.length);
+            expect(onDocumentFetch.calledOnce).toBe(true);
+        });
+
         it('should attach no documents on click actions when no document are available to the searching user', async () => {
             const endpoint = sandbox.createStubInstance(SearchEndpoint);
             endpoint.search.callsFake(() => Promise.resolve(Fake.createFakeResults(0)));
