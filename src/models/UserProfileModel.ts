@@ -10,7 +10,6 @@ import {
     SearchInterface,
     IQuery,
     IQueryResults,
-    ISearchEvent,
 } from 'coveo-search-ui';
 import { UserActionEvents } from '../components/UserActions/Events';
 import { UserProfilingEndpoint, IActionHistory, UserActionType } from '../rest/UserProfilingEndpoint';
@@ -108,9 +107,9 @@ export class UserProfileModel extends Model {
      *
      * @param userId The identifier of a user.
      */
-    public async getActions(userId: string, onDocumentFetch?: (query: QueryBuilder) => void): Promise<UserAction[]> {
+    public async getActions(userId: string): Promise<UserAction[]> {
         let actions = <UserAction[]>this.get(userId);
-        actions = Array.isArray(actions) ? actions : await this.fetchActions(userId, onDocumentFetch);
+        actions = Array.isArray(actions) ? actions : await this.fetchActions(userId);
 
         this.set(userId, actions, UserProfileModel.MODEL_CONFIG);
 
@@ -127,30 +126,24 @@ export class UserProfileModel extends Model {
         this.getOrFetchCache[userId] = undefined;
     }
 
-    private fetchActions(userId: string, onDocumentFetch?: (query: QueryBuilder) => void) {
+    private fetchActions(userId: string) {
         const pendingFetch = this.getOrFetchCache[userId];
         const doFetch = () => {
-            this.getOrFetchCache[userId] = this.endpoint
-                .getActions(userId)
-                .then((actions) => this.parseGetActionsResponse(userId, actions, onDocumentFetch));
+            this.getOrFetchCache[userId] = this.endpoint.getActions(userId).then((actions) => this.parseGetActionsResponse(userId, actions));
             return this.getOrFetchCache[userId];
         };
         return pendingFetch || doFetch();
     }
 
-    private parseGetActionsResponse(
-        userId: string,
-        actions: IActionHistory[],
-        onDocumentFetch?: (query: QueryBuilder) => void
-    ): Promise<UserAction[]> {
-        const userActions = this.buildUserActions(actions, onDocumentFetch);
+    private parseGetActionsResponse(userId: string, actions: IActionHistory[]): Promise<UserAction[]> {
+        const userActions = this.buildUserActions(actions);
 
         this.registerNewAttribute(userId, userActions);
 
         return userActions;
     }
 
-    private async fetchDocuments(urihashes: string[], onDocumentFetch?: (query: QueryBuilder) => void): Promise<{ [urihash: string]: IQueryResult }> {
+    private async fetchDocuments(urihashes: string[]): Promise<{ [urihash: string]: IQueryResult }> {
         if (urihashes.length === 0) {
             return Promise.resolve({});
         }
@@ -162,10 +155,14 @@ export class UserProfileModel extends Model {
             urihashes.filter((x) => x)
         );
 
+        // Ensure we fetch the good amount of document.
+        builder.numberOfResults = urihashes.length;
+
         // Here we directly use the Search Endpoint to query without side effects.
         const query = builder.build();
         const searchRequest = await this.options.searchEndpoint.search(query);
 
+        // Here we directly send the event using the Analytics Endpoint to prevent any unwanted side effects.
         this.sendUserActionLoad(query, searchRequest);
 
         const documentsDict = searchRequest.results.reduce((acc, result) => ({ ...acc, [result.raw.urihash]: result }), {});
@@ -173,7 +170,7 @@ export class UserProfileModel extends Model {
         return documentsDict;
     }
 
-    private async buildUserActions(actions: IActionHistory[], onDocumentFetch: (query: QueryBuilder) => void): Promise<UserAction[]> {
+    private async buildUserActions(actions: IActionHistory[]): Promise<UserAction[]> {
         let documents = {} as { [urihash: string]: IQueryResult };
 
         const urihashes = actions
@@ -183,8 +180,9 @@ export class UserProfileModel extends Model {
             .filter((value, index, list) => list.indexOf(value) === index);
 
         try {
-            documents = await this.fetchDocuments(urihashes, onDocumentFetch);
+            documents = await this.fetchDocuments(urihashes);
         } catch (error) {
+            console.log(error);
             this.logger.error(UserProfileModel.ERROR_MESSAGE.FETCH_CLICKED_DOCUMENT_FAIL, error);
         }
 
