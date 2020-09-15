@@ -110,7 +110,7 @@ export class QueryList extends Component {
         }
 
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
-        this.userProfileModel.getActions(this.options.userId, this.logLoadEvent.bind(this)).then((actions) => {
+        this.userProfileModel.getActions(this.options.userId).then((actions) => {
             this.sortedQueryList = [...actions]
                 .filter((action) => action.query)
                 .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
@@ -119,12 +119,6 @@ export class QueryList extends Component {
                 .reduce(this.removeDuplicateQueries, []);
             this.render();
         }, this.logger.error.bind(this.logger));
-    }
-
-    private logLoadEvent() {
-        if (this.bindings.usageAnalytics) {
-            this.bindings.usageAnalytics.logSearchEvent(UserActionEvents.load, {});
-        }
     }
 
     private removeDuplicateQueries(acc: string[], query: string): string[] {

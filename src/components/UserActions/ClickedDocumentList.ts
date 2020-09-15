@@ -15,7 +15,6 @@ import { ExpandableList } from './ExpandableList';
 import { UserActionType } from '../../rest/UserProfilingEndpoint';
 import { duplicate } from '../../utils/icons';
 import './Strings';
-import { UserActionEvents } from './Events';
 
 /**
  * Initialization options of the **ClickedDocumentList** class.
@@ -106,7 +105,7 @@ export class ClickedDocumentList extends Component {
 
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
 
-        this.userProfileModel.getActions(this.options.userId, this.logLoadEvent.bind(this)).then((actions) => {
+        this.userProfileModel.getActions(this.options.userId).then((actions) => {
             this.sortedDocumentsList = actions
                 .filter((action) => action.document && action.type === UserActionType.Click)
                 .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
@@ -122,12 +121,6 @@ export class ClickedDocumentList extends Component {
 
     private filterDuplicatesClickAction(accumulator: UserAction[], action: UserAction): UserAction[] {
         return !accumulator.find((existing) => existing.raw.uri_hash === action.raw.uri_hash) ? [...accumulator, action] : accumulator;
-    }
-
-    private logLoadEvent() {
-        if (this.bindings.usageAnalytics) {
-            this.bindings.usageAnalytics.logSearchEvent(UserActionEvents.load, {});
-        }
     }
 
     private render() {

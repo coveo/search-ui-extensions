@@ -5,7 +5,6 @@ import { duplicate, search, view, dot } from '../../utils/icons';
 import { UserActionType } from '../../rest/UserProfilingEndpoint';
 import { MANUAL_SEARCH_EVENT_CAUSE } from '../../utils/events';
 import './Strings';
-import { UserActionEvents } from './Events';
 
 /**
  * Initialization options of the **UserActivity** class.
@@ -102,17 +101,11 @@ export class UserActivity extends Component {
 
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
 
-        this.userProfileModel.getActions(this.options.userId, this.logLoadEvent.bind(this)).then((actions) => {
+        this.userProfileModel.getActions(this.options.userId).then((actions) => {
             this.actions = actions.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
             this.foldedActions = this.actions.filter((action) => !this.isUnfoldByDefault(action));
             this.render();
         });
-    }
-
-    private logLoadEvent() {
-        if (this.bindings.usageAnalytics) {
-            this.bindings.usageAnalytics.logSearchEvent(UserActionEvents.load, {});
-        }
     }
 
     private isUnfoldByDefault(action: UserAction) {

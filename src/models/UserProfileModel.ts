@@ -1,4 +1,18 @@
-import { Model, QueryBuilder, IQueryResult, AccessToken, Assert, ISearchEndpoint, SearchEndpoint } from 'coveo-search-ui';
+import {
+    Model,
+    QueryBuilder,
+    IQueryResult,
+    AccessToken,
+    Assert,
+    ISearchEndpoint,
+    SearchEndpoint,
+    Component,
+    SearchInterface,
+    IQuery,
+    IQueryResults,
+    ISearchEvent,
+} from 'coveo-search-ui';
+import { UserActionEvents } from '../components/UserActions/Events';
 import { UserProfilingEndpoint, IActionHistory, UserActionType } from '../rest/UserProfilingEndpoint';
 
 /**
@@ -141,23 +155,18 @@ export class UserProfileModel extends Model {
             return Promise.resolve({});
         }
 
-        const query = new QueryBuilder();
-        query.advancedExpression.addFieldExpression(
+        const builder = new QueryBuilder();
+        builder.advancedExpression.addFieldExpression(
             '@urihash',
             '==',
             urihashes.filter((x) => x)
         );
 
-        // Ensure we fetch the good amount of document.
-        query.numberOfResults = urihashes.length;
-
-        // Let some component perform action before the fetch occur such as log events.
-        if (onDocumentFetch) {
-            onDocumentFetch(query);
-        }
-
         // Here we directly use the Search Endpoint to query without side effects.
-        const searchRequest = await this.options.searchEndpoint.search(query.build());
+        const query = builder.build();
+        const searchRequest = await this.options.searchEndpoint.search(query);
+
+        this.sendUserActionLoad(query, searchRequest);
 
         const documentsDict = searchRequest.results.reduce((acc, result) => ({ ...acc, [result.raw.urihash]: result }), {});
 
@@ -200,6 +209,30 @@ export class UserProfileModel extends Model {
 
     private isSearch(action: IActionHistory) {
         return action.name === UserActionType.Search;
+    }
+
+    private sendUserActionLoad(query: IQuery, result: IQueryResults) {
+        const uaClient = (Component.get(this.element, SearchInterface, true) as SearchInterface)?.usageAnalytics;
+        uaClient?.logSearchEvent(UserActionEvents.load, {});
+        uaClient?.endpoint.sendSearchEvents([
+            {
+                ...uaClient.getPendingSearchEvent().templateSearchEvent,
+                ...{
+                    queryPipeline: result.pipeline,
+                    splitTestRunName: result.splitTestRun,
+                    splitTestRunVersion: result.splitTestRun ? result.pipeline : undefined,
+                    queryText: query.q ?? '',
+                    advancedQuery: query.aq ?? '',
+                    didYouMean: query.enableDidYouMean,
+                    numberOfResults: result.totalCount,
+                    responseTime: result.duration,
+                    pageNumber: query.firstResult / query.numberOfResults,
+                    resultsPerPage: query.numberOfResults,
+                    searchQueryUid: result.searchUid,
+                    contextual: false,
+                },
+            },
+        ]);
     }
 }
 
