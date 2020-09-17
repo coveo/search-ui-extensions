@@ -220,7 +220,8 @@ $timestamp-grey: #67768b;
             margin-left: 0.5em;
         }
 
-        .coveo-click {
+        .coveo-click,
+        .coveo-view {
             a {
                 cursor: pointer;
                 color: $coveo-blue-6;

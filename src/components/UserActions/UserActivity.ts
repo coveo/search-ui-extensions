@@ -54,6 +54,8 @@ const TEXT_CLASS = 'coveo-text';
 const ICON_CLASS = 'coveo-icon';
 const BUBBLE_CLASS = 'coveo-bubble';
 
+const CLICKABLE_URI_ID = '@clickableuri';
+
 const WIDTH_CUTOFF = 350;
 
 export class UserActivity extends Component {
@@ -275,9 +277,18 @@ export class UserActivity extends Component {
         const li = document.createElement('li');
         li.classList.add(VIEW_EVENT_CLASS);
 
-        const dataElement = document.createElement('div');
+        let dataElement: HTMLElement;
+        if (action.raw.content_id_key && action.raw.content_id_key === CLICKABLE_URI_ID) {
+            const a = document.createElement('a');
+            a.href = action.raw.content_id_value;
+            a.innerText = action.raw.content_id_value;
+            dataElement = a;
+        } else {
+            dataElement = document.createElement('div');
+            dataElement.innerText = `${action.raw.content_id_key}: ${action.raw.content_id_value}`;
+        }
+
         dataElement.classList.add(DATA_CLASS);
-        dataElement.innerText = `${action.raw.content_id_key}: ${action.raw.content_id_value}`;
 
         li.appendChild(this.buildTitleSection(action));
         li.appendChild(dataElement);
