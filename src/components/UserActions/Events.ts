@@ -3,8 +3,8 @@ import { IAnalyticsActionCause } from 'coveo-search-ui';
 export const USER_ACTION_EVENT_TYPE = 'User Actions';
 
 export class UserActionEvents {
-    public static readonly documentClick: IAnalyticsActionCause = Object.freeze({
-        name: 'userActionDocumentClick',
+    public static readonly load: IAnalyticsActionCause = Object.freeze({
+        name: 'userActionLoad',
         type: USER_ACTION_EVENT_TYPE,
     });
     public static readonly submit: IAnalyticsActionCause = Object.freeze({
