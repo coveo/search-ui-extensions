@@ -7,7 +7,6 @@ import {
     Initialization,
     IQuerySuggestRequest,
     l,
-    init,
     IQuerySuggestResponse,
 } from 'coveo-search-ui';
 import './Strings';
@@ -101,20 +100,16 @@ export class TopQueries extends Component {
         } else {
             suggestions.completions.forEach((completion) => {
                 const li = document.createElement('li');
-                const actionButton = document.createElement('div');
-                actionButton.setAttribute('class', 'CoveoActionButton coveo-link');
-                init(actionButton, {
-                    ActionButton: {
-                        click: () => {
-                            //Needs to be added in js-uis analyticsActionCauseList????
-                            this.usageAnalytics.logSearchEvent(TopQueries.topQueriesClickActionCause, {});
-                            this.options.onClick(completion.expression);
-                        },
-                        title: completion.expression,
-                    },
+                const a = document.createElement('a');
+                a.setAttribute('class', 'coveo-link');
+                a.addEventListener('click', () => {
+                    //Needs to be added in js-uis analyticsActionCauseList????
+                    this.usageAnalytics.logSearchEvent(TopQueries.topQueriesClickActionCause, {});
+                    this.options.onClick(completion.expression);
                 });
+                a.innerHTML = completion.expression;              
 
-                li.appendChild(actionButton);
+                li.appendChild(a);
                 this.listElem.appendChild(li);
             });
         }

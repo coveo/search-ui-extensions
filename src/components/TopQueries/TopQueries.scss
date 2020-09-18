@@ -1,4 +1,4 @@
-@import "../../sass/Variables.scss";
+@import '../../sass/Variables.scss';
 
 $border-radius: 2px;
 $default-font-size: 15px;
@@ -29,7 +29,7 @@ $default-padding: 8px;
         margin: 0;
         border-top: $default-border;
 
-        .CoveoActionButton {
+        a {
             padding: $default-padding;
             padding-left: 20px;
         }
