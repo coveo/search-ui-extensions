@@ -277,14 +277,13 @@ export class UserActivity extends Component {
         const li = document.createElement('li');
         li.classList.add(VIEW_EVENT_CLASS);
 
-        let dataElement: HTMLElement;
+        const dataElement = document.createElement('div');
         if (action.raw.content_id_key && action.raw.content_id_key === CLICKABLE_URI_ID) {
             const a = document.createElement('a');
             a.href = action.raw.content_id_value;
             a.innerText = action.raw.content_id_value;
-            dataElement = a;
+            dataElement.appendChild(a);
         } else {
-            dataElement = document.createElement('div');
             dataElement.innerText = `${action.raw.content_id_key}: ${action.raw.content_id_value}`;
         }
 
