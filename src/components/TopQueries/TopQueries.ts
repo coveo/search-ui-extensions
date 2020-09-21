@@ -8,6 +8,7 @@ import {
     IQuerySuggestRequest,
     l,
     IQuerySuggestResponse,
+    IAnalyticsNoMeta,
 } from 'coveo-search-ui';
 import './Strings';
 
@@ -23,11 +24,10 @@ export interface ITopQueriesOptions {
     title?: string;
     /**
      * Specifies the handler called when a suggestion is clicked.
-     * This should call a search query.
      *
-     * Default navigates to #q=<suggestion>
+     * Default executes a search query using the suggestion
      */
-    onClick?: (expression: string) => void;
+    onClick?: (expression: string, component: TopQueries) => void;
 }
 
 /**
@@ -44,13 +44,15 @@ export class TopQueries extends Component {
         suggestionQueryParams: ComponentOptions.buildJsonOption<IQuerySuggestRequest>({ defaultValue: { q: '' } }),
         title: ComponentOptions.buildStringOption({ defaultValue: l('TopQueries_title') }),
         onClick: ComponentOptions.buildCustomOption((s) => null, {
-            defaultValue: (expression: string) => {
-                window.location.href = `#q=${expression}`;
+            defaultValue: (expression: string, component: TopQueries) => {
+                component.usageAnalytics.logSearchEvent<IAnalyticsNoMeta>(TopQueries.topQueriesClickActionCause, {});
+                component.queryStateModel.set('q', expression);
+                component.queryController.executeQuery({ origin: component });
             },
         }),
     };
 
-    private static topQueriesClickActionCause: IAnalyticsActionCause = {
+    public static topQueriesClickActionCause: IAnalyticsActionCause = {
         name: 'topQueriesClick',
         type: 'interface',
     };
@@ -99,8 +101,7 @@ export class TopQueries extends Component {
                 const a = document.createElement('a');
                 a.classList.add('coveo-link');
                 a.addEventListener('click', () => {
-                    this.usageAnalytics.logSearchEvent(TopQueries.topQueriesClickActionCause, {});
-                    this.options.onClick(completion.expression);
+                    this.options.onClick(completion.expression, this);
                 });
                 a.innerHTML = completion.expression;
 
