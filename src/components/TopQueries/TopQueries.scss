@@ -1,9 +1,7 @@
 @import '../../sass/Variables.scss';
 
-$border-radius: 2px;
-$default-font-size: 15px;
-$list-font-size: 13px;
-$default-padding: 8px;
+$title-font-size: 1.1em;
+$default-padding: 6px;
 
 .CoveoTopQueries {
     border: $default-border;
@@ -14,7 +12,7 @@ $default-padding: 8px;
         margin: 0;
         padding: $default-padding;
         background-color: $grey-3;
-        font-size: $default-font-size;
+        font-size: $title-font-size;
         color: $color-greyish-teal-blue;
     }
 
@@ -22,16 +20,12 @@ $default-padding: 8px;
         margin: 0;
         padding: 0;
         list-style-type: none;
-        font-size: $default-font-size;
     }
 
     li {
         margin: 0;
         border-top: $default-border;
-
-        a {
-            padding: $default-padding;
-            padding-left: 20px;
-        }
+        padding: $default-padding;
+        padding-left: 20px;
     }
 }

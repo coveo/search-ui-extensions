@@ -11,9 +11,6 @@ import {
 } from 'coveo-search-ui';
 import './Strings';
 
-//TODO
-//      link (onclick -> find coveo search -> execute search)
-
 export interface ITopQueriesOptions {
     /**
      * The parameters sent to the suggestion query.
@@ -51,7 +48,6 @@ export class TopQueries extends Component {
                 window.location.href = `#q=${expression}`;
             },
         }),
-        //logSearchEventAnalytics: ComponentOptions.buildBooleanOption({ defaultValue: true }),
     };
 
     private static topQueriesClickActionCause: IAnalyticsActionCause = {
@@ -101,13 +97,12 @@ export class TopQueries extends Component {
             suggestions.completions.forEach((completion) => {
                 const li = document.createElement('li');
                 const a = document.createElement('a');
-                a.setAttribute('class', 'coveo-link');
+                a.classList.add('coveo-link');
                 a.addEventListener('click', () => {
-                    //Needs to be added in js-uis analyticsActionCauseList????
                     this.usageAnalytics.logSearchEvent(TopQueries.topQueriesClickActionCause, {});
                     this.options.onClick(completion.expression);
                 });
-                a.innerHTML = completion.expression;              
+                a.innerHTML = completion.expression;
 
                 li.appendChild(a);
                 this.listElem.appendChild(li);

@@ -18,10 +18,33 @@ describe('TopQueries', () => {
         completions: [],
     };
 
+    const SUGGESTION: IQuerySuggestResponse = {
+        completions: [
+            {
+                expression: 'test1',
+                score: 1,
+                highlighted: 'testHighlight',
+                executableConfidence: 1,
+            },
+        ],
+    };
+
     const SUGGESTIONS: IQuerySuggestResponse = {
         completions: [
             {
                 expression: 'test1',
+                score: 1,
+                highlighted: 'testHighlight',
+                executableConfidence: 1,
+            },
+            {
+                expression: 'test2',
+                score: 1,
+                highlighted: 'testHighlight',
+                executableConfidence: 1,
+            },
+            {
+                expression: 'test3',
                 score: 1,
                 highlighted: 'testHighlight',
                 executableConfidence: 1,
@@ -34,20 +57,10 @@ describe('TopQueries', () => {
     });
 
     beforeEach(async () => {
-        /*mock = Mock.advancedComponentSetup<TopQueries>(
-            TopQueries,
-            new Mock.AdvancedComponentSetupOptions(null, options, (env) => {
-                env.searchEndpoint = Mock.mockSearchEndpoint();
-                env.searchEndpoint.getQuerySuggest = () => Promise.resolve(EMPTY_SUGGESTION);
-                return env;
-            })
-        );*/
-
         mock = Mock.basicComponentSetup<TopQueries>(TopQueries, options);
     });
 
     afterEach(() => {
-        sandbox.reset();
         sandbox.restore();
     });
 
@@ -85,5 +98,39 @@ describe('TopQueries', () => {
 
         expect(stub.called);
         expect(mock.cmp.element.classList.contains('coveo-hidden')).toBeFalse();
+    });
+
+    it('should containt all suggestions in ActionButtons', async () => {
+        let stub = sandbox.stub(mock.env.searchEndpoint, 'getQuerySuggest');
+        stub.returns(Promise.resolve(SUGGESTIONS));
+        await mock.cmp.updateTopQueries();
+
+        let elems = mock.cmp.element.querySelectorAll('li');
+        expect(elems.length == SUGGESTIONS.completions.length);
+        expect(stub.called);
+    });
+
+    it('links should contain the suggestions expression', async () => {
+        let stub = sandbox.stub(mock.env.searchEndpoint, 'getQuerySuggest');
+        stub.returns(Promise.resolve(SUGGESTION));
+        await mock.cmp.updateTopQueries();
+
+        let elem = mock.cmp.element.querySelector('a');
+        expect(elem.innerHTML == SUGGESTION.completions[0].expression);
+        expect(stub.called);
+    });
+
+    it('links shouldb execute click method onClick with expression given as argument', async () => {
+        let stub = sandbox.stub(mock.env.searchEndpoint, 'getQuerySuggest');
+        stub.returns(Promise.resolve(SUGGESTION));
+        await mock.cmp.updateTopQueries();
+
+        let onClickSpy = sandbox.spy(mock.cmp.options, 'onClick');
+
+        let elem = mock.cmp.element.querySelector('a');
+        elem.click();
+
+        expect(onClickSpy.called);
+        expect(onClickSpy.args[0][0] == SUGGESTION.completions[0].expression);
     });
 });
