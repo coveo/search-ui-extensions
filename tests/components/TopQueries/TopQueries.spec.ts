@@ -136,7 +136,7 @@ describe('TopQueries', () => {
         expect(onClickSpy.args[0][1]).toBe(topQueries.cmp);
     });
 
-    it('Should send a ua search event when clicking on suggestion', async () => {
+    it('Default suggestion click should send a ua search event when clicking on suggestion', async () => {
         let topQueries = Mock.advancedComponentSetup<TopQueries>(
             TopQueries,
             new Mock.AdvancedComponentSetupOptions(null, options, (env) => {
@@ -158,5 +158,19 @@ describe('TopQueries', () => {
         expect(logSearchStub.called).toBe(true);
         expect(logSearchStub.args[0][0]).toBe(TopQueries.topQueriesClickActionCause);
         expect(logSearchStub.args[0][1]).toEqual({});
+    });
+
+    it('Default suggestion click should send an executeQuery request', async () => {
+        let topQueries = Mock.basicComponentSetup<TopQueries>(TopQueries, options);
+        let suggestSub = sandbox.stub(topQueries.env.searchEndpoint, 'getQuerySuggest');
+        suggestSub.returns(Promise.resolve(SUGGESTION));
+        await topQueries.cmp.updateTopQueries();
+
+        let executeQuerySpy = sandbox.spy(topQueries.env.queryController, 'executeQuery');
+
+        let elem = topQueries.cmp.element.querySelector('a');
+        elem.click();
+
+        expect(executeQuerySpy.called).toBe(true);
     });
 });
