@@ -1,5 +1,4 @@
 import {
-    $$,
     Component,
     ComponentOptions,
     IAnalyticsActionCause,
@@ -16,6 +15,7 @@ export interface ITopQueriesOptions {
     /**
      * The parameters sent to the suggestion query.
      * The component uses this information to get better suggestions
+     * In most cases, the q attribute should be set to ''
      */
     suggestionQueryParams?: IQuerySuggestRequest;
     /**
@@ -92,8 +92,8 @@ export class TopQueries extends Component {
             return;
         }
 
-        if (suggestions?.completions?.length) {
-            // Hide the widget if there are no query suggestions
+        if (!suggestions?.completions?.length || suggestions.completions.length == 0) {
+            // Hide the widget if there are no query suggestions or data format is invalid
             this.hide();
         } else {
             suggestions.completions.forEach((completion) => {

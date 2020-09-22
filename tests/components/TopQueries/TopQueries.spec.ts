@@ -1,17 +1,11 @@
 import { IQuerySuggestResponse, NoopAnalyticsClient } from 'coveo-search-ui';
 import { Mock } from 'coveo-search-ui-tests';
+import { IBasicComponentSetup } from 'coveo-search-ui-tests/MockEnvironment';
 import { createSandbox, SinonSandbox } from 'sinon';
-import { ITopQueriesOptions } from '../../../src/components/TopQueries/TopQueries';
 import { TopQueries } from '../../../src/Index';
 
 describe('TopQueries', () => {
     let sandbox: SinonSandbox;
-    const options: ITopQueriesOptions = {
-        suggestionQueryParams: {
-            q: '',
-            searchHub: 'test',
-        },
-    };
 
     const EMPTY_SUGGESTION: IQuerySuggestResponse = {
         completions: [],
@@ -59,118 +53,110 @@ describe('TopQueries', () => {
         sandbox.restore();
     });
 
-    it('should hide itself if there are no suggestions', async () => {
-        let topQueries = Mock.basicComponentSetup<TopQueries>(TopQueries, options);
-        let stub = sandbox.stub(topQueries.env.searchEndpoint, 'getQuerySuggest');
-        stub.returns(Promise.resolve(EMPTY_SUGGESTION));
+    async function basicTopQueriesSetup(querySuggestionResponse: any) {
+        const topQueries = Mock.advancedComponentSetup<TopQueries>(
+            TopQueries,
+            new Mock.AdvancedComponentSetupOptions(null, {}, (env) => {
+                env.searchInterface.usageAnalytics = new NoopAnalyticsClient();
+                return env;
+            })
+        );
+        const suggestStub = stubGetQuerySuggest(topQueries, querySuggestionResponse);
         await topQueries.cmp.updateTopQueries();
+        return { topQueries, suggestStub };
+    }
 
-        expect(stub.called).toBe(true);
-        expect(topQueries.cmp.element.classList.contains('coveo-hidden')).toBe(true);
-    });
+    function stubGetQuerySuggest(component: IBasicComponentSetup<TopQueries>, returnValue: any) {
+        const suggestSub = sandbox.stub(component.env.searchEndpoint, 'getQuerySuggest');
+        suggestSub.returns(Promise.resolve(returnValue));
+        return suggestSub;
+    }
 
     it('should hide itself if there are no suggestions', async () => {
-        let topQueries = Mock.basicComponentSetup<TopQueries>(TopQueries, options);
-        let stub = sandbox.stub(topQueries.env.searchEndpoint, 'getQuerySuggest');
-        stub.returns(Promise.resolve(EMPTY_SUGGESTION));
-        await topQueries.cmp.updateTopQueries();
+        const { topQueries, suggestStub } = await basicTopQueriesSetup(EMPTY_SUGGESTION);
 
-        expect(stub.called).toBe(true);
+        expect(suggestStub.called).toBe(true);
         expect(topQueries.cmp.element.classList.contains('coveo-hidden')).toBe(true);
     });
 
     it('should hide itself if the query throws an exception', async () => {
-        let topQueries = Mock.basicComponentSetup<TopQueries>(TopQueries, options);
-        let stub = sandbox.stub(topQueries.env.searchEndpoint, 'getQuerySuggest');
-        stub.throws('Error');
+        const topQueries = Mock.basicComponentSetup<TopQueries>(TopQueries, {});
+        const suggestStub = sandbox.stub(topQueries.env.searchEndpoint, 'getQuerySuggest');
+        suggestStub.throws('Error');
         await topQueries.cmp.updateTopQueries();
 
-        expect(stub.called).toBe(true);
+        expect(suggestStub.called).toBe(true);
+        expect(topQueries.cmp.element.classList.contains('coveo-hidden')).toBe(true);
+    });
+
+    it('should hide itself if the query returns invalid data', async () => {
+        const { topQueries, suggestStub } = await basicTopQueriesSetup({ this: { is: 'not valid data' } });
+
+        expect(suggestStub.called).toBe(true);
         expect(topQueries.cmp.element.classList.contains('coveo-hidden')).toBe(true);
     });
 
     it('should be shown if there are suggestions', async () => {
-        let topQueries = Mock.basicComponentSetup<TopQueries>(TopQueries, options);
-        let stub = sandbox.stub(topQueries.env.searchEndpoint, 'getQuerySuggest');
-        stub.returns(Promise.resolve(SUGGESTIONS));
-        await topQueries.cmp.updateTopQueries();
+        const { topQueries, suggestStub } = await basicTopQueriesSetup(SUGGESTIONS);
 
-        expect(stub.called).toBe(true);
+        expect(suggestStub.called).toBe(true);
         expect(topQueries.cmp.element.classList.contains('coveo-hidden')).toBe(false);
     });
 
     it('should containt all suggestions in ActionButtons', async () => {
-        let topQueries = Mock.basicComponentSetup<TopQueries>(TopQueries, options);
-        let stub = sandbox.stub(topQueries.env.searchEndpoint, 'getQuerySuggest');
-        stub.returns(Promise.resolve(SUGGESTIONS));
-        await topQueries.cmp.updateTopQueries();
+        const { topQueries, suggestStub } = await basicTopQueriesSetup(SUGGESTIONS);
 
-        let elems = topQueries.cmp.element.querySelectorAll('li');
+        const elems = topQueries.cmp.element.querySelectorAll('li');
+
+        expect(suggestStub.called).toBe(true);
         expect(elems.length).toBe(SUGGESTIONS.completions.length);
-        expect(stub.called).toBe(true);
     });
 
     it('links should contain the suggestions expression', async () => {
-        let topQueries = Mock.basicComponentSetup<TopQueries>(TopQueries, options);
-        let stub = sandbox.stub(topQueries.env.searchEndpoint, 'getQuerySuggest');
-        stub.returns(Promise.resolve(SUGGESTION));
-        await topQueries.cmp.updateTopQueries();
+        const { topQueries, suggestStub } = await basicTopQueriesSetup(SUGGESTION);
 
-        let elem = topQueries.cmp.element.querySelector('a');
+        const elem = topQueries.cmp.element.querySelector('a');
+
+        expect(suggestStub.called).toBe(true);
         expect(elem.innerHTML).toBe(SUGGESTION.completions[0].expression);
-        expect(stub.called).toBe(true);
     });
 
     it('links should execute click method onClick with expression given as argument', async () => {
-        let topQueries = Mock.basicComponentSetup<TopQueries>(TopQueries, options);
-        let stub = sandbox.stub(topQueries.env.searchEndpoint, 'getQuerySuggest');
-        stub.returns(Promise.resolve(SUGGESTION));
-        await topQueries.cmp.updateTopQueries();
+        const { topQueries, suggestStub } = await basicTopQueriesSetup(SUGGESTION);
 
-        let onClickSpy = sandbox.spy(topQueries.cmp.options, 'onClick');
+        const onClickSpy = sandbox.spy(topQueries.cmp.options, 'onClick');
 
-        let elem = topQueries.cmp.element.querySelector('a');
+        const elem = topQueries.cmp.element.querySelector('a');
         elem.click();
 
+        expect(suggestStub.called).toBe(true);
         expect(onClickSpy.args[0][0]).toBe(SUGGESTION.completions[0].expression);
         expect(onClickSpy.args[0][1]).toBe(topQueries.cmp);
     });
 
     it('Default suggestion click should send a ua search event when clicking on suggestion', async () => {
-        let topQueries = Mock.advancedComponentSetup<TopQueries>(
-            TopQueries,
-            new Mock.AdvancedComponentSetupOptions(null, options, (env) => {
-                env.searchInterface.usageAnalytics = new NoopAnalyticsClient();
-                return env;
-            })
-        );
+        const { topQueries, suggestStub } = await basicTopQueriesSetup(SUGGESTION);
 
-        let stub = sandbox.stub(topQueries.env.searchEndpoint, 'getQuerySuggest');
-        stub.returns(Promise.resolve(SUGGESTION));
-        await topQueries.cmp.updateTopQueries();
+        const logSearchStub = sandbox.stub(topQueries.env.searchInterface.usageAnalytics, 'logSearchEvent');
 
-        let logSearchStub = sandbox.stub(topQueries.env.searchInterface.usageAnalytics, 'logSearchEvent');
-
-        let elem = topQueries.cmp.element.querySelector('a');
+        const elem = topQueries.cmp.element.querySelector('a');
         elem.click();
 
-        console.log(logSearchStub.called);
+        expect(suggestStub.called).toBe(true);
         expect(logSearchStub.called).toBe(true);
         expect(logSearchStub.args[0][0]).toBe(TopQueries.topQueriesClickActionCause);
         expect(logSearchStub.args[0][1]).toEqual({});
     });
 
     it('Default suggestion click should send an executeQuery request', async () => {
-        let topQueries = Mock.basicComponentSetup<TopQueries>(TopQueries, options);
-        let suggestSub = sandbox.stub(topQueries.env.searchEndpoint, 'getQuerySuggest');
-        suggestSub.returns(Promise.resolve(SUGGESTION));
-        await topQueries.cmp.updateTopQueries();
+        const { topQueries, suggestStub } = await basicTopQueriesSetup(SUGGESTION);
 
-        let executeQuerySpy = sandbox.spy(topQueries.env.queryController, 'executeQuery');
+        const executeQuerySpy = sandbox.spy(topQueries.env.queryController, 'executeQuery');
 
-        let elem = topQueries.cmp.element.querySelector('a');
+        const elem = topQueries.cmp.element.querySelector('a');
         elem.click();
 
+        expect(suggestStub.called).toBe(true);
         expect(executeQuerySpy.called).toBe(true);
     });
 });
