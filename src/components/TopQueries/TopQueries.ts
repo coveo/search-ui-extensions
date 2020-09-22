@@ -112,7 +112,7 @@ export class TopQueries extends Component {
     }
 
     private hide(): void {
-        $$(this.element).addClass('coveo-hidden');
+        this.element.classList.add('coveo-hidden');
     }
 
     private show(): void {
