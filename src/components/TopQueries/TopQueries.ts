@@ -85,7 +85,7 @@ export class TopQueries extends Component {
 
         let suggestions: IQuerySuggestResponse;
         try {
-            suggestions = await this.queryController.getEndpoint().getQuerySuggest(suggestionQueryParams || this.options.suggestionQueryParams);
+            suggestions = await this.queryController.getEndpoint().getQuerySuggest(suggestionQueryParams ?? this.options.suggestionQueryParams);
         } catch (err) {
             console.error(`Failed to fetch query suggestions: ${err}`);
             this.hide();
