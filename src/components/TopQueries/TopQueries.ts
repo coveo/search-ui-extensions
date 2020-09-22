@@ -93,7 +93,7 @@ export class TopQueries extends Component {
         }
 
         if (suggestions.completions.length == 0) {
-            //Hide the widget if there are no query suggestions
+            // Hide the widget if there are no query suggestions
             this.hide();
         } else {
             suggestions.completions.forEach((completion) => {
