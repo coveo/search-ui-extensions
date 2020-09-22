@@ -116,7 +116,7 @@ export class TopQueries extends Component {
     }
 
     private show(): void {
-        $$(this.element).removeClass('coveo-hidden');
+        this.element.classList.remove('coveo-hidden');
     }
 }
 
