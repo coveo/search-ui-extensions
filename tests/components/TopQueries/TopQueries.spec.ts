@@ -2,6 +2,7 @@ import { IQuerySuggestResponse, NoopAnalyticsClient } from 'coveo-search-ui';
 import { Mock } from 'coveo-search-ui-tests';
 import { IBasicComponentSetup } from 'coveo-search-ui-tests/MockEnvironment';
 import { createSandbox, SinonSandbox } from 'sinon';
+import { ITopQueriesOptions } from '../../../src/components/TopQueries/TopQueries';
 import { TopQueries } from '../../../src/Index';
 
 describe('TopQueries', () => {
@@ -53,10 +54,10 @@ describe('TopQueries', () => {
         sandbox.restore();
     });
 
-    async function basicTopQueriesSetup(querySuggestionResponse: any) {
+    async function basicTopQueriesSetup(querySuggestionResponse: any, options: ITopQueriesOptions = {}) {
         const topQueries = Mock.advancedComponentSetup<TopQueries>(
             TopQueries,
-            new Mock.AdvancedComponentSetupOptions(null, {}, (env) => {
+            new Mock.AdvancedComponentSetupOptions(null, options, (env) => {
                 env.searchInterface.usageAnalytics = new NoopAnalyticsClient();
                 return env;
             })
@@ -158,5 +159,19 @@ describe('TopQueries', () => {
 
         expect(suggestStub.called).toBe(true);
         expect(executeQuerySpy.called).toBe(true);
+    });
+
+    it('Should call getQuerySuggest with paramers given in options', async () => {
+        const options: ITopQueriesOptions = {
+            suggestionQueryParams: {
+                q: '',
+                count: 13,
+            },
+        };
+
+        const { suggestStub } = await basicTopQueriesSetup(SUGGESTION, options);
+
+        expect(suggestStub.called).toBe(true);
+        expect(suggestStub.args[0][0]).toBe(options.suggestionQueryParams);
     });
 });

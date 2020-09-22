@@ -80,12 +80,12 @@ export class TopQueries extends Component {
         this.updateTopQueries();
     }
 
-    public async updateTopQueries(suggestionQueryParams?: IQuerySuggestRequest): Promise<void> {
+    public async updateTopQueries(suggestionQueryParams: IQuerySuggestRequest = this.options.suggestionQueryParams): Promise<void> {
         this.show();
 
         let suggestions: IQuerySuggestResponse;
         try {
-            suggestions = await this.queryController.getEndpoint().getQuerySuggest(suggestionQueryParams ?? this.options.suggestionQueryParams);
+            suggestions = await this.queryController.getEndpoint().getQuerySuggest(suggestionQueryParams);
         } catch (err) {
             console.error(`Failed to fetch query suggestions: ${err}`);
             this.hide();
