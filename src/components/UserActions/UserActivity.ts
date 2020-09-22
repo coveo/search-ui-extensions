@@ -278,7 +278,7 @@ export class UserActivity extends Component {
         li.classList.add(VIEW_EVENT_CLASS);
 
         const dataElement = document.createElement('div');
-        if (action.raw.content_id_key && action.raw.content_id_key === CLICKABLE_URI_ID) {
+        if (action.raw.content_id_key === CLICKABLE_URI_ID) {
             const a = document.createElement('a');
             a.href = action.raw.content_id_value;
             a.innerText = action.raw.content_id_value;
