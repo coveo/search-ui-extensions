@@ -92,7 +92,7 @@ export class TopQueries extends Component {
             return;
         }
 
-        if (suggestions.completions.length == 0) {
+        if (suggestions?.completions?.length) {
             // Hide the widget if there are no query suggestions
             this.hide();
         } else {
