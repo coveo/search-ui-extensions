@@ -54,8 +54,6 @@ const TEXT_CLASS = 'coveo-text';
 const ICON_CLASS = 'coveo-icon';
 const BUBBLE_CLASS = 'coveo-bubble';
 
-const CLICKABLE_URI_ID = '@clickableuri';
-
 const WIDTH_CUTOFF = 350;
 
 export class UserActivity extends Component {
@@ -80,6 +78,7 @@ export class UserActivity extends Component {
         }),
     };
 
+    private static clickable_uri_ids = ['@clickableuri'];
     private actions: UserAction[];
     private foldedActions: UserAction[];
     private userProfileModel: UserProfileModel;
@@ -278,7 +277,8 @@ export class UserActivity extends Component {
         li.classList.add(VIEW_EVENT_CLASS);
 
         const dataElement = document.createElement('div');
-        if (action.raw.content_id_key === CLICKABLE_URI_ID) {
+        if (UserActivity.clickable_uri_ids.indexOf(action.raw.content_id_key) !== -1) {
+            //If the content id key is included in the clickable_uri list, make the component a link
             const a = document.createElement('a');
             a.href = action.raw.content_id_value;
             a.innerText = action.raw.content_id_value;
