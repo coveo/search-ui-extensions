@@ -1,9 +1,9 @@
-import { createSandbox, SinonFakeXMLHttpRequest } from 'sinon';
+import { createSandbox, SinonFakeXMLHttpRequest, SinonStub } from 'sinon';
 import { Fake } from 'coveo-search-ui-tests';
 import { UserProfileModel, UserAction } from '../../src/models/UserProfileModel';
 import { UserActionType } from '../../src/rest/UserProfilingEndpoint';
 import { buildActionHistoryResponse, buildAccessToken } from '../utils';
-import { Logger, SearchEndpoint, QueryBuilder } from 'coveo-search-ui';
+import { Logger, SearchEndpoint, QueryBuilder, Component } from 'coveo-search-ui';
 
 describe('UserProfilingModel', () => {
     const TEST_URI_HASH = 'testUriHash';
@@ -131,6 +131,25 @@ describe('UserProfilingModel', () => {
     });
 
     describe('getActions', () => {
+        let logSearchEventStub: SinonStub;
+        let sendSearchEventsStub: SinonStub;
+
+        beforeEach(() => {
+            sandbox.stub(Component, 'get').callsFake(() => {
+                logSearchEventStub = sandbox.stub();
+                sendSearchEventsStub = sandbox.stub();
+                return {
+                    usageAnalytics: {
+                        logSearchEvent: logSearchEventStub,
+                        getPendingSearchEvent: sandbox.stub().returns({}),
+                        endpoint: {
+                            sendSearchEvents: sendSearchEventsStub,
+                        },
+                    },
+                } as any;
+            });
+        });
+
         it('should attach available documents on click actions', async () => {
             const documentResults = Fake.createFakeResults(1);
             documentResults.results[0].raw.urihash = TEST_URI_HASH;
@@ -153,9 +172,11 @@ describe('UserProfilingModel', () => {
             );
 
             const actions = await actionsPromise;
+            console.log(actions);
             const actionsWithDocument = actions.filter((action) => action.document);
             const uniqueUriHashes = FAKE_ACTIONS_WITH_URI_HASH.map((x) => x.value.uri_hash).filter((x, i, l) => l.indexOf(x) === i);
 
+            expect(FAKE_ACTIONS_WITH_URI_HASH.length).toEqual(actions.length);
             expect(((endpoint.search.args[0][0] as unknown) as QueryBuilder).numberOfResults).toEqual(uniqueUriHashes.length);
             expect(actionsWithDocument.length).toBeGreaterThanOrEqual(documentResults.results.length);
             actionsWithDocument.forEach((action, i) => {
@@ -164,6 +185,33 @@ describe('UserProfilingModel', () => {
                 expect(matchingDocument).toBeDefined();
                 expect(action.document.title).toEqual(matchingDocument.title);
             });
+        });
+
+        it('should send a userActionLoad event when document are fetched', async () => {
+            const documentResults = Fake.createFakeResults(1);
+            documentResults.results[0].raw.urihash = TEST_URI_HASH;
+
+            const endpoint = sandbox.createStubInstance(SearchEndpoint);
+            endpoint.search.callsFake(() => Promise.resolve(documentResults));
+
+            const model = new UserProfileModel(document.createElement('div'), {
+                organizationId: TEST_ORGANIZATION,
+                restUri: TEST_REST_URI,
+                accessToken: TEST_TOKEN,
+                searchEndpoint: endpoint,
+            });
+
+            const actionsPromise = model.getActions(TEST_USER);
+            requests[requests.length - 1].respond(
+                200,
+                { 'Content-Type': 'application/json' },
+                JSON.stringify(buildActionHistoryResponse(FAKE_ACTIONS_WITH_URI_HASH))
+            );
+
+            await actionsPromise;
+
+            expect(logSearchEventStub.called).toBe(true);
+            expect(sendSearchEventsStub.called).toBe(true);
         });
 
         it('should attach no documents on click actions when no document are available to the searching user', async () => {
