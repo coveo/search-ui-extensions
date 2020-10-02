@@ -78,6 +78,7 @@ export class UserActivity extends Component {
         }),
     };
 
+    private static clickable_uri_ids = ['@clickableuri'];
     private actions: UserAction[];
     private foldedActions: UserAction[];
     private userProfileModel: UserProfileModel;
@@ -276,8 +277,17 @@ export class UserActivity extends Component {
         li.classList.add(VIEW_EVENT_CLASS);
 
         const dataElement = document.createElement('div');
+        if (UserActivity.clickable_uri_ids.indexOf(action.raw.content_id_key) !== -1) {
+            //If the content id key is included in the clickable_uri list, make the component a link
+            const a = document.createElement('a');
+            a.href = action.raw.content_id_value;
+            a.innerText = action.raw.content_id_value;
+            dataElement.appendChild(a);
+        } else {
+            dataElement.innerText = `${action.raw.content_id_key}: ${action.raw.content_id_value}`;
+        }
+
         dataElement.classList.add(DATA_CLASS);
-        dataElement.innerText = `${action.raw.content_id_key}: ${action.raw.content_id_value}`;
 
         li.appendChild(this.buildTitleSection(action));
         li.appendChild(dataElement);

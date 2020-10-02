@@ -102,9 +102,7 @@ export class TopQueries extends Component {
                 const li = document.createElement('li');
                 const a = document.createElement('a');
                 a.classList.add('coveo-link');
-                a.addEventListener('click', () => {
-                    this.options.onClick(completion.expression, this);
-                });
+                a.addEventListener('click', () => this.options.onClick(completion.expression, this));
                 a.innerHTML = completion.expression;
 
                 li.appendChild(a);
