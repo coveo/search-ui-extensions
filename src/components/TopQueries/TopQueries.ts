@@ -26,7 +26,7 @@ export interface ITopQueriesOptions {
      * Specifies the handler called when a suggestion is clicked.
      *
      * Default executes a search query using the suggestion
-     * 
+     *
      * This option must be set in JavaScript when initializing the component.
      */
     onClick?: (expression: string, component: TopQueries) => void;
