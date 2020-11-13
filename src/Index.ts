@@ -15,3 +15,4 @@ export { ViewedByCustomer } from './components/ViewedByCustomer/ViewedByCustomer
 export { ResultAction } from './components/ResultAction/ResultAction';
 export { CopyToClipboard } from './components/CopyToClipboard/CopyToClipboard';
 export { TopQueries } from './components/TopQueries/TopQueries';
+export { AugmentedResultList } from './components/AugmentedResultList/AugmentedResultList';

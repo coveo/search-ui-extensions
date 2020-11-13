@@ -172,7 +172,6 @@ describe('UserProfilingModel', () => {
             );
 
             const actions = await actionsPromise;
-            console.log(actions);
             const actionsWithDocument = actions.filter((action) => action.document);
             const uniqueUriHashes = FAKE_ACTIONS_WITH_URI_HASH.map((x) => x.value.uri_hash).filter((x, i, l) => l.indexOf(x) === i);
 
