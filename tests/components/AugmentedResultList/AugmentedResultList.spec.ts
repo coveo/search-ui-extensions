@@ -149,14 +149,14 @@ describe('AugmentedResultList', () => {
     });
 
     it('should still build results without augmenting if objectDataAction is missing', (done) => {
-      const numResults = 10;
-      const data = createFakeResultsThatMatch(numResults);
-      const test = createComponent();
+        const numResults = 10;
+        const data = createFakeResultsThatMatch(numResults);
+        const test = createComponent();
 
-      test.cmp.buildResults(data).then(() => {
-          expect(test.cmp.getDisplayedResults().length).toEqual(numResults);
-          expect(test.cmp.getDisplayedResults()).toEqual(data.results);
-          done();
-      });
-  });
+        test.cmp.buildResults(data).then(() => {
+            expect(test.cmp.getDisplayedResults().length).toEqual(numResults);
+            expect(test.cmp.getDisplayedResults()).toEqual(data.results);
+            done();
+        });
+    });
 });

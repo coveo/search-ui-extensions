@@ -120,7 +120,7 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
 
                     // Attach data specific to each result/object
                     for (const key in match) {
-                      res.raw[key.toLowerCase()] = (match as any)[key];
+                        res.raw[key.toLowerCase()] = (match as any)[key];
                     }
 
                     // Attach data common to all results
