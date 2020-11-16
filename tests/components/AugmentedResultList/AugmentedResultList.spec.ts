@@ -171,8 +171,8 @@ describe('AugmentedResultList', () => {
         const loggerSpy = sandbox.spy(Logger.prototype, 'error');
 
         test.cmp.buildResults(data).then(() => {
-          expect(loggerSpy.calledWith(['Unable to fetch augment data.', 'purposeful failure'])).toBeTrue();
-          done();
+            expect(loggerSpy.calledWith(['Unable to fetch augment data.', 'purposeful failure'])).toBeTrue();
+            done();
         });
     });
 });
