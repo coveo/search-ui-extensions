@@ -51,8 +51,8 @@ describe('AugmentedResultList', () => {
     };
 
     const testMatchingFunction = (augmentData: any, queryResult: IQueryResult) => {
-      return augmentData.type === 'water' && (augmentData.id === queryResult.raw.id);
-    } 
+        return augmentData.type === 'water' && augmentData.id === queryResult.raw.id;
+    };
 
     const createFakeResultsThatMatch = (numResults: number) => {
         const fakeResults = Fake.createFakeResults(numResults);
@@ -60,7 +60,10 @@ describe('AugmentedResultList', () => {
         return fakeResults;
     };
 
-    const createComponent = (fetchAugmentData?: (objectIds: string[]) => Promise<IPromiseReturnArgs<IAugmentData>>, matchingFunction?: (augmentData: any, queryResult: IQueryResult) => boolean) => {
+    const createComponent = (
+        fetchAugmentData?: (objectIds: string[]) => Promise<IPromiseReturnArgs<IAugmentData>>,
+        matchingFunction?: (augmentData: any, queryResult: IQueryResult) => boolean
+    ) => {
         element = document.createElement('div');
         document.body.append(element);
         testOptions = new Mock.AdvancedComponentSetupOptions(element, {
@@ -153,9 +156,9 @@ describe('AugmentedResultList', () => {
         test.cmp.buildResults(data).then(() => {
             const displayedResults = test.cmp.getDisplayedResults();
             expect(displayedResults.length).toEqual(numResults);
-            expect(displayedResults.find(result => result.raw.id === '#007').raw.name).toEqual('squirtle');
-            expect(displayedResults.find(result => result.raw.id === '#001').raw.name).toBeUndefined();
-            expect(displayedResults.find(result => result.raw.id === '#004').raw.name).toBeUndefined();
+            expect(displayedResults.find((result) => result.raw.id === '#007').raw.name).toEqual('squirtle');
+            expect(displayedResults.find((result) => result.raw.id === '#001').raw.name).toBeUndefined();
+            expect(displayedResults.find((result) => result.raw.id === '#004').raw.name).toBeUndefined();
             done();
         });
     });
