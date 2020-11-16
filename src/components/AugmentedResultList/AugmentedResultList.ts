@@ -10,11 +10,11 @@ export interface IAugmentData {
     /**
      * Data specific to a result with matching object id.
      */
-    resultData: any[];
+    resultData: {}[];
     /**
      * Data to add to every result with matching object id.
      */
-    commonData: any;
+    commonData: {};
 }
 
 /**
@@ -31,6 +31,7 @@ export interface IPromiseReturnArgs<T> {
 export interface AugmentedResultListOptions extends IResultListOptions {
     matchingIdField: IFieldOption;
     fetchAugmentData: (objectIds: String[]) => Promise<IPromiseReturnArgs<IAugmentData>>;
+    matchingFunction: (augmentData: any, queryResult: IQueryResult) => boolean;
 }
 
 export class AugmentedResultList extends Coveo.ResultList implements IComponentBindings {
@@ -52,6 +53,12 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
         fetchAugmentData: ComponentOptions.buildCustomOption<(objectIds: String[]) => Promise<IPromiseReturnArgs<IAugmentData>>>(() => {
             return null;
         }),
+        /**
+         * The function to use to determine a match between augment data and query results.
+         */
+        matchingFunction: ComponentOptions.buildCustomOption<(augmentData: any, queryResult: IQueryResult) => boolean>(() => {
+            return null;
+        }),
     };
 
     /**
@@ -63,7 +70,15 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
      */
     constructor(public element: HTMLElement, public options: AugmentedResultListOptions, public bindings: IComponentBindings) {
         super(element, ComponentOptions.initComponentOptions(element, AugmentedResultList, options), bindings, AugmentedResultList.ID);
+        if (!this.options.matchingFunction) {
+            this.options.matchingFunction = this.defaultMatchingFunction;
+        }
     }
+
+    private defaultMatchingFunction = (augmentData: any, queryResult: IQueryResult) => {
+        const fieldName = this.getFieldString(this.options.matchingIdField);
+        return augmentData[fieldName] === queryResult.raw[fieldName];
+    };
 
     private getObjectPayload(results: IQueryResult[]): String[] {
         const field = this.getFieldString(this.options.matchingIdField);
@@ -83,10 +98,9 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
     }
 
     public async buildResults(queryResults: Coveo.IQueryResults): Promise<HTMLElement[]> {
-        const fieldString = this.getFieldString(this.options.matchingIdField);
+        let remoteResults: IPromiseReturnArgs<IAugmentData>;
 
         if (this.options.fetchAugmentData) {
-            let remoteResults: IPromiseReturnArgs<IAugmentData>;
             try {
                 // Call remote action to fetch augmenting data
                 remoteResults = await this.options.fetchAugmentData(this.getObjectPayload(queryResults.results));
@@ -96,11 +110,9 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
             }
 
             if (remoteResults?.data) {
-                // Merge remote action results with Coveo Results
+                // Merge augmenting data with Coveo Results
                 queryResults.results.forEach((res: Coveo.IQueryResult) => {
-                    const match = remoteResults.data.resultData.find((data) => {
-                        return (data as any)[fieldString] === res.raw[fieldString];
-                    });
+                    const match = remoteResults.data.resultData.find((data: any) => this.options.matchingFunction(data, res));
 
                     // Attach data specific to each result/object
                     for (const key in match) {
