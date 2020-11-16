@@ -1,7 +1,7 @@
 import * as sinon from 'sinon';
 import { IQueryResult, Logger, SearchEndpoint } from 'coveo-search-ui';
 import { Mock, Fake } from 'coveo-search-ui-tests';
-import { AugmentedResultList, IPromiseReturnArgs } from '../../../src/components/AugmentedResultList/AugmentedResultList';
+import { AugmentedResultList, IPromiseReturnArgs, IAugmentData } from '../../../src/components/AugmentedResultList/AugmentedResultList';
 
 describe('AugmentedResultList', () => {
     let sandbox: sinon.SinonSandbox;
@@ -10,7 +10,7 @@ describe('AugmentedResultList', () => {
     let element: HTMLElement;
     let testOptions: Mock.AdvancedComponentSetupOptions;
 
-    const objectData = [
+    const resultData = [
         {
             id: '#001',
             name: 'bulbasaur',
@@ -33,17 +33,21 @@ describe('AugmentedResultList', () => {
         starter: true,
     };
 
-    const returnData: IPromiseReturnArgs = {
+    const returnData: IPromiseReturnArgs<IAugmentData> = {
         data: {
-            objectData,
+            resultData,
             commonData,
         },
     };
 
     const matchingIdField = '@id';
 
-    const stubObjectAction = (objectIds: string[]): Promise<IPromiseReturnArgs> => {
+    const stubFetchAugmentData = (objectIds: string[]): Promise<IPromiseReturnArgs<IAugmentData>> => {
         return Promise.resolve(returnData);
+    };
+
+    const failingFetchStub = (objectIds: string[]): Promise<IPromiseReturnArgs<IAugmentData>> => {
+        return Promise.reject('purposeful failure');
     };
 
     const createFakeResultsThatMatch = (numResults: number) => {
@@ -52,38 +56,38 @@ describe('AugmentedResultList', () => {
         return fakeResults;
     };
 
-    const createComponent = (objectDataAction?: (objectIds: string[]) => Promise<IPromiseReturnArgs>) => {
+    const createComponent = (fetchAugmentData?: (objectIds: string[]) => Promise<IPromiseReturnArgs<IAugmentData>>) => {
         element = document.createElement('div');
         document.body.append(element);
         testOptions = new Mock.AdvancedComponentSetupOptions(element, {
             matchingIdField,
-            objectDataAction,
+            fetchAugmentData,
         });
 
         componentSetup = Mock.advancedComponentSetup(AugmentedResultList, testOptions);
         return componentSetup;
     };
 
-    const verifyAugmentedObjectData = (objectData: any, results: IQueryResult[]) => {
-        objectData.forEach((object: any) => {
-            const matchingResult = results.find((result) => result.raw.id === (object as any).id);
+    const verifyAugmentedResultData = (resultData: any, results: IQueryResult[]) => {
+        resultData.forEach((data: any) => {
+            const matchingResult = results.find((result) => result.raw.id === data.id);
             if (matchingResult) {
-                for (const key in object) {
-                    expect(matchingResult.raw[key]).toEqual(object[key]);
+                for (const key in data) {
+                    expect(matchingResult.raw[key]).toEqual(data[key]);
                 }
             }
         });
     };
 
-    const verifyUntouchedResults = (objectData: {}[], results: IQueryResult[]) => {
+    const verifyUntouchedResults = (resultData: {}[], results: IQueryResult[]) => {
         const idString = matchingIdField.replace('@', '');
 
-        objectData.forEach((object: any) => {
-            const ids = objectData.map((data: any) => (data as any)[idString]);
+        resultData.forEach((data: any) => {
+            const ids = resultData.map((data: any) => (data as any)[idString]);
             const otherResults = results.filter((result) => !ids.find((id) => (result as any)[idString] === id));
 
             otherResults.forEach((result: IQueryResult) => {
-                for (const key in object) {
+                for (const key in data) {
                     if (key !== idString) {
                         expect(result.raw[key]).toBeUndefined;
                     }
@@ -100,10 +104,10 @@ describe('AugmentedResultList', () => {
         });
     };
 
-    const verifyAugmentedResults = (returnData: IPromiseReturnArgs, results: IQueryResult[]) => {
-        verifyAugmentedObjectData(returnData.data.objectData, results);
+    const verifyAugmentedResults = (returnData: IPromiseReturnArgs<IAugmentData>, results: IQueryResult[]) => {
+        verifyAugmentedResultData(returnData.data.resultData, results);
         verifyAugmentedCommonData(returnData.data.commonData, results);
-        verifyUntouchedResults(returnData.data.objectData, results);
+        verifyUntouchedResults(returnData.data.resultData, results);
     };
 
     beforeAll(() => {
@@ -127,7 +131,7 @@ describe('AugmentedResultList', () => {
     it('should augment results with object data', (done) => {
         const numResults = 10;
         const data = createFakeResultsThatMatch(numResults);
-        const test = createComponent(stubObjectAction);
+        const test = createComponent(stubFetchAugmentData);
 
         test.cmp.buildResults(data).then(() => {
             expect(test.cmp.getDisplayedResults().length).toEqual(numResults);
@@ -139,7 +143,7 @@ describe('AugmentedResultList', () => {
     it("should NOT augment results if IDs don't match", (done) => {
         const numResults = 10;
         const data = Fake.createFakeResults(numResults);
-        const test = createComponent(stubObjectAction);
+        const test = createComponent(stubFetchAugmentData);
 
         test.cmp.buildResults(data).then(() => {
             expect(test.cmp.getDisplayedResults().length).toEqual(numResults);
@@ -148,7 +152,7 @@ describe('AugmentedResultList', () => {
         });
     });
 
-    it('should still build results without augmenting if objectDataAction is missing', (done) => {
+    it('should still build results without augmenting if resultDataAction is missing', (done) => {
         const numResults = 10;
         const data = createFakeResultsThatMatch(numResults);
         const test = createComponent();
@@ -157,6 +161,18 @@ describe('AugmentedResultList', () => {
             expect(test.cmp.getDisplayedResults().length).toEqual(numResults);
             expect(test.cmp.getDisplayedResults()).toEqual(data.results);
             done();
+        });
+    });
+
+    it('should fail gracefully and log an error', (done) => {
+        const numResults = 10;
+        const data = createFakeResultsThatMatch(numResults);
+        const test = createComponent(failingFetchStub);
+        const loggerSpy = sandbox.spy(Logger.prototype, 'error');
+
+        test.cmp.buildResults(data).then(() => {
+          expect(loggerSpy.calledWith(['Unable to fetch augment data.', 'purposeful failure'])).toBeTrue();
+          done();
         });
     });
 });

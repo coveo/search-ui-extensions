@@ -1,36 +1,36 @@
-import { $$, ComponentOptions, IComponentBindings, Initialization, IQueryResult, IResultListOptions, IFieldOption } from 'coveo-search-ui';
+import { ComponentOptions, IComponentBindings, Initialization, IQueryResult, IResultListOptions, IFieldOption } from 'coveo-search-ui';
 
 /**
- * Interface for the object data returned from remote action.
+ * Interface for the data returned from external fetch action.
  *
  * @export
- * @interface IObjectData
+ * @interface IAugmentData
  */
-export interface IObjectData {
+export interface IAugmentData {
     /**
      * Data specific to a result with matching object id.
      */
-    objectData: {}[];
+    resultData: any[];
     /**
      * Data to add to every result with matching object id.
      */
-    commonData: {};
+    commonData: any;
 }
 
 /**
- * Generic interface for the response returned by the remote action method.
+ * Generic interface for the response returned by the external fetch action.
  *
  * @export
  * @interface IPromiseReturnArgs
  * @template T
  */
-export interface IPromiseReturnArgs {
-    data: IObjectData;
+export interface IPromiseReturnArgs<T> {
+    data: T;
 }
 
 export interface AugmentedResultListOptions extends IResultListOptions {
     matchingIdField: IFieldOption;
-    objectDataAction: (objectIds: String[]) => Promise<IPromiseReturnArgs>;
+    fetchAugmentData: (objectIds: String[]) => Promise<IPromiseReturnArgs<IAugmentData>>;
 }
 
 export class AugmentedResultList extends Coveo.ResultList implements IComponentBindings {
@@ -41,15 +41,15 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
      */
     static options: AugmentedResultListOptions = {
         /**
-         * The field to be used as matching ID between object and result.
+         * The field to be used as matching ID between augment data and result.
          */
         matchingIdField: ComponentOptions.buildFieldOption({
             required: true,
         }),
         /**
-         * The function used to fetch extra object information.
+         * The function used to fetch extra result information.
          */
-        objectDataAction: ComponentOptions.buildCustomOption<(objectIds: String[]) => Promise<IPromiseReturnArgs>>(() => {
+        fetchAugmentData: ComponentOptions.buildCustomOption<(objectIds: String[]) => Promise<IPromiseReturnArgs<IAugmentData>>>(() => {
             return null;
         }),
     };
@@ -77,49 +77,36 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
         return fieldName.replace('@', '');
     }
 
-    protected enableAnimation() {
-        if (!document.getElementById('overlay')) {
-            $$(document.body).append($$('div', { id: 'overlay', class: 'modal-backdrop fade in' }).el);
-        }
-    }
-
-    protected disableAnimation() {
-        if (document.getElementById('overlay')) {
-            document.getElementById('overlay').remove();
-        }
-    }
-
     public renderResults(resultElements: HTMLElement[], append = false): Promise<void> {
         const res = super.renderResults(resultElements, append);
-        this.disableAnimation();
         return res;
     }
 
-    public async buildResults(results: Coveo.IQueryResults): Promise<HTMLElement[]> {
-        this.enableAnimation();
+    public async buildResults(queryResults: Coveo.IQueryResults): Promise<HTMLElement[]> {
         const fieldString = this.getFieldString(this.options.matchingIdField);
 
-        if (this.options.objectDataAction) {
-            // Call remote action to fetch object data
-            const remoteResults: IPromiseReturnArgs = await this.options
-                .objectDataAction(this.getObjectPayload(results.results))
-                .then((data) => {
-                    return data;
-                })
-                .catch((ex) => {
-                    this.logger.error('Unable to fetch object data.');
-                    return null;
-                });
+        if (this.options.fetchAugmentData) {
+            let remoteResults: IPromiseReturnArgs<IAugmentData>;
+            try {
+                // Call remote action to fetch augmenting data
+                remoteResults = await this.options.fetchAugmentData(this.getObjectPayload(queryResults.results));
+            } catch (e) {
+                this.logger.error(['Unable to fetch augment data.', e]);
+                return null;
+            }
 
-            if (remoteResults && remoteResults.data) {
+            if (remoteResults?.data) {
                 // Merge remote action results with Coveo Results
-                results.results.forEach((res: Coveo.IQueryResult) => {
-                    const match = remoteResults.data.objectData.find((data) => {
+                queryResults.results.forEach((res: Coveo.IQueryResult) => {
+                    const match = remoteResults.data.resultData.find((data) => {
                         return (data as any)[fieldString] === res.raw[fieldString];
                     });
 
                     // Attach data specific to each result/object
                     for (const key in match) {
+                        if (Boolean(res.raw[key.toLowerCase()])) {
+                            this.logger.warn(`The ${key} field was overwritten on result: ${res.title}`);
+                        }
                         res.raw[key.toLowerCase()] = (match as any)[key];
                     }
 
@@ -133,7 +120,7 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
             this.logger.error('No objectDataAction is defined.');
         }
 
-        const ret = super.buildResults(results);
+        const ret = super.buildResults(queryResults);
         return ret;
     }
 }
