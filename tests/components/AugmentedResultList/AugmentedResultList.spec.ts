@@ -163,6 +163,24 @@ describe('AugmentedResultList', () => {
         });
     });
 
+    it('should augment results with object data and warn if an overwrite occured', (done) => {
+        const numResults = 10;
+        const data = createFakeResultsThatMatch(numResults);
+        const test = createComponent(stubFetchAugmentData);
+        const loggerSpy = sandbox.spy(Logger.prototype, 'warn');
+
+        // Set attribute to be overwritten.
+        const overwrittenResult = data.results.find((res) => res.raw.id === '#001');
+        overwrittenResult.raw.name = 'Mewtwo';
+
+        test.cmp.buildResults(data).then(() => {
+            expect(test.cmp.getDisplayedResults().length).toEqual(numResults);
+            expect(loggerSpy.calledWith(`The name field was overwritten on result: ${overwrittenResult.title}`)).toBeTrue();
+            verifyAugmentedResults(returnData, test.cmp.getDisplayedResults());
+            done();
+        });
+    });
+
     it("should NOT augment results if IDs don't match", (done) => {
         const numResults = 10;
         const data = Fake.createFakeResults(numResults);

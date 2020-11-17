@@ -76,20 +76,20 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
     }
 
     private defaultMatchingFunction = (augmentData: any, queryResult: IQueryResult) => {
-        const fieldName = this.getFieldString(this.options.matchingIdField);
+        const fieldName = this.getMatchingFieldString();
         return augmentData[fieldName] === queryResult.raw[fieldName];
     };
 
     private getObjectPayload(results: IQueryResult[]): String[] {
-        const field = this.getFieldString(this.options.matchingIdField);
+        const field = this.getMatchingFieldString();
         if (results.length > 0) {
             return results.filter((result) => result.raw && result.raw[field]).map((result) => result.raw[field]);
         }
         return [];
     }
 
-    private getFieldString(fieldName: IFieldOption) {
-        return fieldName.replace('@', '');
+    private getMatchingFieldString() {
+        return this.options.matchingIdField.replace('@', '');
     }
 
     public renderResults(resultElements: HTMLElement[], append = false): Promise<void> {
@@ -99,6 +99,7 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
 
     public async buildResults(queryResults: Coveo.IQueryResults): Promise<HTMLElement[]> {
         let remoteResults: IPromiseReturnArgs<IAugmentData>;
+        const fieldName = this.getMatchingFieldString();
 
         if (this.options.fetchAugmentData) {
             try {
@@ -112,14 +113,14 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
             if (remoteResults?.data) {
                 // Merge augmenting data with Coveo Results
                 queryResults.results.forEach((res: Coveo.IQueryResult) => {
-                    const match = remoteResults.data.resultData.find((data: any) => this.options.matchingFunction(data, res));
+                    const match: any = remoteResults.data.resultData.find((data: any) => this.options.matchingFunction(data, res));
 
                     // Attach data specific to each result/object
                     for (const key in match) {
-                        if (Boolean(res.raw[key.toLowerCase()])) {
+                        if (key.toLowerCase() !== fieldName && Boolean(res.raw[key.toLowerCase()])) {
                             this.logger.warn(`The ${key} field was overwritten on result: ${res.title}`);
                         }
-                        res.raw[key.toLowerCase()] = (match as any)[key];
+                        res.raw[key.toLowerCase()] = match[key];
                     }
 
                     // Attach data common to all results
