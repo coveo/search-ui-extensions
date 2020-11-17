@@ -28,22 +28,24 @@ describe('AugmentedResultList', () => {
         },
     ];
 
-    const commonData = {
+    let commonData: any = {
         evolution: 1,
         starter: true,
     };
 
-    const returnData: IPromiseReturnArgs<IAugmentData> = {
-        data: {
-            resultData,
-            commonData,
-        },
+    const getReturnData = (): IPromiseReturnArgs<IAugmentData> => {
+        return {
+            data: {
+                resultData,
+                commonData,
+            },
+        }
     };
 
     const matchingIdField = '@id';
 
     const stubFetchAugmentData = (objectIds: string[]): Promise<IPromiseReturnArgs<IAugmentData>> => {
-        return Promise.resolve(returnData);
+        return Promise.resolve(getReturnData());
     };
 
     const failingFetchStub = (objectIds: string[]): Promise<IPromiseReturnArgs<IAugmentData>> => {
@@ -112,7 +114,8 @@ describe('AugmentedResultList', () => {
         });
     };
 
-    const verifyAugmentedResults = (returnData: IPromiseReturnArgs<IAugmentData>, results: IQueryResult[]) => {
+    const verifyAugmentedResults = (returnData: IPromiseReturnArgs<IAugmentData>, results: IQueryResult[], numResults: number) => {
+        expect(results.length).toEqual(numResults);
         verifyAugmentedResultData(returnData.data.resultData, results);
         verifyAugmentedCommonData(returnData.data.commonData, results);
         verifyUntouchedResults(returnData.data.resultData, results);
@@ -126,6 +129,10 @@ describe('AugmentedResultList', () => {
         sandbox = sinon.createSandbox();
         const endpoint = sandbox.createStubInstance(SearchEndpoint);
         endpoint.search.callsFake(() => Promise.resolve(createFakeResultsThatMatch(10)));
+        commonData = {
+            evolution: 1,
+            starter: true,
+        };
     });
 
     afterEach(() => {
@@ -142,8 +149,7 @@ describe('AugmentedResultList', () => {
         const test = createComponent(stubFetchAugmentData);
 
         test.cmp.buildResults(data).then(() => {
-            expect(test.cmp.getDisplayedResults().length).toEqual(numResults);
-            verifyAugmentedResults(returnData, test.cmp.getDisplayedResults());
+            verifyAugmentedResults(getReturnData(), test.cmp.getDisplayedResults(), numResults);
             done();
         });
     });
@@ -163,7 +169,7 @@ describe('AugmentedResultList', () => {
         });
     });
 
-    it('should augment results with object data and warn if an overwrite occured', (done) => {
+    it('should augment results with object data and log a trace if an overwrite occured', (done) => {
         const numResults = 10;
         const data = createFakeResultsThatMatch(numResults);
         const test = createComponent(stubFetchAugmentData);
@@ -174,9 +180,22 @@ describe('AugmentedResultList', () => {
         overwrittenResult.raw.name = 'Mewtwo';
 
         test.cmp.buildResults(data).then(() => {
-            expect(test.cmp.getDisplayedResults().length).toEqual(numResults);
             expect(loggerSpy.calledWith(`The name field was overwritten on result: ${overwrittenResult.title}`)).toBeTrue();
-            verifyAugmentedResults(returnData, test.cmp.getDisplayedResults());
+            verifyAugmentedResults(getReturnData(), test.cmp.getDisplayedResults(), numResults);
+            done();
+        });
+    });
+
+    it('should augment results with object data over common data in case of overlap', (done) => {
+        const numResults = 10;
+        const data = createFakeResultsThatMatch(numResults);
+        commonData.type = 'psychic';
+        const test = createComponent(stubFetchAugmentData);
+        const loggerSpy = sandbox.spy(Logger.prototype, 'trace');
+
+        test.cmp.buildResults(data).then(() => {
+            expect(loggerSpy.called).toBeTrue();
+            verifyAugmentedResultData(getReturnData().data.resultData, test.cmp.getDisplayedResults());
             done();
         });
     });
@@ -187,8 +206,7 @@ describe('AugmentedResultList', () => {
         const test = createComponent(stubFetchAugmentData);
 
         test.cmp.buildResults(data).then(() => {
-            expect(test.cmp.getDisplayedResults().length).toEqual(numResults);
-            verifyAugmentedResults(returnData, test.cmp.getDisplayedResults());
+            verifyAugmentedResults(getReturnData(), test.cmp.getDisplayedResults(), numResults);
             done();
         });
     });
@@ -205,7 +223,7 @@ describe('AugmentedResultList', () => {
         });
     });
 
-    it('should fail gracefully and log an error', (done) => {
+    it('should fail gracefully and log an error if fetch is unsuccessful', (done) => {
         const numResults = 10;
         const data = createFakeResultsThatMatch(numResults);
         const test = createComponent(failingFetchStub);
