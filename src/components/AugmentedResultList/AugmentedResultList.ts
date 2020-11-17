@@ -70,9 +70,7 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
      */
     constructor(public element: HTMLElement, public options: AugmentedResultListOptions, public bindings: IComponentBindings) {
         super(element, ComponentOptions.initComponentOptions(element, AugmentedResultList, options), bindings, AugmentedResultList.ID);
-        if (!this.options.matchingFunction) {
-            this.options.matchingFunction = this.defaultMatchingFunction;
-        }
+        this.options.matchingFunction = this.options.matchingFunction ?? this.defaultMatchingFunction;
     }
 
     private defaultMatchingFunction = (augmentData: any, queryResult: IQueryResult) => {
@@ -82,10 +80,7 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
 
     private getObjectPayload(results: IQueryResult[]): String[] {
         const field = this.getFieldString(this.options.matchingIdField);
-        if (results.length > 0) {
-            return results.filter((result) => result.raw && result.raw[field]).map((result) => result.raw[field]);
-        }
-        return [];
+        return results.filter((result) => result.raw && result.raw[field]).map((result) => result.raw[field]);
     }
 
     private getFieldString(fieldName: IFieldOption) {
@@ -93,8 +88,7 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
     }
 
     public renderResults(resultElements: HTMLElement[], append = false): Promise<void> {
-        const res = super.renderResults(resultElements, append);
-        return res;
+        return super.renderResults(resultElements, append);
     }
 
     public async buildResults(queryResults: Coveo.IQueryResults): Promise<HTMLElement[]> {
@@ -132,8 +126,7 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
             this.logger.error('No objectDataAction is defined.');
         }
 
-        const ret = super.buildResults(queryResults);
-        return ret;
+        return super.buildResults(queryResults);
     }
 }
 
