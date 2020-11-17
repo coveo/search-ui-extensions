@@ -39,7 +39,7 @@ describe('AugmentedResultList', () => {
                 resultData,
                 commonData,
             },
-        }
+        };
     };
 
     const matchingIdField = '@id';
