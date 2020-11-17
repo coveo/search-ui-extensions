@@ -109,17 +109,17 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
                 queryResults.results.forEach((res: Coveo.IQueryResult) => {
                     const match: any = remoteResults.data.resultData.find((data: any) => this.options.matchingFunction(data, res));
 
-                    // Attach data specific to each result/object
-                    for (const key in match) {
-                        if (key.toLowerCase() !== fieldName && Boolean(res.raw[key.toLowerCase()])) {
-                            this.logger.warn(`The ${key} field was overwritten on result: ${res.title}`);
-                        }
-                        res.raw[key.toLowerCase()] = match[key];
-                    }
-
-                    // Attach data common to all results
+                    // Add data common to all results
                     for (const key in remoteResults.data.commonData) {
                         res.raw[key.toLowerCase()] = (remoteResults.data.commonData as any)[key];
+                    }
+
+                    // Add data specific to each result/object
+                    for (const key in match) {
+                        if (key.toLowerCase() !== fieldName && Boolean(res.raw[key.toLowerCase()])) {
+                            this.logger.trace(`The ${key} field was overwritten on result: ${res.title}`);
+                        }
+                        res.raw[key.toLowerCase()] = match[key];
                     }
                 });
             }

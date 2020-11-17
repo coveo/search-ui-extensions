@@ -167,7 +167,7 @@ describe('AugmentedResultList', () => {
         const numResults = 10;
         const data = createFakeResultsThatMatch(numResults);
         const test = createComponent(stubFetchAugmentData);
-        const loggerSpy = sandbox.spy(Logger.prototype, 'warn');
+        const loggerSpy = sandbox.spy(Logger.prototype, 'trace');
 
         // Set attribute to be overwritten.
         const overwrittenResult = data.results.find((res) => res.raw.id === '#001');
