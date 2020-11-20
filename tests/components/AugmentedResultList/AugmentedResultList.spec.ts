@@ -223,6 +223,22 @@ describe('AugmentedResultList', () => {
         });
     });
 
+    it('should fail and throw error if both matching id field and matching function are missing', () => {
+        let error: Error;
+        try {
+            const element = document.createElement('div');
+            document.body.append(element);
+            const testOptions = new Mock.AdvancedComponentSetupOptions(element, {
+                fetchAugmentData: stubFetchAugmentData,
+            });
+            Mock.advancedComponentSetup(AugmentedResultList, testOptions);
+        } catch (e) {
+            error = e;
+        }
+
+        expect(error.message).toEqual('A matching id field or matching function is required.');
+    });
+
     it('should fail gracefully and log an error if fetch is unsuccessful', (done) => {
         const numResults = 10;
         const data = createFakeResultsThatMatch(numResults);

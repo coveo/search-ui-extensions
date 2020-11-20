@@ -44,15 +44,13 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
         /**
          * The field to be used as matching ID between augment data and result.
          */
-        matchingIdField: ComponentOptions.buildFieldOption({
-            required: true,
-        }),
+        matchingIdField: ComponentOptions.buildFieldOption(),
         /**
          * The function used to fetch extra result information.
          */
         fetchAugmentData: ComponentOptions.buildCustomOption<(objectIds: String[]) => Promise<IPromiseReturnArgs<IAugmentData>>>(() => {
             return null;
-        }),
+        }, {required: true}),
         /**
          * The function to use to determine a match between augment data and query results.
          */
@@ -70,6 +68,9 @@ export class AugmentedResultList extends Coveo.ResultList implements IComponentB
      */
     constructor(public element: HTMLElement, public options: AugmentedResultListOptions, public bindings: IComponentBindings) {
         super(element, ComponentOptions.initComponentOptions(element, AugmentedResultList, options), bindings, AugmentedResultList.ID);
+        if (!Boolean(this.options.matchingIdField) && !Boolean(this.options.matchingFunction)) {
+          throw new Error('A matching id field or matching function is required.');
+        }
         this.options.matchingFunction = this.options.matchingFunction ?? this.defaultMatchingFunction;
     }
 
