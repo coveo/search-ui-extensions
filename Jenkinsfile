@@ -1,5 +1,5 @@
 library(
-    identifier: "jenkins-common-lib@v1.4",
+    identifier: "jenkins-common-lib@v1.6",
     retriever: modernSCM(github(credentialsId: "github-app-dev", repository: "jenkins-common-lib", repoOwner: "coveo")),
     changelog: false
 )
@@ -20,45 +20,44 @@ pipeline {
     }
 
     stages {
-        stage("Setup") {
+        stage("Build") {
             steps {
                 withDockerContainer(image: NODE_IMAGE, args: "-u root:root") {
-                    sh "npm install"
-                    sh "npm run lint"
-                    sh "npm run testCoverage"
-                    sh "npm run dev & npx wait-on http://localhost:8080"
-                    sh "npx cypress run"
+                    withCredentials([string(credentialsId: 'coveralls-search-ui-extensions', variable: 'COVERALLS_REPO_TOKEN')]) {
+                        sh "apt-get update -qq"
+                        sh "apt install -qq -y gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget"
+                        sh "npm install"
+                        sh "npm run lint"
+                        sh "npm run build"
+                        sh "npm run testCoverage"
+                    }
                 }
             }
         }
 
         stage("Test package") {
             steps {
-                withDockerContainer(image: NODE_IMAGE, args: "-u root:root") {
-                    sh "node ./scripts/before.deploy.js"
-                }
-
                 withCredentials([string(credentialsId: 'snyk_token', variable: 'SNYK_TOKEN')]) {
                     runSnyk(org: "coveo-jsui", directory: ".")
                 }
+            }
+        }
 
-                withDockerContainer(image: DEPLOY_PIPELINE_IMAGE) {
-                    sh "deployment-package package create --version ${params.NPM_PACKAGE_VERSION} --dry-run"
-                }
+        stage("Deploy on Tag") {
+            when {
+                tag pattern: "^v\\d+\\.\\d+\\.\\d+$", comparator: "REGEXP"
             }
-        }
-        /*
-        stage("Deploy") {
             steps {
-                
-                withDockerContainer(image: DEPLOY_PIPELINE_IMAGE) {
-                    script {
-                        packageName = sh (script: "deployment-package package create --version ${params.NPM_PACKAGE_VERSION}", returnStdout: true).trim()
-                        sh "deployment-package package deploy --package-name ${packageName} --target-environment dev"
-                    }
+                sh "mkdir -p s3/${TAG_NAME}"
+                sh "cp -r bin/commonjs bin/css bin/es6 bin/img bin/typings s3/${TAG_NAME}"
+
+                script {
+                    deploymentPackage.command(
+                        command: "package create",
+                        parameters: [ withDeploy: true ]
+                    )
                 }
             }
         }
-        */
     }
 }

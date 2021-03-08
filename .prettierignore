@@ -8,3 +8,5 @@ node_modules/**/*
 .snyk
 .travis.yml
 LICENSE
+Jenkinsfile
+.deployment.config
