@@ -45,7 +45,7 @@ pipeline {
 
         stage("Deploy on Tag") {
             when {
-                tag pattern: "^v\\d+\\.\\d+\\.\\d+$", comparator: "REGEXP"
+                tag pattern: "^v\\d+\\.\\d+\\.\\d+", comparator: "REGEXP"
             }
             steps {
                 sh "mkdir -p s3/${TAG_NAME}"
