@@ -20,7 +20,7 @@ pipeline {
     }
 
     stages {
-        stage("Build") {
+        stage("Build and Test") {
             steps {
                 withDockerContainer(image: NODE_IMAGE, args: "-u root:root") {
                     withCredentials([string(credentialsId: 'coveralls-search-ui-extensions', variable: 'COVERALLS_REPO_TOKEN')]) {
@@ -35,7 +35,7 @@ pipeline {
             }
         }
 
-        stage("Test package") {
+        stage("Snyk") {
             steps {
                 withCredentials([string(credentialsId: 'snyk_token', variable: 'SNYK_TOKEN')]) {
                     runSnyk(org: "coveo-jsui", directory: ".")
