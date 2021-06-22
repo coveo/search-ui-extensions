@@ -108,6 +108,6 @@ This was a standalone task and has no additional steps past this.
 ## Related Links
 
 -   **search-ui-extensions PR**: https://github.com/coveo/search-ui-extensions/pull/45
--   **salesforceIntegrationV2 PR**: https://bitbucket.org/coveord/salesforceintegrationv2/pull-requests/1470/
+-   **salesforceIntegrationV2 PR**: https://github.com/coveo/salesforceintegrationv2/pull-requests/1470/
 
 ---
