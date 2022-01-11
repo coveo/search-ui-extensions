@@ -103,7 +103,7 @@ export class UserActivity extends Component {
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
 
         this.userProfileModel.getActions(this.options.userId).then((actions) => {
-            this.actions = actions.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+            this.actions = actions.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
             this.foldedActions = this.actions.filter((action) => !this.isUnfoldByDefault(action));
             this.render();
         });
