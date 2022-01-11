@@ -180,7 +180,7 @@ describe('UserActions', () => {
         const detailSection = mock.cmp.element.querySelector('.coveo-details');
 
         expect(automaticallyCreateComponentsInsideStub.called).toBe(true);
-        expect(detailSection.querySelector<HTMLElement>('.coveo-accordion-header-title').innerText).toBe("User's Recent Activity");
+        expect(detailSection.querySelector<HTMLElement>('.coveo-accordion-header-title').innerText).toBe('User Activity Timeline');
         expect(detailSection.querySelector('.CoveoUserActivity')).not.toBeNull();
     });
 
