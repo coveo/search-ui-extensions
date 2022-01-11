@@ -30,7 +30,7 @@ export interface IQueryListOptions {
     /**
      * Number of User Queries shown.
      *
-     * Default: `4`
+     * Default: `3`
      * Minimum: `1`
      */
     numberOfItems: number;
@@ -38,7 +38,7 @@ export interface IQueryListOptions {
     /**
      * Label of the list of User Queries.
      *
-     * Default: `Recent Queries`
+     * Default: `Most Recent Queries`
      */
     listLabel: string;
 
@@ -73,13 +73,13 @@ export class QueryList extends Component {
      */
     static readonly options: IQueryListOptions = {
         numberOfItems: ComponentOptions.buildNumberOption({
-            defaultValue: 4,
+            defaultValue: 3,
             min: 1,
             required: true,
         }),
 
         listLabel: ComponentOptions.buildStringOption({
-            defaultValue: 'Recent Queries',
+            defaultValue: 'Most Recent Queries',
         }),
 
         transform: ComponentOptions.buildCustomOption<(query: string) => Promise<HTMLElement>>(DEFAULT_TRANSFORMATION, {
