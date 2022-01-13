@@ -41,7 +41,7 @@ $background-color-grey: #f7f8f9;
     padding: 0;
     background-color: $background-color-white;
 
-    >h1 {
+    > h1 {
         color: $coveo-blue-6;
         font-size: 2em;
         font-weight: bold;
@@ -104,7 +104,7 @@ $background-color-grey: #f7f8f9;
                     position: relative;
                     width: $icon-container-size;
 
-                    &> {
+                    & > {
                         svg {
                             position: absolute;
                             top: 2px;
@@ -167,7 +167,7 @@ $background-color-grey: #f7f8f9;
 
         $folded-grey: $grey-4;
         $primary-grey: #626971;
-        $show-more-blue: #1372EC;
+        $show-more-blue: #1372ec;
 
         .coveo-folded {
             cursor: pointer;
@@ -219,7 +219,6 @@ $background-color-grey: #f7f8f9;
         }
 
         .coveo-session-container {
-
             .coveo-session-header {
                 font-style: italic;
                 font-size: 15px;
@@ -267,13 +266,13 @@ $background-color-grey: #f7f8f9;
                 height: 1.5em;
                 width: 1.5em;
 
-                &>svg {
+                & > svg {
                     height: 1.5em;
                     width: 1.5em;
                 }
             }
 
-            &>div {
+            & > div {
                 padding-bottom: 0.5em;
             }
 
@@ -292,7 +291,6 @@ $background-color-grey: #f7f8f9;
 }
 
 .coveo-accordion {
-
     padding: 0 1em;
     border: 1px solid $heather;
     border-radius: 2px;
@@ -310,7 +308,7 @@ $background-color-grey: #f7f8f9;
         align-content: center;
         align-items: baseline;
         justify-content: space-between;
-        
+
         padding: 1em 0;
 
         &-title {

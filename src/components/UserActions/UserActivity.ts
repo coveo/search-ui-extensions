@@ -134,10 +134,10 @@ export class UserActivity extends Component {
 
     private isPartOfTheSameSession = (action: UserAction, previousDateTime: Date): boolean => {
         return (
-            Math.abs(action.timestamp.valueOf() - previousDateTime.valueOf()) / DATE_TO_SECONDS / DATE_TO_MINUTES < MAX_MINUTES_IN_SESSION
-            && action.timestamp.getDate() - previousDateTime.getDate() == 0
+            Math.abs(action.timestamp.valueOf() - previousDateTime.valueOf()) / DATE_TO_SECONDS / DATE_TO_MINUTES < MAX_MINUTES_IN_SESSION &&
+            action.timestamp.getDate() - previousDateTime.getDate() == 0
         );
-    }
+    };
 
     private splitActionsBySessions(actions: UserAction[]): UserActionSession[] {
         if (actions.length === 0) {
@@ -150,13 +150,13 @@ export class UserActivity extends Component {
         });
         let previousDateTime = actions[0]?.timestamp;
         let currentSession: UserActionSession = splitSessions[0];
-        actions.forEach(action => {
+        actions.forEach((action) => {
             if (this.isPartOfTheSameSession(action, previousDateTime)) {
                 currentSession.actions.push(action);
             } else {
                 splitSessions.push({
                     timestamp: action.timestamp,
-                    actions: [action]
+                    actions: [action],
                 });
                 currentSession = splitSessions[splitSessions.length - 1];
             }
@@ -182,7 +182,7 @@ export class UserActivity extends Component {
         const list = document.createElement('ol');
 
         this.buildSessionsItems(this.sessions).forEach((sessionItem) => {
-            if(sessionItem) {
+            if (sessionItem) {
                 list.appendChild(sessionItem);
             }
         });
@@ -195,15 +195,11 @@ export class UserActivity extends Component {
 
         let hitExpanded = false;
         let sessionsFiltered = sessions;
-        if(this.options.hideCustomEvents) {
-            sessionsFiltered = sessionsFiltered.filter(
-                session => session.actions.some(
-                    action => action.type !== UserActionType.Custom
-                )
-            );
+        if (this.options.hideCustomEvents) {
+            sessionsFiltered = sessionsFiltered.filter((session) => session.actions.some((action) => action.type !== UserActionType.Custom));
         }
-        return sessionsFiltered.
-            reduce((acc, session) => {
+        return sessionsFiltered
+            .reduce((acc, session) => {
                 const last = acc[acc.length - 1];
                 const shouldBeFolded = this.foldedSessions.indexOf(session) !== -1;
                 if (shouldBeFolded && nbUnfoldedSessions > 0) {
@@ -220,12 +216,9 @@ export class UserActivity extends Component {
             .map((item) => {
                 if (Array.isArray(item)) {
                     return this.buildFoldedSession(
-                        (hitExpanded)
-                            ? item[0]
-                            : item[item.length - 1],
-                        (hitExpanded)
-                            ? 'Show past session'
-                            : 'Show new session');
+                        hitExpanded ? item[0] : item[item.length - 1],
+                        hitExpanded ? 'Show past session' : 'Show new session'
+                    );
                 }
                 hitExpanded = true;
                 return this.buildSessionItem(item);
@@ -256,7 +249,7 @@ export class UserActivity extends Component {
     private buildSessionItem(session: UserActionSession): HTMLElement {
         let sessionActions = session.actions;
         if (this.options.hideCustomEvents) {
-            sessionActions = sessionActions.filter(action => action.type !== UserActionType.Custom);
+            sessionActions = sessionActions.filter((action) => action.type !== UserActionType.Custom);
         }
         if (sessionActions.length === 0) {
             return null;
@@ -264,7 +257,7 @@ export class UserActivity extends Component {
         const sessionContainer = document.createElement('div');
         sessionContainer.classList.add('coveo-session-container');
         sessionContainer.appendChild(this.buildSessionHeader(session));
-        this.buildSessionContent(sessionActions).forEach(actionHTML => sessionContainer.appendChild(actionHTML));
+        this.buildSessionContent(sessionActions).forEach((actionHTML) => sessionContainer.appendChild(actionHTML));
         return sessionContainer;
     }
 
@@ -276,7 +269,7 @@ export class UserActivity extends Component {
     }
 
     private buildSessionContent(actions: UserAction[]): HTMLLIElement[] {
-        return actions.map(action => {
+        return actions.map((action) => {
             return this.buildActionListItem(action);
         });
     }
