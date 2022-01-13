@@ -1,10 +1,14 @@
 import { Component, IComponentBindings, Initialization, ComponentOptions, l, get } from 'coveo-search-ui';
-import { formatTime, formatDate, formatDateAndTime, formatDateAndTimeShort, formatTimeInterval } from '../../utils/time';
-import { UserAction, UserProfileModel } from '../../models/UserProfileModel';
+// import { formatTime, formatDate, formatTimeInterval } from '../../utils/time';
+import { UserAction, UserProfileModel, UserActionSession } from '../../models/UserProfileModel';
 import { duplicate, search, view, dot } from '../../utils/icons';
 import { UserActionType } from '../../rest/UserProfilingEndpoint';
-import { MANUAL_SEARCH_EVENT_CAUSE } from '../../utils/events';
+// import { MANUAL_SEARCH_EVENT_CAUSE } from '../../utils/events';
 import './Strings';
+
+const DATE_TO_SECONDS = 1000;
+const DATE_TO_MINUTES = 60;
+const MAX_MINUTES_IN_SESSION = 30;
 
 /**
  * Initialization options of the **UserActivity** class.
@@ -32,17 +36,24 @@ export interface IUserActivityOptions {
      * Default: `[]`
      */
     unfoldExclude: string[];
+
+    /**
+     * Hide all custom events from the User Activity timeline.
+     *
+     * Default: true
+     */
+    hideCustomEvents: boolean;
 }
 
 const MAIN_CLASS = 'coveo-user-activity';
-const CELL_CLASS = 'coveo-cell';
-const TITLE_CLASS = 'coveo-title';
-const DATA_CLASS = 'coveo-data';
+// const CELL_CLASS = 'coveo-cell';
+// const TITLE_CLASS = 'coveo-title';
+// const DATA_CLASS = 'coveo-data';
 const ORIGIN_CLASS = 'coveo-footer';
 const ACTIVITY_TITLE_SECTION = 'coveo-activity-title-section';
 const ACTIVITY_TITLE_CLASS = 'coveo-activity-title';
-const ACTIVIY_TIMESTAMP_CLASS = 'coveo-activity-timestamp';
-const HEADER_CLASS = 'coveo-header';
+// const ACTIVIY_TIMESTAMP_CLASS = 'coveo-activity-timestamp';
+// const HEADER_CLASS = 'coveo-header';
 const ACTIVITY_CLASS = 'coveo-activity';
 
 const CLICK_EVENT_CLASS = 'coveo-click';
@@ -52,9 +63,9 @@ const VIEW_EVENT_CLASS = 'coveo-view';
 const FOLDED_CLASS = 'coveo-folded';
 const TEXT_CLASS = 'coveo-text';
 const ICON_CLASS = 'coveo-icon';
-const BUBBLE_CLASS = 'coveo-bubble';
+// const BUBBLE_CLASS = 'coveo-bubble';
 
-const WIDTH_CUTOFF = 350;
+// const WIDTH_CUTOFF = 350;
 
 export class UserActivity extends Component {
     static readonly ID = 'UserActivity';
@@ -76,12 +87,20 @@ export class UserActivity extends Component {
             defaultValue: [],
             required: true,
         }),
+        hideCustomEvents: ComponentOptions.buildBooleanOption({
+            defaultValue: true,
+            required: false,
+        }),
     };
 
     private static clickable_uri_ids = ['@clickableuri'];
-    private actions: UserAction[];
-    private foldedActions: UserAction[];
+    // private actions: UserAction[];
+    private sessions: UserActionSession[];
+    // private foldedActions: UserAction[];
     private userProfileModel: UserProfileModel;
+
+    private DEFAULT_OPENED = 4;
+    private foldedSessions: UserActionSession[];
 
     /**
      * Create an instance of the **UserActivity** class. Initialize is needed the **UserProfileModel** and fetch user actions related to the **UserId**.
@@ -103,40 +122,56 @@ export class UserActivity extends Component {
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
 
         this.userProfileModel.getActions(this.options.userId).then((actions) => {
-            this.actions = actions.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-            this.foldedActions = this.actions.filter((action) => !this.isUnfoldByDefault(action));
+            const sortedActions = actions.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+            this.sessions = this.splitActionsBySessions(sortedActions);
+            console.log(this.sessions);
+
+            this.foldedSessions = this.sessions.filter((_, index) => index !== this.DEFAULT_OPENED);
+            // this.foldedActions = this.actions.filter((action) => !this.isUnfoldByDefault(action));
             this.render();
         });
     }
 
-    private isUnfoldByDefault(action: UserAction) {
-        const isCustom = action.type === UserActionType.Custom;
-        const isSearch = action.type === UserActionType.Search;
-        const isClick = action.type === UserActionType.Click;
+    private isPartOfTheSameSession = (action: UserAction, previousDateTime: Date): boolean => {
+        return (
+            Math.abs(action.timestamp.valueOf() - previousDateTime.valueOf()) / DATE_TO_SECONDS / DATE_TO_MINUTES < MAX_MINUTES_IN_SESSION
+            && action.timestamp.getDate() - previousDateTime.getDate() == 0
+        );
+    }
 
-        const cause = (isCustom && action.raw.event_value) || (isSearch && action.raw.cause) || '';
-
-        const useInclude = this.options.unfoldInclude && this.options.unfoldInclude.length > 0;
-
-        const isExcluded = (isSearch || isCustom) && this.options.unfoldExclude.indexOf(cause) !== -1;
-        const isIncluded = (isSearch || isCustom) && this.options.unfoldInclude.indexOf(cause) !== -1;
-
-        return isClick || (useInclude && isIncluded) || (!useInclude && !isExcluded);
+    private splitActionsBySessions(actions: UserAction[]): UserActionSession[] {
+        if (actions.length === 0) {
+            return [];
+        }
+        let splitSessions: UserActionSession[] = [];
+        splitSessions.push({
+            timestamp: actions[0].timestamp,
+            actions: [],
+        });
+        let previousDateTime = actions[0]?.timestamp;
+        let currentSession: UserActionSession = splitSessions[0];
+        actions.forEach(action => {
+            if (this.isPartOfTheSameSession(action, previousDateTime)) {
+                currentSession.actions.push(action);
+            } else {
+                splitSessions.push({
+                    timestamp: action.timestamp,
+                    actions: [action]
+                });
+                currentSession = splitSessions[splitSessions.length - 1];
+            }
+            previousDateTime = action.timestamp;
+        });
+        return splitSessions;
     }
 
     private render() {
         const panel = document.createElement('div');
         panel.classList.add(MAIN_CLASS);
 
-        const timestampSection = document.createElement('div');
-        timestampSection.classList.add(HEADER_CLASS);
-
-        this.buildTimestampSection().forEach((el) => timestampSection.appendChild(el));
-
         const activitySection = this.buildActivitySection();
         activitySection.classList.add(ACTIVITY_CLASS);
 
-        panel.appendChild(timestampSection);
         panel.appendChild(activitySection);
 
         this.element.innerHTML = '';
@@ -146,49 +181,107 @@ export class UserActivity extends Component {
     private buildActivitySection(): HTMLElement {
         const list = document.createElement('ol');
 
-        this.buildListItems(this.actions).forEach((listItem, index, array) => {
-            list.appendChild(listItem);
-            if (index < array.length - 1) {
-                list.appendChild(this.buildBubble());
+        this.buildSessionsItems(this.sessions).forEach((sessionItem) => {
+            if(sessionItem) {
+                list.appendChild(sessionItem);
             }
         });
 
         return list;
     }
 
-    private buildBubble() {
-        const li = document.createElement('li');
-        li.classList.add(BUBBLE_CLASS);
-        return li;
-    }
+    private buildSessionsItems(sessions: UserActionSession[]): HTMLElement[] {
+        const nbUnfoldedSessions = this.sessions.length - this.foldedSessions.length;
 
-    private buildListItems(actions: UserAction[]): HTMLElement[] {
-        const nbUnfoldedActions = this.actions.length - this.foldedActions.length;
-
-        return actions
-            .reduce((acc, action) => {
+        let hitExpanded = false;
+        let sessionsFiltered = sessions;
+        if(this.options.hideCustomEvents) {
+            sessionsFiltered = sessionsFiltered.filter(
+                session => session.actions.some(
+                    action => action.type !== UserActionType.Custom
+                )
+            );
+        }
+        return sessionsFiltered.
+            reduce((acc, session) => {
                 const last = acc[acc.length - 1];
-                if (this.foldedActions.indexOf(action) !== -1 && nbUnfoldedActions > 0) {
+                const shouldBeFolded = this.foldedSessions.indexOf(session) !== -1;
+                if (shouldBeFolded && nbUnfoldedSessions > 0) {
                     if (Array.isArray(last)) {
-                        last.push(action);
+                        last.push(session);
                         return [...acc];
                     } else {
-                        return [...acc, [action]];
+                        return [...acc, [session]];
                     }
                 } else {
-                    return [...acc, action];
+                    return [...acc, session];
                 }
             }, [])
             .map((item) => {
                 if (Array.isArray(item)) {
-                    return this.buildFolded(item);
-                } else {
-                    return this.buildListItem(item);
+                    return this.buildFoldedSession(
+                        (hitExpanded)
+                            ? item[0]
+                            : item[item.length - 1],
+                        (hitExpanded)
+                            ? 'Show past session'
+                            : 'Show new session');
                 }
+                hitExpanded = true;
+                return this.buildSessionItem(item);
             });
     }
 
-    private buildListItem(action: UserAction): HTMLLIElement {
+    private buildFoldedSession(sessionToExpand: UserActionSession, showMoreButtonText: string): HTMLLIElement {
+        const li = document.createElement('li');
+        li.classList.add(FOLDED_CLASS);
+
+        const hr = document.createElement('hr');
+        const span = document.createElement('span');
+        span.classList.add(TEXT_CLASS);
+        span.innerText = showMoreButtonText || 'Show More';
+
+        hr.appendChild(span);
+
+        li.addEventListener('click', () => {
+            this.foldedSessions = this.foldedSessions.filter((session) => session !== sessionToExpand);
+            this.render();
+        });
+
+        li.appendChild(hr);
+
+        return li;
+    }
+
+    private buildSessionItem(session: UserActionSession): HTMLElement {
+        let sessionActions = session.actions;
+        if (this.options.hideCustomEvents) {
+            sessionActions = sessionActions.filter(action => action.type !== UserActionType.Custom);
+        }
+        if (sessionActions.length === 0) {
+            return null;
+        }
+        const sessionContainer = document.createElement('div');
+        sessionContainer.classList.add('coveo-session-container');
+        sessionContainer.appendChild(this.buildSessionHeader(session));
+        this.buildSessionContent(sessionActions).forEach(actionHTML => sessionContainer.appendChild(actionHTML));
+        return sessionContainer;
+    }
+
+    private buildSessionHeader(session: UserActionSession): HTMLElement {
+        const sessionHeader = document.createElement('div');
+        sessionHeader.classList.add('coveo-session-header');
+        sessionHeader.innerText = `Session ${session.timestamp.toLocaleDateString()}`;
+        return sessionHeader;
+    }
+
+    private buildSessionContent(actions: UserAction[]): HTMLLIElement[] {
+        return actions.map(action => {
+            return this.buildActionListItem(action);
+        });
+    }
+
+    private buildActionListItem(action: UserAction): HTMLLIElement {
         let li: HTMLLIElement;
 
         switch (action.type) {
@@ -209,24 +302,13 @@ export class UserActivity extends Component {
         return li;
     }
 
-    private buildFolded(actions: UserAction[]): HTMLLIElement {
+    private buildSearchEvent(action: UserAction): HTMLLIElement {
         const li = document.createElement('li');
-        li.classList.add(FOLDED_CLASS);
+        li.classList.add(SEARCH_EVENT_CLASS);
 
-        const hr = document.createElement('hr');
-
-        const span = document.createElement('span');
-        span.classList.add(TEXT_CLASS);
-        span.innerText = `${actions.length} ${actions.length > 1 ? l(`${UserActivity.ID}_other_events`) : l(`${UserActivity.ID}_other_event`)}`;
-
-        hr.appendChild(span);
-
-        li.addEventListener('click', () => {
-            this.foldedActions = this.foldedActions.filter((action) => actions.indexOf(action) === -1);
-            this.render();
-        });
-
-        li.appendChild(hr);
+        li.appendChild(this.buildTitleSection(action, action.query || 'Empty Search'));
+        li.appendChild(this.buildFooterElement(action));
+        li.appendChild(this.buildIcon(search));
 
         return li;
     }
@@ -235,39 +317,20 @@ export class UserActivity extends Component {
         const li = document.createElement('li');
         li.classList.add(CLICK_EVENT_CLASS);
 
-        const dataElement = document.createElement('a');
-        dataElement.classList.add(DATA_CLASS);
-        dataElement.innerText = (action.document && action.document.title) || '';
-        dataElement.href = (action.document && action.document.clickUri) || '';
+        const titleSection = document.createElement('div');
+        titleSection.classList.add(ACTIVITY_TITLE_SECTION);
+
+        const clickedURLElement = document.createElement('a');
+        clickedURLElement.classList.add(ACTIVITY_TITLE_CLASS);
+        clickedURLElement.innerText = (action.document && action.document.title) || '';
+        clickedURLElement.href = (action.document && action.document.clickUri) || '';
+        titleSection.appendChild(clickedURLElement);
 
         document.createAttributeNS('svg', 'svg');
 
-        li.appendChild(this.buildTitleSection(action));
-        if (action.document) {
-            li.appendChild(dataElement);
-        }
-        li.appendChild(this.buildOriginElement(action));
+        li.appendChild(titleSection);
+        li.appendChild(this.buildFooterElement(action));
         li.appendChild(this.buildIcon(duplicate));
-
-        return li;
-    }
-
-    private buildSearchEvent(action: UserAction): HTMLLIElement {
-        const li = document.createElement('li');
-        li.classList.add(SEARCH_EVENT_CLASS);
-
-        li.appendChild(this.buildTitleSection(action));
-
-        if (action.query) {
-            const dataElement = document.createElement('div');
-            dataElement.classList.add(DATA_CLASS);
-            dataElement.innerText = action.query || '';
-
-            li.appendChild(dataElement);
-        }
-
-        li.appendChild(this.buildOriginElement(action));
-        li.appendChild(this.buildIcon(search));
 
         return li;
     }
@@ -276,22 +339,21 @@ export class UserActivity extends Component {
         const li = document.createElement('li');
         li.classList.add(VIEW_EVENT_CLASS);
 
-        const dataElement = document.createElement('div');
         if (UserActivity.clickable_uri_ids.indexOf(action.raw.content_id_key) !== -1) {
             //If the content id key is included in the clickable_uri list, make the component a link
+            const titleSection = document.createElement('div');
+            titleSection.classList.add(ACTIVITY_TITLE_SECTION);
+
             const a = document.createElement('a');
             a.href = action.raw.content_id_value;
-            a.innerText = action.raw.content_id_value;
-            dataElement.appendChild(a);
+            a.innerText = action.raw.title || action.raw.content_id_value;
+            titleSection.appendChild(a);
+            li.appendChild(titleSection);
         } else {
-            dataElement.innerText = `${action.raw.content_id_key}: ${action.raw.content_id_value}`;
+            li.appendChild(this.buildTitleSection(action, action.raw.title || `${action.raw.content_id_key}: ${action.raw.content_id_value}`));
         }
 
-        dataElement.classList.add(DATA_CLASS);
-
-        li.appendChild(this.buildTitleSection(action));
-        li.appendChild(dataElement);
-        li.appendChild(this.buildOriginElement(action));
+        li.appendChild(this.buildFooterElement(action));
         li.appendChild(this.buildIcon(view));
 
         return li;
@@ -301,54 +363,35 @@ export class UserActivity extends Component {
         const li = document.createElement('li');
         li.classList.add(CUSTOM_EVENT_CLASS);
 
-        const titleElem = document.createElement('div');
-        titleElem.classList.add(ACTIVITY_TITLE_CLASS);
-        titleElem.innerText = `${l(action.raw.event_type || `${UserActivity.ID}_custom`)}`;
+        li.appendChild(this.buildTitleSection(action, `${l(action.raw.event_value || `${UserActivity.ID}_custom`)}`));
 
-        const titleSection = this.buildTitleSection(action);
-        titleSection.querySelector(`.${ACTIVITY_TITLE_CLASS}`).remove();
-        titleSection.insertBefore(titleElem, titleSection.firstChild);
-
-        const dataElement = document.createElement('div');
-        dataElement.classList.add(DATA_CLASS);
-        dataElement.innerText = action.raw.event_value || '';
-
-        li.appendChild(titleSection);
-        li.appendChild(dataElement);
-        li.appendChild(this.buildOriginElement(action));
+        li.appendChild(this.buildFooterElement(action));
         li.appendChild(this.buildIcon(dot));
 
         return li;
     }
 
-    private buildOriginElement(action: UserAction): HTMLElement {
+    private buildFooterElement(action: UserAction): HTMLElement {
         const el = document.createElement('div');
         el.classList.add(ORIGIN_CLASS);
-        el.innerText = action.raw.origin_level_1 || '';
+        el.innerText = `${action.timestamp.toLocaleTimeString()}`;
+        if (action.raw.origin_level_1) {
+            el.innerText += ` - ${action.raw.origin_level_1}`;
+        }
         return el;
     }
 
-    private buildTimestampElement(action: UserAction): HTMLElement {
-        const el = document.createElement('div');
-        el.classList.add(ACTIVIY_TIMESTAMP_CLASS);
-        el.innerText = this.element.offsetWidth > WIDTH_CUTOFF ? formatDateAndTime(action.timestamp) : formatDateAndTimeShort(action.timestamp);
-        return el;
-    }
-
-    private buildTitleElement(action: UserAction): HTMLElement {
-        const title = this.isManualSubmitAction(action) ? 'query' : action.type.toLowerCase();
-
+    private buildTitleElement(_: UserAction, content: string): HTMLElement {
         const el = document.createElement('div');
         el.classList.add(ACTIVITY_TITLE_CLASS);
-        el.innerText = l(`${UserActivity.ID}_${title}`);
+        el.innerText = content;
         return el;
     }
 
-    private buildTitleSection(action: UserAction): HTMLElement {
+    private buildTitleSection(action: UserAction, content: string): HTMLElement {
         const titleSection = document.createElement('div');
         titleSection.classList.add(ACTIVITY_TITLE_SECTION);
-        titleSection.appendChild(this.buildTitleElement(action));
-        titleSection.appendChild(this.buildTimestampElement(action));
+        titleSection.appendChild(this.buildTitleElement(action, content));
         return titleSection;
     }
 
@@ -357,51 +400,6 @@ export class UserActivity extends Component {
         el.classList.add(ICON_CLASS);
         el.innerHTML = icon;
         return el;
-    }
-
-    private buildTimestampSection(): HTMLElement[] {
-        const startDate = this.actions[0];
-        const endDate = this.actions[this.actions.length - 1];
-        const duration = endDate.timestamp.getTime() - startDate.timestamp.getTime();
-
-        return [
-            this.buildTimestampCell({ title: l(`${UserActivity.ID}_start_date`), data: formatDate(startDate.timestamp) }),
-            this.buildTimestampCell({ title: l(`${UserActivity.ID}_start_time`), data: formatTime(startDate.timestamp) }),
-            this.buildTimestampCell({ title: l(`${UserActivity.ID}_duration`), data: formatTimeInterval(duration) }),
-        ];
-    }
-
-    private buildTimestampCell({ title, data }: { title: string; data: string }): HTMLElement {
-        const cell = document.createElement('div');
-        cell.classList.add(CELL_CLASS);
-
-        const titleElement = document.createElement('div');
-        titleElement.classList.add(TITLE_CLASS);
-        titleElement.innerText = title;
-
-        const dataElement = document.createElement('div');
-        dataElement.classList.add(DATA_CLASS);
-        dataElement.innerText = data;
-
-        cell.appendChild(titleElement);
-        cell.appendChild(dataElement);
-
-        return cell;
-    }
-
-    /**
-     * Dertermine if an action is a manual search submit.
-     * A manual search submit is a Search event that has a query expression and that the cause is one of the above:
-     * + **omniboxAnalytics**
-     * + **userActionsSubmit**
-     * + **omniboxFromLink**
-     * + **searchboxAsYouType**
-     * + **searchboxSubmit**
-     * + **searchFromLink**
-     * @param action Action that will be tested.
-     */
-    private isManualSubmitAction(action: UserAction) {
-        return action.type === UserActionType.Search && action.raw.query_expression && MANUAL_SEARCH_EVENT_CAUSE.indexOf(action.raw.cause) !== -1;
     }
 }
 
