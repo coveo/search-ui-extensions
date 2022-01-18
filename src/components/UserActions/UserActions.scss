@@ -6,6 +6,8 @@ $path-line-width: 0.05em;
 $headers-gap: 2em;
 $dot-width: $headers-gap / 3;
 $font-size: 1em;
+$font-size-titles: 1.2em;
+$font-size-small: 0.8em;
 $icon-size: 1em;
 $search-ui-dropdown-header-color: #1d4f76;
 $timestamp-grey: #67768b;
@@ -41,7 +43,7 @@ $background-color-grey: #f7f8f9;
     padding: 0;
     background-color: $background-color-white;
 
-    > h1 {
+    >h1 {
         color: $coveo-blue-6;
         font-size: 2em;
         font-weight: bold;
@@ -80,7 +82,7 @@ $background-color-grey: #f7f8f9;
     padding-bottom: 1.5em;
 
     .coveo-title {
-        font-size: 0.8em;
+        font-size: $font-size-small;
         font-weight: normal;
         margin: 0 0 0.75em;
         text-transform: uppercase;
@@ -104,7 +106,7 @@ $background-color-grey: #f7f8f9;
                     position: relative;
                     width: $icon-container-size;
 
-                    & > {
+                    &> {
                         svg {
                             position: absolute;
                             top: 2px;
@@ -118,7 +120,7 @@ $background-color-grey: #f7f8f9;
     }
 
     .coveo-more-less {
-        font-size: 0.9em;
+        font-size: $font-size-small;
         border: 0;
         padding: 0;
         color: $coveo-blue-6;
@@ -210,7 +212,7 @@ $background-color-grey: #f7f8f9;
 
             .coveo-activity-timestamp {
                 box-sizing: border-box;
-                font-size: 0.85em;
+                font-size: $font-size-small;
                 color: $timestamp-grey;
                 vertical-align: top;
                 text-align: right;
@@ -218,10 +220,16 @@ $background-color-grey: #f7f8f9;
             }
         }
 
+        .coveo-case-creation-action {
+            .coveo-activity-title {
+                font-weight: bold;
+                font-size: $font-size-titles;
+            }
+        }
+
         .coveo-session-container {
             .coveo-session-header {
                 font-style: italic;
-                font-size: 15px;
                 font-weight: 700;
                 color: $primary-grey;
                 padding: 0.5em 0;
@@ -266,13 +274,13 @@ $background-color-grey: #f7f8f9;
                 height: 1.5em;
                 width: 1.5em;
 
-                & > svg {
+                &>svg {
                     height: 1.5em;
                     width: 1.5em;
                 }
             }
 
-            & > div {
+            &>div {
                 padding-bottom: 0.5em;
             }
 
@@ -282,9 +290,28 @@ $background-color-grey: #f7f8f9;
             }
 
             .coveo-footer {
-                font-size: 0.7em;
+                font-size: $font-size-small;
                 color: $primary-grey;
                 padding-bottom: 1.7em;
+            }
+
+            .coveo-caption-for-icon {
+                font-size: $font-size-small;
+                display: none;
+                background: #263e55;
+                color: white;
+                border-radius: 2px;
+                padding: 6px 16px;
+                position: absolute;
+                white-space: nowrap;
+                z-index: 1;
+            }
+
+            // &:hover .coveo-caption-for-icon {
+            //     display: inline;
+            // }
+            .coveo-caption-for-icon {
+                display: inline;
             }
         }
     }
@@ -312,7 +339,7 @@ $background-color-grey: #f7f8f9;
         padding: 1em 0;
 
         &-title {
-            font-size: 1.2em;
+            font-size: $font-size-titles;
             font-weight: bold;
             text-align: left;
             width: auto;
@@ -362,7 +389,7 @@ $background-color-grey: #f7f8f9;
     }
 
     .coveo-dropdown-header {
-        font-size: 12px;
+        font-size: $font-size-small;
         display: inline-block;
         padding: 0 7px;
         height: 22px;

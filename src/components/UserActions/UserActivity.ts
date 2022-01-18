@@ -55,16 +55,16 @@ const ACTIVITY_TITLE_CLASS = 'coveo-activity-title';
 // const ACTIVIY_TIMESTAMP_CLASS = 'coveo-activity-timestamp';
 // const HEADER_CLASS = 'coveo-header';
 const ACTIVITY_CLASS = 'coveo-activity';
-
 const CLICK_EVENT_CLASS = 'coveo-click';
 const SEARCH_EVENT_CLASS = 'coveo-search';
 const CUSTOM_EVENT_CLASS = 'coveo-custom';
 const VIEW_EVENT_CLASS = 'coveo-view';
 const FOLDED_CLASS = 'coveo-folded';
+const FOLDED_ACTIONS_CLASS = 'coveo-folded-actions';
 const TEXT_CLASS = 'coveo-text';
 const ICON_CLASS = 'coveo-icon';
+const CASE_CREATION_ACTION_CLASS = 'coveo-case-creation-action'
 // const BUBBLE_CLASS = 'coveo-bubble';
-
 // const WIDTH_CUTOFF = 350;
 
 export class UserActivity extends Component {
@@ -94,12 +94,13 @@ export class UserActivity extends Component {
     };
 
     private static clickable_uri_ids = ['@clickableuri'];
-    // private actions: UserAction[];
     private sessions: UserActionSession[];
-    // private foldedActions: UserAction[];
+    private sessionsToDisplay: UserActionSession[];
+    private caseSubmitSessionIndex: number;
+    private caseSubmitActionIndex: number;
+    private foldedActions: UserAction[] = [];
     private userProfileModel: UserProfileModel;
 
-    private DEFAULT_OPENED = 4;
     private foldedSessions: UserActionSession[];
 
     /**
@@ -126,8 +127,8 @@ export class UserActivity extends Component {
             this.sessions = this.splitActionsBySessions(sortedActions);
             console.log(this.sessions);
 
-            this.foldedSessions = this.sessions.filter((_, index) => index !== this.DEFAULT_OPENED);
-            // this.foldedActions = this.actions.filter((action) => !this.isUnfoldByDefault(action));
+            this.buildSessionsToDisplay();
+
             this.render();
         });
     }
@@ -165,7 +166,64 @@ export class UserActivity extends Component {
         return splitSessions;
     }
 
+    private buildSessionsToDisplay() {
+        this.caseSubmitSessionIndex = this.findCaseSubmitSessionIndex();
+        if (this.caseSubmitSessionIndex !== -1) {
+            console.log('Found Case Creation');
+            // Testing usecase
+            this.sessions[this.caseSubmitSessionIndex].actions.unshift(...this.sessions[0].actions);
+            this.sessions[this.caseSubmitSessionIndex].actions.push(...this.sessions[0].actions);
+
+            this.sessionsToDisplay = this.findSurroundingSessions();
+
+            this.caseSubmitActionIndex = this.findCaseSubmitActionIndex(this.sessions[this.caseSubmitSessionIndex]?.actions);
+
+            this.foldedSessions = this.sessionsToDisplay.filter(session => session !== this.sessions[this.caseSubmitSessionIndex]);
+            this.foldedActions = this.sessions[this.caseSubmitSessionIndex]?.actions.filter((_, index) => index < this.caseSubmitActionIndex);
+            if(this.options.hideCustomEvents) {
+                this.foldedActions = this.foldedActions.filter(action => action.type !== UserActionType.Custom);
+            }
+            console.log(this.caseSubmitActionIndex);
+
+        } else {
+            console.log('Didn\'t find Case Creation');
+            this.sessionsToDisplay = this.sessions.slice(0, 5);
+            this.foldedSessions = this.sessions.slice(1, 5);
+        }
+    }
+
+    private findCaseSubmitSessionIndex(): number {
+
+        return this.sessions.findIndex(
+            session => session.actions.some(
+                action => this.isCaseSubmitAction(action)
+            )
+        );
+    }
+
+    private findCaseSubmitActionIndex(actions: UserAction[]): number {
+        let caseSubmitActionIndex = -1;
+        if (actions && Array.isArray(actions)) {
+            caseSubmitActionIndex = actions.findIndex(action => this.isCaseSubmitAction(action));
+        }
+        return caseSubmitActionIndex;
+    }
+
+    private isCaseSubmitAction(action: UserAction): boolean {
+        return action.type === UserActionType.Custom
+            && (action.raw.event_type === 'ticket_create' || action.raw.cause === 'CaseSubmit');
+    }
+
+    private findSurroundingSessions(): UserActionSession[] {
+        return this.sessions.slice(
+            Math.max(0, this.caseSubmitSessionIndex - 2),
+            Math.min(this.caseSubmitSessionIndex + 3, this.sessions.length)
+        );
+    }
+
     private render() {
+        this.element.innerHTML = '';
+
         const panel = document.createElement('div');
         panel.classList.add(MAIN_CLASS);
 
@@ -173,15 +231,13 @@ export class UserActivity extends Component {
         activitySection.classList.add(ACTIVITY_CLASS);
 
         panel.appendChild(activitySection);
-
-        this.element.innerHTML = '';
         this.element.appendChild(panel);
     }
 
     private buildActivitySection(): HTMLElement {
         const list = document.createElement('ol');
 
-        this.buildSessionsItems(this.sessions).forEach((sessionItem) => {
+        this.buildSessionsItems(this.sessionsToDisplay).forEach((sessionItem) => {
             if (sessionItem) {
                 list.appendChild(sessionItem);
             }
@@ -191,13 +247,11 @@ export class UserActivity extends Component {
     }
 
     private buildSessionsItems(sessions: UserActionSession[]): HTMLElement[] {
-        const nbUnfoldedSessions = this.sessions.length - this.foldedSessions.length;
+        const nbUnfoldedSessions = this.sessionsToDisplay.length - this.foldedSessions.length;
 
         let hitExpanded = false;
         let sessionsFiltered = sessions;
-        if (this.options.hideCustomEvents) {
-            sessionsFiltered = sessionsFiltered.filter((session) => session.actions.some((action) => action.type !== UserActionType.Custom));
-        }
+        
         return sessionsFiltered
             .reduce((acc, session) => {
                 const last = acc[acc.length - 1];
@@ -213,7 +267,7 @@ export class UserActivity extends Component {
                     return [...acc, session];
                 }
             }, [])
-            .map((item) => {
+            .map((item: UserActionSession) => {
                 if (Array.isArray(item)) {
                     return this.buildFoldedSession(
                         hitExpanded ? item[0] : item[item.length - 1],
@@ -221,7 +275,15 @@ export class UserActivity extends Component {
                     );
                 }
                 hitExpanded = true;
-                return this.buildSessionItem(item);
+                const isCaseSubmitSession = this.caseSubmitSessionIndex !== -1 && item === this.sessions[this.caseSubmitSessionIndex];
+                if(this.options.hideCustomEvents) {
+                    item.actions = item.actions.filter(action => action.type !== UserActionType.Custom ||
+                    (
+                        this.isCaseSubmitAction(action) 
+                        && isCaseSubmitSession
+                    ))
+                }
+                return this.buildSessionItem(item, isCaseSubmitSession);
             });
     }
 
@@ -246,18 +308,17 @@ export class UserActivity extends Component {
         return li;
     }
 
-    private buildSessionItem(session: UserActionSession): HTMLElement {
-        let sessionActions = session.actions;
-        if (this.options.hideCustomEvents) {
-            sessionActions = sessionActions.filter((action) => action.type !== UserActionType.Custom);
-        }
-        if (sessionActions.length === 0) {
+    private buildSessionItem(session: UserActionSession, isCaseSubmitSession: boolean): HTMLElement {
+        if (session.actions.length === 0) {
             return null;
         }
+
         const sessionContainer = document.createElement('div');
         sessionContainer.classList.add('coveo-session-container');
         sessionContainer.appendChild(this.buildSessionHeader(session));
-        this.buildSessionContent(sessionActions).forEach((actionHTML) => sessionContainer.appendChild(actionHTML));
+
+        const foldedActions = (isCaseSubmitSession) ? this.foldedActions : [];
+        this.buildSessionContent(session.actions, foldedActions).forEach((actionHTML) => sessionContainer.appendChild(actionHTML));
         return sessionContainer;
     }
 
@@ -268,10 +329,56 @@ export class UserActivity extends Component {
         return sessionHeader;
     }
 
-    private buildSessionContent(actions: UserAction[]): HTMLLIElement[] {
-        return actions.map((action) => {
+    private buildSessionContent(actions: UserAction[], foldedActions: UserAction[]): HTMLLIElement[] {
+        const nbUnfoldedActions = actions.length - foldedActions.length;
+
+        return actions.reduce((acc, action, index) => {
+            const last = acc[acc.length - 1];
+            const shouldBeFolded = index < nbUnfoldedActions;
+            if (shouldBeFolded && foldedActions.length > 0) {
+                    if (Array.isArray(last)) {
+                        last.push(action);
+                        return [...acc];
+                    } else {
+                        return [...acc, [action]];
+                    }
+                } else {
+                    return [...acc, action];
+                }
+        }, [])
+        .map(item => {
+            if(Array.isArray(item)) {
+                return this.buildFoldedActions();
+            }
+            return this.buildActionListItem(item);
+        })
+
+        return actions.map((action, index) => {
+            if (index < nbUnfoldedActions) {
+                return this.buildFoldedActions();
+            }
             return this.buildActionListItem(action);
         });
+    }
+
+    private buildFoldedActions(): HTMLLIElement {
+        const li = document.createElement('li');
+        li.classList.add(FOLDED_ACTIONS_CLASS);
+
+        const hr = document.createElement('hr');
+        const span = document.createElement('span');
+        span.classList.add(TEXT_CLASS);
+        span.innerText = 'More actions...';
+
+        hr.appendChild(span);
+
+        li.addEventListener('click', () => {
+            this.foldedActions = [];
+            this.render();
+        });
+
+        li.appendChild(hr);
+        return li;
     }
 
     private buildActionListItem(action: UserAction): HTMLLIElement {
@@ -289,7 +396,7 @@ export class UserActivity extends Component {
                 break;
             default:
             case UserActionType.Custom:
-                li = this.buildCustomEvent(action);
+                li = this.buildCustomEvent(action, this.isCaseSubmitAction(action));
                 break;
         }
         return li;
@@ -302,6 +409,9 @@ export class UserActivity extends Component {
         li.appendChild(this.buildTitleSection(action, action.query || 'Empty Search'));
         li.appendChild(this.buildFooterElement(action));
         li.appendChild(this.buildIcon(search));
+        if (action.raw.origin_level_1) {
+            // li.appendChild(this.buildTooltipElement(action));
+        }
 
         return li;
     }
@@ -352,17 +462,28 @@ export class UserActivity extends Component {
         return li;
     }
 
-    private buildCustomEvent(action: UserAction): HTMLLIElement {
+    private buildCustomEvent(action: UserAction, shouldBeBolded: boolean): HTMLLIElement {
         const li = document.createElement('li');
-        li.classList.add(CUSTOM_EVENT_CLASS);
+        li.classList.add(CUSTOM_EVENT_CLASS, CASE_CREATION_ACTION_CLASS);
 
-        li.appendChild(this.buildTitleSection(action, `${l(action.raw.event_value || `${UserActivity.ID}_custom`)}`));
-
+        li.appendChild(this.buildTitleSection(action, `${action.raw.event_value || action.raw.event_type || l(`${UserActivity.ID}_custom`)}`));
         li.appendChild(this.buildFooterElement(action));
         li.appendChild(this.buildIcon(dot));
 
         return li;
     }
+
+    // private buildTooltipElement(action: UserAction): HTMLElement {
+    //     const caption = document.createElement('div');
+    //     caption.classList.add('coveo-caption-for-icon');
+    //     caption.innerText = action.raw.origin_level_1;
+
+    //     const arrow = document.createElement('div');
+    //     arrow.classList.add('coveo-arrow-for-tooltip');
+    //     caption.appendChild(arrow);
+
+    //     return caption;
+    // }
 
     private buildFooterElement(action: UserAction): HTMLElement {
         const el = document.createElement('div');
