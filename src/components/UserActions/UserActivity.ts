@@ -63,7 +63,7 @@ const FOLDED_CLASS = 'coveo-folded';
 const FOLDED_ACTIONS_CLASS = 'coveo-folded-actions';
 const TEXT_CLASS = 'coveo-text';
 const ICON_CLASS = 'coveo-icon';
-const CASE_CREATION_ACTION_CLASS = 'coveo-case-creation-action'
+const CASE_CREATION_ACTION_CLASS = 'coveo-case-creation-action';
 // const BUBBLE_CLASS = 'coveo-bubble';
 // const WIDTH_CUTOFF = 350;
 
@@ -178,47 +178,37 @@ export class UserActivity extends Component {
 
             this.caseSubmitActionIndex = this.findCaseSubmitActionIndex(this.sessions[this.caseSubmitSessionIndex]?.actions);
 
-            this.foldedSessions = this.sessionsToDisplay.filter(session => session !== this.sessions[this.caseSubmitSessionIndex]);
+            this.foldedSessions = this.sessionsToDisplay.filter((session) => session !== this.sessions[this.caseSubmitSessionIndex]);
             this.foldedActions = this.sessions[this.caseSubmitSessionIndex]?.actions.filter((_, index) => index < this.caseSubmitActionIndex);
-            if(this.options.hideCustomEvents) {
-                this.foldedActions = this.foldedActions.filter(action => action.type !== UserActionType.Custom);
+            if (this.options.hideCustomEvents) {
+                this.foldedActions = this.foldedActions.filter((action) => action.type !== UserActionType.Custom);
             }
             console.log(this.caseSubmitActionIndex);
-
         } else {
-            console.log('Didn\'t find Case Creation');
+            console.log("Didn't find Case Creation");
             this.sessionsToDisplay = this.sessions.slice(0, 5);
             this.foldedSessions = this.sessions.slice(1, 5);
         }
     }
 
     private findCaseSubmitSessionIndex(): number {
-
-        return this.sessions.findIndex(
-            session => session.actions.some(
-                action => this.isCaseSubmitAction(action)
-            )
-        );
+        return this.sessions.findIndex((session) => session.actions.some((action) => this.isCaseSubmitAction(action)));
     }
 
     private findCaseSubmitActionIndex(actions: UserAction[]): number {
         let caseSubmitActionIndex = -1;
         if (actions && Array.isArray(actions)) {
-            caseSubmitActionIndex = actions.findIndex(action => this.isCaseSubmitAction(action));
+            caseSubmitActionIndex = actions.findIndex((action) => this.isCaseSubmitAction(action));
         }
         return caseSubmitActionIndex;
     }
 
     private isCaseSubmitAction(action: UserAction): boolean {
-        return action.type === UserActionType.Custom
-            && (action.raw.event_type === 'ticket_create' || action.raw.cause === 'CaseSubmit');
+        return action.type === UserActionType.Custom && (action.raw.event_type === 'ticket_create' || action.raw.cause === 'CaseSubmit');
     }
 
     private findSurroundingSessions(): UserActionSession[] {
-        return this.sessions.slice(
-            Math.max(0, this.caseSubmitSessionIndex - 2),
-            Math.min(this.caseSubmitSessionIndex + 3, this.sessions.length)
-        );
+        return this.sessions.slice(Math.max(0, this.caseSubmitSessionIndex - 2), Math.min(this.caseSubmitSessionIndex + 3, this.sessions.length));
     }
 
     private render() {
@@ -251,7 +241,7 @@ export class UserActivity extends Component {
 
         let hitExpanded = false;
         let sessionsFiltered = sessions;
-        
+
         return sessionsFiltered
             .reduce((acc, session) => {
                 const last = acc[acc.length - 1];
@@ -276,12 +266,10 @@ export class UserActivity extends Component {
                 }
                 hitExpanded = true;
                 const isCaseSubmitSession = this.caseSubmitSessionIndex !== -1 && item === this.sessions[this.caseSubmitSessionIndex];
-                if(this.options.hideCustomEvents) {
-                    item.actions = item.actions.filter(action => action.type !== UserActionType.Custom ||
-                    (
-                        this.isCaseSubmitAction(action) 
-                        && isCaseSubmitSession
-                    ))
+                if (this.options.hideCustomEvents) {
+                    item.actions = item.actions.filter(
+                        (action) => action.type !== UserActionType.Custom || (this.isCaseSubmitAction(action) && isCaseSubmitSession)
+                    );
                 }
                 return this.buildSessionItem(item, isCaseSubmitSession);
             });
@@ -317,7 +305,7 @@ export class UserActivity extends Component {
         sessionContainer.classList.add('coveo-session-container');
         sessionContainer.appendChild(this.buildSessionHeader(session));
 
-        const foldedActions = (isCaseSubmitSession) ? this.foldedActions : [];
+        const foldedActions = isCaseSubmitSession ? this.foldedActions : [];
         this.buildSessionContent(session.actions, foldedActions).forEach((actionHTML) => sessionContainer.appendChild(actionHTML));
         return sessionContainer;
     }
@@ -332,10 +320,11 @@ export class UserActivity extends Component {
     private buildSessionContent(actions: UserAction[], foldedActions: UserAction[]): HTMLLIElement[] {
         const nbUnfoldedActions = actions.length - foldedActions.length;
 
-        return actions.reduce((acc, action, index) => {
-            const last = acc[acc.length - 1];
-            const shouldBeFolded = index < nbUnfoldedActions;
-            if (shouldBeFolded && foldedActions.length > 0) {
+        return actions
+            .reduce((acc, action, index) => {
+                const last = acc[acc.length - 1];
+                const shouldBeFolded = index < nbUnfoldedActions;
+                if (shouldBeFolded && foldedActions.length > 0) {
                     if (Array.isArray(last)) {
                         last.push(action);
                         return [...acc];
@@ -345,13 +334,13 @@ export class UserActivity extends Component {
                 } else {
                     return [...acc, action];
                 }
-        }, [])
-        .map(item => {
-            if(Array.isArray(item)) {
-                return this.buildFoldedActions();
-            }
-            return this.buildActionListItem(item);
-        })
+            }, [])
+            .map((item) => {
+                if (Array.isArray(item)) {
+                    return this.buildFoldedActions();
+                }
+                return this.buildActionListItem(item);
+            });
 
         return actions.map((action, index) => {
             if (index < nbUnfoldedActions) {
