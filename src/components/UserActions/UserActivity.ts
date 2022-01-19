@@ -19,21 +19,21 @@ export interface IUserActivityOptions {
      * **Require**
      */
     userId: string;
-    
+
     /**
      * Identifies whenever the current Ticket was created to place the creation event in the timeline.
-     * If it is provided, the timeline will focus on that event, 
+     * If it is provided, the timeline will focus on that event,
      * showing the session that corresponds to the date and time, if it is available, as well as 2 sessions more recent,
      * and 2 sessions prior to the case creation session.
-     * If it is not provided or if the date is too old for the User Actions available, 
+     * If it is not provided or if the date is too old for the User Actions available,
      * the timeline will show the last 5 sessions available focusing on the most recent session.
      *
-     * The format can either be 
+     * The format can either be
      * - an epoch number (number of milliseconds since January 1, 1970),
      * - a Date string that can be parsed by JavaScript's Date object
      * - a JavaScript Date
      */
-    ticketCreationDateTime: Date,
+    ticketCreationDateTime: Date;
 }
 
 const MAIN_CLASS = 'coveo-user-activity';
@@ -56,7 +56,7 @@ export class UserActivity extends Component {
     static readonly options: IUserActivityOptions = {
         userId: ComponentOptions.buildStringOption({ required: true }),
         ticketCreationDateTime: ComponentOptions.buildCustomOption<Date>((value: string) => UserActivity.parseDate(value), {
-            required: false
+            required: false,
         }),
     };
 
@@ -78,7 +78,7 @@ export class UserActivity extends Component {
     constructor(public element: HTMLElement, public options: IUserActivityOptions, public bindings: IComponentBindings) {
         super(element, UserActivity.ID, bindings);
 
-        this.options = ComponentOptions.initComponentOptions(element, UserActivity, options );
+        this.options = ComponentOptions.initComponentOptions(element, UserActivity, options);
 
         if (typeof this.options.ticketCreationDateTime === 'string' || typeof this.options.ticketCreationDateTime === 'number') {
             this.options.ticketCreationDateTime = UserActivity.parseDate(this.options.ticketCreationDateTime);
@@ -122,20 +122,14 @@ export class UserActivity extends Component {
             return [];
         }
         let splitSessions: UserActionSession[] = [];
-        splitSessions.push(new UserActionSession(
-            actions[0].timestamp,
-            [],
-        ));
+        splitSessions.push(new UserActionSession(actions[0].timestamp, []));
         let previousDateTime = actions[0]?.timestamp;
         let currentSession: UserActionSession = splitSessions[0];
         actions.forEach((action) => {
             if (this.isPartOfTheSameSession(action, previousDateTime)) {
                 currentSession.actions.push(action);
             } else {
-                splitSessions.push(new UserActionSession(
-                    action.timestamp,
-                    [action],
-                ));
+                splitSessions.push(new UserActionSession(action.timestamp, [action]));
                 currentSession = splitSessions[splitSessions.length - 1];
             }
             previousDateTime = action.timestamp;
@@ -150,9 +144,11 @@ export class UserActivity extends Component {
                 this.sessionsToDisplay = this.findSurroundingSessions();
                 this.caseSubmitSession.expanded = true;
 
-                const insertTicketCreatedIndex = this.caseSubmitSession.actions.findIndex(action => action.timestamp <= this.options.ticketCreationDateTime);
+                const insertTicketCreatedIndex = this.caseSubmitSession.actions.findIndex(
+                    (action) => action.timestamp <= this.options.ticketCreationDateTime
+                );
                 this.caseSubmitSession.actions.splice(insertTicketCreatedIndex, 0, this.buildTicketCreatedAction());
-                console.log(this.sessionsToDisplay);    
+                console.log(this.sessionsToDisplay);
                 return;
             } else {
                 console.warn(`Could not find a user action session corresponding to this date: ${this.options.ticketCreationDateTime}.`);
@@ -167,13 +163,14 @@ export class UserActivity extends Component {
             type: UserActionType.TicketCreated,
             timestamp: this.options.ticketCreationDateTime,
             raw: {},
-        }
+        };
     }
 
-    private findCaseSubmitSession(): { caseSubmitSessionIndex: number, caseSubmitSession: UserActionSession } {
-        const caseSubmitSessionIndex = this.sessions.findIndex(session =>
-            session.actions[0]?.timestamp >= this.options.ticketCreationDateTime
-            && session.actions[session.actions.length - 1]?.timestamp <= this.options.ticketCreationDateTime
+    private findCaseSubmitSession(): { caseSubmitSessionIndex: number; caseSubmitSession: UserActionSession } {
+        const caseSubmitSessionIndex = this.sessions.findIndex(
+            (session) =>
+                session.actions[0]?.timestamp >= this.options.ticketCreationDateTime &&
+                session.actions[session.actions.length - 1]?.timestamp <= this.options.ticketCreationDateTime
         );
         const caseSubmitSession = this.sessions[caseSubmitSessionIndex];
 
@@ -215,14 +212,14 @@ export class UserActivity extends Component {
         const htmlElements: any[] = [];
 
         sessions.forEach((session, index) => {
-            if(session.expanded) {
+            if (session.expanded) {
                 htmlElements.push(this.buildSessionItem(session));
                 hitExpanded = true;
             } else {
-                if(!hitExpanded && sessions[index+1]?.expanded) {
+                if (!hitExpanded && sessions[index + 1]?.expanded) {
                     htmlElements.push(this.buildFoldedSession(session, 'Show new session'));
                 }
-                if(hitExpanded && sessions[index-1]?.expanded) {
+                if (hitExpanded && sessions[index - 1]?.expanded) {
                     htmlElements.push(this.buildFoldedSession(session, 'Show past session'));
                 }
             }
@@ -261,7 +258,9 @@ export class UserActivity extends Component {
         sessionContainer.classList.add('coveo-session-container');
         sessionContainer.appendChild(this.buildSessionHeader(session));
 
-        this.buildSessionContent(session.actions, session === this.caseSubmitSession).forEach((actionHTML) => sessionContainer.appendChild(actionHTML));
+        this.buildSessionContent(session.actions, session === this.caseSubmitSession).forEach((actionHTML) =>
+            sessionContainer.appendChild(actionHTML)
+        );
         return sessionContainer;
     }
 
@@ -275,11 +274,11 @@ export class UserActivity extends Component {
     private buildSessionContent(actions: UserAction[], withFolded: boolean): HTMLLIElement[] {
         let actionsHTML = [];
         let actionsToDisplay = actions;
-        if(withFolded && this.options.ticketCreationDateTime && !this.hasExpandedActions) {
-            actionsToDisplay = actionsToDisplay.filter(action => action.timestamp <= this.options.ticketCreationDateTime);
+        if (withFolded && this.options.ticketCreationDateTime && !this.hasExpandedActions) {
+            actionsToDisplay = actionsToDisplay.filter((action) => action.timestamp <= this.options.ticketCreationDateTime);
             actionsHTML.push(this.buildFoldedActions());
         }
-        actionsHTML = actionsHTML.concat(actionsToDisplay.map(action => this.buildActionListItem(action)));
+        actionsHTML = actionsHTML.concat(actionsToDisplay.map((action) => this.buildActionListItem(action)));
         return actionsHTML;
     }
 
@@ -296,7 +295,7 @@ export class UserActivity extends Component {
             this.render();
         });
 
-        for(let i = 0; i < 3; i++)  {
+        for (let i = 0; i < 3; i++) {
             const el = this.buildIcon(dot);
             li.appendChild(el);
         }
