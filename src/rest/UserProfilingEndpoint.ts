@@ -30,6 +30,7 @@ export enum UserActionType {
     Click = 'CLICK',
     PageView = 'VIEW',
     Custom = 'CUSTOM',
+    TicketCreated = 'TICKET_CREATED',
 }
 
 /**
