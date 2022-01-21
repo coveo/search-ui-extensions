@@ -93,7 +93,6 @@ export class UserActivity extends Component {
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
 
         this.userProfileModel.getActions(this.options.userId).then((actions) => {
-            
             const sortedActions = actions.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
             this.sessions = this.splitActionsBySessions(sortedActions);
 
@@ -113,9 +112,7 @@ export class UserActivity extends Component {
     }
 
     private isPartOfTheSameSession = (action: UserAction, previousDateTime: Date): boolean => {
-        return (
-            Math.abs(action.timestamp.valueOf() - previousDateTime.valueOf()) / DATE_TO_SECONDS / DATE_TO_MINUTES < MAX_MINUTES_IN_SESSION
-        );
+        return Math.abs(action.timestamp.valueOf() - previousDateTime.valueOf()) / DATE_TO_SECONDS / DATE_TO_MINUTES < MAX_MINUTES_IN_SESSION;
     };
 
     private splitActionsBySessions(actions: UserAction[]): UserActionSession[] {
@@ -159,11 +156,7 @@ export class UserActivity extends Component {
     }
 
     private buildTicketCreatedAction(): UserAction {
-        return new UserAction(
-            UserActionType.TicketCreated,
-            this.options.ticketCreationDateTime,
-            {},
-        );
+        return new UserAction(UserActionType.TicketCreated, this.options.ticketCreationDateTime, {});
     }
 
     private findCaseSubmitSession(): { caseSubmitSessionIndex: number; caseSubmitSession: UserActionSession } {
@@ -180,7 +173,9 @@ export class UserActivity extends Component {
         }
 
         // If we didn't, we can try to find a session that occured just before the ticket create.
-        const potentialSessionBeforeIndex = this.sessions.findIndex((session) => session.actions[0]?.timestamp <= this.options.ticketCreationDateTime);
+        const potentialSessionBeforeIndex = this.sessions.findIndex(
+            (session) => session.actions[0]?.timestamp <= this.options.ticketCreationDateTime
+        );
 
         if (potentialSessionBeforeIndex !== -1) {
             if (this.isPartOfTheSameSession(this.sessions[potentialSessionBeforeIndex].actions[0], this.options.ticketCreationDateTime)) {
@@ -189,7 +184,7 @@ export class UserActivity extends Component {
 
             // If the session before the ticket create is not part of the same session, create a standalone session.
             this.sessions.splice(potentialSessionBeforeIndex, 0, new UserActionSession(this.options.ticketCreationDateTime, []));
-            
+
             return { caseSubmitSessionIndex: potentialSessionBeforeIndex, caseSubmitSession: this.sessions[potentialSessionBeforeIndex] };
         }
         return { caseSubmitSessionIndex: -1, caseSubmitSession: null };

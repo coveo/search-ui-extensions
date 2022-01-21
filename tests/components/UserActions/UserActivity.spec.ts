@@ -10,25 +10,40 @@ import { formatDate, formatTime } from '../../../src/utils/time';
 // import { formatDate, formatTime, formatDateAndTime, formatDateAndTimeShort, formatTimeInterval } from '../../../src/utils/time';
 
 describe('UserActivity', () => {
-
     const TEST_DATE_TIME = 1642443657767;
     const TEST_DATE = new Date(TEST_DATE_TIME);
     const FAKE_ORIGIN_1 = 'origin1';
     const FAKE_DOCUMENT_TITLE = 'Martine a la plage';
     const MINUTE = 60000;
 
-    const FAKE_EVENT_SEARCH = new UserAction(UserActionType.Search, TEST_DATE, { cause: 'searchFromLink', origin_level_1: FAKE_ORIGIN_1, query_expression: 'foo' }, null, 'foo');
-    const FAKE_EVENT_CLICK = new UserAction(UserActionType.Click, new Date(TEST_DATE.getTime() + 1 * MINUTE), { c_contentidkey: "permanentid", c_contentidvalue: "somepermanentid", origin_level_1: FAKE_ORIGIN_1, title: FAKE_DOCUMENT_TITLE, uri_hash: "whatever" });
+    const FAKE_EVENT_SEARCH = new UserAction(
+        UserActionType.Search,
+        TEST_DATE,
+        { cause: 'searchFromLink', origin_level_1: FAKE_ORIGIN_1, query_expression: 'foo' },
+        null,
+        'foo'
+    );
+    const FAKE_EVENT_CLICK = new UserAction(UserActionType.Click, new Date(TEST_DATE.getTime() + 1 * MINUTE), {
+        c_contentidkey: 'permanentid',
+        c_contentidvalue: 'somepermanentid',
+        origin_level_1: FAKE_ORIGIN_1,
+        title: FAKE_DOCUMENT_TITLE,
+        uri_hash: 'whatever',
+    });
     FAKE_EVENT_CLICK.document = Fake.createFakeResult();
-    const FAKE_EVENT_CUSTOM = new UserAction(UserActionType.Custom, new Date(TEST_DATE.getTime() + 2 * MINUTE), { event_type: 'case', event_value: 'caseDetach', origin_level_1: FAKE_ORIGIN_1 });
-    const FAKE_EVENT_VIEW = new UserAction(UserActionType.PageView, new Date(TEST_DATE.getTime() + 3 * MINUTE), { content_id_key: '@clickableuri', content_id_value: 'whatever', title: 'Home', origin_level_1: FAKE_ORIGIN_1 });
+    const FAKE_EVENT_CUSTOM = new UserAction(UserActionType.Custom, new Date(TEST_DATE.getTime() + 2 * MINUTE), {
+        event_type: 'case',
+        event_value: 'caseDetach',
+        origin_level_1: FAKE_ORIGIN_1,
+    });
+    const FAKE_EVENT_VIEW = new UserAction(UserActionType.PageView, new Date(TEST_DATE.getTime() + 3 * MINUTE), {
+        content_id_key: '@clickableuri',
+        content_id_value: 'whatever',
+        title: 'Home',
+        origin_level_1: FAKE_ORIGIN_1,
+    });
 
-    const FAKE_USER_ACTIONS_SESSION = [
-        FAKE_EVENT_SEARCH,
-        FAKE_EVENT_CLICK,
-        FAKE_EVENT_CUSTOM,
-        FAKE_EVENT_VIEW,
-    ]
+    const FAKE_USER_ACTIONS_SESSION = [FAKE_EVENT_SEARCH, FAKE_EVENT_CLICK, FAKE_EVENT_CUSTOM, FAKE_EVENT_VIEW];
 
     const SESSION_SELECTOR = 'div.coveo-session-container';
     const SESSION_HEADER_SELECTOR = 'div.coveo-session-header';
@@ -43,7 +58,11 @@ describe('UserActivity', () => {
     const FOLDED_ACTIONS_SELECTOR = 'li.coveo-folded-actions';
     const FOLDED_SESSIONS_SELECTOR = 'ol.coveo-activity > li.coveo-folded';
 
-    const getMockComponent = async (returnedActions: UserAction | UserAction[], ticketCreationDateTime: Date | string | number, element = document.createElement('div')) => {
+    const getMockComponent = async (
+        returnedActions: UserAction | UserAction[],
+        ticketCreationDateTime: Date | string | number,
+        element = document.createElement('div')
+    ) => {
         const mock = Mock.advancedComponentSetup<UserActivity>(
             UserActivity,
             new Mock.AdvancedComponentSetupOptions(element, { userId: 'testuserId', ticketCreationDateTime: ticketCreationDateTime }, (env) => {
@@ -78,8 +97,8 @@ describe('UserActivity', () => {
 
         it('should display a header with the date of the most recent action in the session', async () => {
             const mock = await getMockComponent(FAKE_USER_ACTIONS_SESSION, null);
-            const expectedDate = FAKE_USER_ACTIONS_SESSION.map(action => action.timestamp).sort((a, b) => b.getTime() - a.getTime())[0];
-            const expectedSessionHeader = `Session ${formatDate(expectedDate)}`
+            const expectedDate = FAKE_USER_ACTIONS_SESSION.map((action) => action.timestamp).sort((a, b) => b.getTime() - a.getTime())[0];
+            const expectedSessionHeader = `Session ${formatDate(expectedDate)}`;
 
             const sessionHeaders = mock.cmp.element.querySelectorAll(SESSION_HEADER_SELECTOR);
             expect(sessionHeaders.length).toEqual(1);
@@ -99,13 +118,13 @@ describe('UserActivity', () => {
         });
 
         it('should display a link to show a past session', async () => {
-            const secondSession = FAKE_USER_ACTIONS_SESSION.map(action => ({
+            const secondSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
                 ...action,
-                timestamp: new Date(action.timestamp.getTime() + 60 * MINUTE)
+                timestamp: new Date(action.timestamp.getTime() + 60 * MINUTE),
             }));
-            const thirdSession = FAKE_USER_ACTIONS_SESSION.map(action => ({
+            const thirdSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
                 ...action,
-                timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE)
+                timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE),
             }));
 
             const mock = await getMockComponent([...FAKE_USER_ACTIONS_SESSION, ...secondSession, ...thirdSession], null);
@@ -115,13 +134,13 @@ describe('UserActivity', () => {
         });
 
         it('should expand a new session when clicking on the link to show a past session', async () => {
-            const secondSession = FAKE_USER_ACTIONS_SESSION.map(action => ({
+            const secondSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
                 ...action,
-                timestamp: new Date(action.timestamp.getTime() + 60 * MINUTE)
+                timestamp: new Date(action.timestamp.getTime() + 60 * MINUTE),
             }));
-            const thirdSession = FAKE_USER_ACTIONS_SESSION.map(action => ({
+            const thirdSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
                 ...action,
-                timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE)
+                timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE),
             }));
 
             const mock = await getMockComponent([...FAKE_USER_ACTIONS_SESSION, ...secondSession, ...thirdSession], null);
@@ -137,13 +156,13 @@ describe('UserActivity', () => {
         });
 
         it('should remove the link to show past session when no more sessions can be shown', async () => {
-            const secondSession = FAKE_USER_ACTIONS_SESSION.map(action => ({
+            const secondSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
                 ...action,
-                timestamp: new Date(action.timestamp.getTime() + 60 * MINUTE)
+                timestamp: new Date(action.timestamp.getTime() + 60 * MINUTE),
             }));
-            const thirdSession = FAKE_USER_ACTIONS_SESSION.map(action => ({
+            const thirdSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
                 ...action,
-                timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE)
+                timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE),
             }));
 
             const mock = await getMockComponent([...FAKE_USER_ACTIONS_SESSION, ...secondSession, ...thirdSession], null);
@@ -225,9 +244,9 @@ describe('UserActivity', () => {
             });
 
             it('should show links to view sessions before and after the ticket creation session', async () => {
-                const moreRecentSession = FAKE_USER_ACTIONS_SESSION.map(action => ({
+                const moreRecentSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
                     ...action,
-                    timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE)
+                    timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE),
                 }));
                 const ticketCreationDate = new Date(TEST_DATE.getTime() + 60 * MINUTE);
                 const mock = await getMockComponent([...moreRecentSession, ...FAKE_USER_ACTIONS_SESSION], ticketCreationDate);
@@ -237,9 +256,9 @@ describe('UserActivity', () => {
             });
 
             it('should expand the session before the ticket creation session when clicking on "Show new session"', async () => {
-                const moreRecentSession = FAKE_USER_ACTIONS_SESSION.map(action => ({
+                const moreRecentSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
                     ...action,
-                    timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE)
+                    timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE),
                 }));
                 const ticketCreationDate = new Date(TEST_DATE.getTime() + 60 * MINUTE);
                 const mock = await getMockComponent([...moreRecentSession, ...FAKE_USER_ACTIONS_SESSION], ticketCreationDate);
@@ -253,9 +272,9 @@ describe('UserActivity', () => {
             });
 
             it('should not display a link to show more sessions when all sessions have been expanded', async () => {
-                const moreRecentSession = FAKE_USER_ACTIONS_SESSION.map(action => ({
+                const moreRecentSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
                     ...action,
-                    timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE)
+                    timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE),
                 }));
                 const ticketCreationDate = new Date(TEST_DATE.getTime() + 60 * MINUTE);
                 const mock = await getMockComponent([...moreRecentSession, ...FAKE_USER_ACTIONS_SESSION], ticketCreationDate);
@@ -275,7 +294,6 @@ describe('UserActivity', () => {
     });
 
     describe('actions', () => {
-
         describe('search', () => {
             it('should display the query as the action title', async () => {
                 const mock = await getMockComponent([FAKE_EVENT_SEARCH], null);
@@ -338,8 +356,8 @@ describe('UserActivity', () => {
                     ...FAKE_EVENT_VIEW,
                     raw: {
                         ...FAKE_EVENT_VIEW.raw,
-                        content_id_key: 'foo'
-                    }
+                        content_id_key: 'foo',
+                    },
                 };
                 const mock = await getMockComponent([viewEvent], null);
 
@@ -395,7 +413,7 @@ describe('UserActivity', () => {
                     raw: {
                         ...FAKE_EVENT_CUSTOM.raw,
                         event_value: '',
-                    }
+                    },
                 };
                 const mock = await getMockComponent([customEventWithoutValue], null);
 
