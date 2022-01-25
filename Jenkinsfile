@@ -6,8 +6,7 @@ library(
 
 pipeline {
     agent {
-        label "linux && docker"
-        dockerfile true
+        label "linux && docker "
     }
     options {
         timestamps()
@@ -23,6 +22,7 @@ pipeline {
     stages {
         stage("Build and Test") {
             steps {
+                agent { docker 'coveo/node-chrome-dockerbuild' }
                 withCredentials([string(credentialsId: 'coveralls-search-ui-extensions', variable: 'COVERALLS_REPO_TOKEN')]) {
                     sh "npm install"
                     sh "npm run lint"
