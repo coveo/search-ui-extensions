@@ -26,7 +26,7 @@ pipeline {
                 dockerfile {
                     filename "Jenkinsfile.dockerfile"
                     label "linux&&docker"
-                    args "-u pptruser:pptruser"
+                    args "--cap-add=SYS_ADMIN"
                 }
             }
             steps {
