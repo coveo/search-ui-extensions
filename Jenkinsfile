@@ -9,7 +9,7 @@ pipeline {
         label "linux && docker "
     }
     tools {
-        dockerTool 'dockerlatest'
+        dockerTool 'docker'
     }
     options {
         timestamps()
