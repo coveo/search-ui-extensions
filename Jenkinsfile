@@ -26,6 +26,7 @@ pipeline {
                 dockerfile {
                     filename "Jenkinsfile.dockerfile"
                     label "linux&&docker"
+                    args: '-u pptruser:pptruser'
                 }
             }
             steps {
