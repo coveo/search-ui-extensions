@@ -21,20 +21,21 @@ pipeline {
 
     stages {
         stage("Build and Test") {
+            agent {
+                dockerfile {
+                    filename 'Dockerfile'
+                }
+            }
             steps {
-                def buildImage = docker.build("build-image", "./DockerFile") 
-                script {
-                    buildImage.inside {
-                        withCredentials([string(credentialsId: 'coveralls-search-ui-extensions', variable: 'COVERALLS_REPO_TOKEN')]) {
-                            sh "npm install"
-                            sh "npm run lint"
-                            sh "npm run build"
-                            sh "npm run testCoverage"
-                        }
-                    }
+                withCredentials([string(credentialsId: 'coveralls-search-ui-extensions', variable: 'COVERALLS_REPO_TOKEN')]) {
+                    sh "npm install"
+                    sh "npm run lint"
+                    sh "npm run build"
+                    sh "npm run testCoverage"
                 }
             }
         }
+    }
 
         stage("Snyk") {
             steps {
