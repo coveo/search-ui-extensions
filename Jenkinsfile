@@ -31,6 +31,7 @@ pipeline {
             }
             steps {
                 withCredentials([string(credentialsId: 'coveralls-search-ui-extensions', variable: 'COVERALLS_REPO_TOKEN')]) {
+                    sh "pwd"
                     sh "npm ci"
                     sh "npm run lint"
                     sh "npm run build"
