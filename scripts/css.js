@@ -1,5 +1,5 @@
 'use strict';
-let sass = require('node-sass');
+let sass = require('sass');
 let fs = require('fs');
 
 let basePath = './bin/css/';
