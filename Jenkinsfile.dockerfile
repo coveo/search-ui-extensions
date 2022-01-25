@@ -23,7 +23,11 @@ RUN apt-get update \
 #     browser.launch({executablePath: 'google-chrome-stable'})
 # ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
+# https://stackoverflow.com/a/65443098
+WORKDIR /usr/app
+COPY ./ /usr/app
 # Install puppeteer so it's available in the container.
+
 RUN npm init -y &&  \
     npm i puppeteer \
     # Add user so we don't need --no-sandbox.
