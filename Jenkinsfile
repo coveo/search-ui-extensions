@@ -17,7 +17,7 @@ pipeline {
     environment {
         NODE_IMAGE = "node:lts"
         DEPLOY_PIPELINE_IMAGE = '458176070654.dkr.ecr.us-east-1.amazonaws.com/jenkins/deployment_package:v7'
-        CYPRESS_CACHE_FOLDER = '/usr/cache'
+        CYPRESS_CACHE_FOLDER = '~/.cache'
     }
 
     stages {
