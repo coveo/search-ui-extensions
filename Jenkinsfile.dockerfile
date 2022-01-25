@@ -25,14 +25,13 @@ RUN apt-get update \
 
 # https://stackoverflow.com/a/65443098
 WORKDIR /usr/app
-COPY ./ /usr/app
 # Install puppeteer so it's available in the container.
 
     # Add user so we don't need --no-sandbox.
     # same layer as npm install to keep re-chowned files from using up several hundred MBs more space
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
-    && chown -R pptruser:pptruser /usr/app \
-    && chmod -R 777 /usr/app
+    && chown -R pptruser:pptruser /usr/ \
+    && chmod -R 777 /usr/
 
 # Run everything after as non-privileged user.
 USER pptruser
