@@ -7,6 +7,7 @@ library(
 pipeline {
     agent {
         label "linux && docker"
+        dockerfile true
     }
     options {
         timestamps()
@@ -21,11 +22,6 @@ pipeline {
 
     stages {
         stage("Build and Test") {
-            agent {
-                dockerfile {
-                    filename 'Dockerfile'
-                }
-            }
             steps {
                 withCredentials([string(credentialsId: 'coveralls-search-ui-extensions', variable: 'COVERALLS_REPO_TOKEN')]) {
                     sh "npm install"
