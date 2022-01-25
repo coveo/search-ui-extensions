@@ -218,7 +218,7 @@ export class UserActivity extends Component {
 
         return {
             caseSubmitSessionIndex,
-            caseSubmitSession
+            caseSubmitSession,
         };
     }
 
@@ -231,10 +231,8 @@ export class UserActivity extends Component {
     }
 
     private findPotentialSessionJustBeforeCaseSubmit(): number {
-        const potentialSessionIndex = this.sessions.findIndex(
-            (session) => session.actions[0].timestamp <= this.options.ticketCreationDateTime
-        );
-        
+        const potentialSessionIndex = this.sessions.findIndex((session) => session.actions[0].timestamp <= this.options.ticketCreationDateTime);
+
         if (potentialSessionIndex !== -1) {
             console.log('potentialSession ', this.sessions[potentialSessionIndex]);
             const lastActionInSession = this.sessions[potentialSessionIndex].actions[0];
@@ -242,7 +240,7 @@ export class UserActivity extends Component {
             console.log('this.options.ticketCreationDateTime ', this.options.ticketCreationDateTime.getTime());
             const ispartofthesamesession = this.isPartOfTheSameSession(lastActionInSession, this.options.ticketCreationDateTime);
             console.log(ispartofthesamesession);
-            
+
             if (!this.isPartOfTheSameSession(lastActionInSession, this.options.ticketCreationDateTime)) {
                 // If the session before the ticket create is not part of the same session, create a standalone session.
                 this.sessions.splice(potentialSessionIndex, 0, new UserActionSession(this.options.ticketCreationDateTime, []));
@@ -253,11 +251,10 @@ export class UserActivity extends Component {
     }
 
     private findSurroundingSessions(from: number, to: number): UserActionSession[] {
-        console.log(`Finding surrounding sessions from ${from} to ${to}`)
+        console.log(`Finding surrounding sessions from ${from} to ${to}`);
         // +1 because with slice `end` is not included.
         return this.sessions.slice(Math.max(0, from), Math.min(this.sessions.length, to + 1));
     }
-
 
     private render() {
         this.element.innerHTML = '';
@@ -276,7 +273,6 @@ export class UserActivity extends Component {
         const list = document.createElement('ol');
 
         const sessionsBuilt = this.buildSessionsItems(this.sessionsToDisplay);
-        
 
         sessionsBuilt.forEach((sessionItem) => {
             if (sessionItem) {
@@ -334,7 +330,6 @@ export class UserActivity extends Component {
         if (session.actions.length === 0) {
             return null;
         }
-        
 
         const sessionContainer = document.createElement('div');
         sessionContainer.classList.add('coveo-session-container');
@@ -347,11 +342,10 @@ export class UserActivity extends Component {
     }
 
     private buildSessionHeader(session: UserActionSession): HTMLElement {
-        
         const sessionHeader = document.createElement('div');
         sessionHeader.classList.add('coveo-session-header');
         sessionHeader.innerText = `Session ${formatDate(session.timestamp)}`;
-        
+
         return sessionHeader;
     }
 
@@ -359,14 +353,14 @@ export class UserActivity extends Component {
         let actionsHTML = [];
         let actionsToDisplay = actions;
         if (withFolded && this.options.ticketCreationDateTime && !this.hasExpandedActions) {
-            // Special behavior because, in the session with the Ticket Creation event, 
+            // Special behavior because, in the session with the Ticket Creation event,
             // until the user expands them, the actions that occurred AFTER a ticket creation are collapsed.
             actionsToDisplay = actionsToDisplay.filter((action) => action.timestamp <= this.options.ticketCreationDateTime);
             if (actionsToDisplay.length < actions.length) {
                 actionsHTML.push(this.buildFoldedActions());
             }
         }
-        actionsHTML = actionsHTML.concat(actionsToDisplay.map(action => this.buildActionListItem(action)));
+        actionsHTML = actionsHTML.concat(actionsToDisplay.map((action) => this.buildActionListItem(action)));
         return actionsHTML;
     }
 
@@ -393,7 +387,6 @@ export class UserActivity extends Component {
     }
 
     private buildActionListItem(action: UserAction): HTMLLIElement {
-        
         try {
             const defaultBuilder = (action: UserAction) => this.buildCustomEvent(action);
             const buildersMap = {
@@ -403,9 +396,9 @@ export class UserActivity extends Component {
                 [UserActionType.TicketCreated]: (action: UserAction) => this.buildTicketCreated(action),
                 [UserActionType.Custom]: (action: UserAction) => this.buildCustomEvent(action),
             };
-    
+
             const builder = buildersMap[action.type] || defaultBuilder;
-            
+
             return builder(action);
         } catch (err) {
             console.error(err);
@@ -414,14 +407,13 @@ export class UserActivity extends Component {
     }
 
     private buildSearchEvent(action: UserAction): HTMLLIElement {
-        
         const li = document.createElement('li');
         li.classList.add(EVENT_CLASS, SEARCH_EVENT_CLASS);
 
         li.appendChild(this.buildTitleSection(action, action.query || 'Empty Search'));
         li.appendChild(this.buildFooterElement(action));
         li.appendChild(this.buildIcon(search));
-        
+
         return li;
     }
 
@@ -467,7 +459,7 @@ export class UserActivity extends Component {
 
         li.appendChild(this.buildFooterElement(action));
         li.appendChild(this.buildIcon(view));
-        
+
         return li;
     }
 
@@ -478,7 +470,7 @@ export class UserActivity extends Component {
         li.appendChild(this.buildTitleSection(action, `${action.raw.event_value || action.raw.event_type || l(`${UserActivity.ID}_custom`)}`));
         li.appendChild(this.buildFooterElement(action));
         li.appendChild(this.buildIcon(dot));
-        
+
         return li;
     }
 

@@ -87,7 +87,7 @@ describe('UserActivity', () => {
     describe('sessions', () => {
         it('should regroup actions in the same session', async () => {
             const mock = await getMockComponent(FAKE_USER_ACTIONS_SESSION, null);
-            
+
             const sessionHeaders = mock.cmp.element.querySelectorAll(SESSION_HEADER_SELECTOR);
             expect(sessionHeaders.length).toEqual(1);
         });
@@ -193,11 +193,11 @@ describe('UserActivity', () => {
             it('should create a virtual session when the ticket creation date is too recent compared to the most recent session', async () => {
                 const ticketCreationDate = new Date(TEST_DATE.getTime() + 60 * MINUTE);
                 console.log(ticketCreationDate.toLocaleString());
-                console.log(FAKE_USER_ACTIONS_SESSION[FAKE_USER_ACTIONS_SESSION.length-1].timestamp.toLocaleString());
+                console.log(FAKE_USER_ACTIONS_SESSION[FAKE_USER_ACTIONS_SESSION.length - 1].timestamp.toLocaleString());
                 const mock = await getMockComponent(FAKE_USER_ACTIONS_SESSION, ticketCreationDate);
 
                 console.log(mock.cmp.element);
-                
+
                 const sessionActions = mock.cmp.element.querySelectorAll(SESSION_ACTIONS_SELECTOR);
 
                 expect(sessionActions.length).toBe(1);
