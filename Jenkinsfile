@@ -8,6 +8,9 @@ pipeline {
     agent {
         label "linux && docker "
     }
+    tools {
+        dockerTool 'dockerlatest'
+    }
     options {
         timestamps()
         ansiColor("xterm")
