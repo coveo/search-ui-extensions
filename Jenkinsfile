@@ -26,7 +26,7 @@ pipeline {
                 dockerfile {
                     filename "Jenkinsfile.dockerfile"
                     label "linux&&docker"
-                    args "-v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/tmp"
+                    args "-v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/tmp -u -u pptruser:pptruser"
                 }
             }
             steps {
