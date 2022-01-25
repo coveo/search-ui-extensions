@@ -31,7 +31,7 @@ COPY ./ /usr/app
     # Add user so we don't need --no-sandbox.
     # same layer as npm install to keep re-chowned files from using up several hundred MBs more space
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
-    && chown -R pptruser:pptruser /usr/app / \
+    && chown -R pptruser:pptruser /usr/app \
     && chown -R pptruser:pptruser /.npm
 
 # Run everything after as non-privileged user.
