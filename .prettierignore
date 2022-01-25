@@ -10,4 +10,4 @@ node_modules/**/*
 LICENSE
 Jenkinsfile
 .deployment.config
-Dockerfile
+*.dockerfile

@@ -5,9 +5,7 @@ library(
 )
 
 pipeline {
-    agent {
-        label "linux && docker "
-    }
+    agent { node { label "linux&&docker" } }
     tools {
         dockerTool 'docker'
     }
@@ -24,7 +22,13 @@ pipeline {
 
     stages {
         stage("Build and Test") {
-            agent { docker 'coveo/node-chrome-dockerbuild' }
+            agent {
+                dockerfile {
+                    filename "Jenkinsfile.dockerfile"
+                    label "linux&&docker"
+                    args "-v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/tmp"
+                }
+            }
             steps {
                 withCredentials([string(credentialsId: 'coveralls-search-ui-extensions', variable: 'COVERALLS_REPO_TOKEN')]) {
                     sh "npm install"
