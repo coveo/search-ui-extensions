@@ -22,7 +22,8 @@ pipeline {
     stages {
         stage("Build and Test") {
             steps {
-                withDockerContainer(dockerfile: './Dockerfile') {
+                def buildImage = docker.build("build-image", "./DockerFile") 
+                buildImage.inside {
                     withCredentials([string(credentialsId: 'coveralls-search-ui-extensions', variable: 'COVERALLS_REPO_TOKEN')]) {
                         sh "npm install"
                         sh "npm run lint"
@@ -31,7 +32,6 @@ pipeline {
                     }
                 }
             }
-        }
 
         stage("Snyk") {
             steps {
