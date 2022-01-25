@@ -30,7 +30,7 @@ pipeline {
             }
             steps {
                 withCredentials([string(credentialsId: 'coveralls-search-ui-extensions', variable: 'COVERALLS_REPO_TOKEN')]) {
-                    sh "npm install"
+                    sh "npm ci"
                     sh "npm run lint"
                     sh "npm run build"
                     sh "npm run testCoverage"
