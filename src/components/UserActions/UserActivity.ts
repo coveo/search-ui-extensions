@@ -98,41 +98,6 @@ export class UserActivity extends Component {
         this.userProfileModel.getActions(this.options.userId).then((actions) => {
             const sortMostRecentFirst = (a: UserAction, b: UserAction) => b.timestamp.getTime() - a.timestamp.getTime();
 
-            // const TEST_DATE_TIME = 1642443657767;
-            // const TEST_DATE = new Date(TEST_DATE_TIME);
-            // const FAKE_ORIGIN_1 = 'origin1';
-            // const FAKE_DOCUMENT_TITLE = 'Martine a la plage';
-            // const MINUTE = 60000;
-
-            // const FAKE_EVENT_SEARCH = new UserAction(
-            //     UserActionType.Search,
-            //     TEST_DATE,
-            //     { cause: 'searchFromLink', origin_level_1: FAKE_ORIGIN_1, query_expression: 'foo' },
-            //     null,
-            //     'foo'
-            // );
-            // const FAKE_EVENT_CLICK = new UserAction(UserActionType.Click, new Date(TEST_DATE.getTime() + 1 * MINUTE), {
-            //     c_contentidkey: 'permanentid',
-            //     c_contentidvalue: 'somepermanentid',
-            //     origin_level_1: FAKE_ORIGIN_1,
-            //     title: FAKE_DOCUMENT_TITLE,
-            //     uri_hash: 'whatever',
-            // });
-            // const FAKE_EVENT_CUSTOM = new UserAction(UserActionType.Custom, new Date(TEST_DATE.getTime() + 2 * MINUTE), {
-            //     event_type: 'case',
-            //     event_value: 'caseDetach',
-            //     origin_level_1: FAKE_ORIGIN_1,
-            // });
-            // const FAKE_EVENT_VIEW = new UserAction(UserActionType.PageView, new Date(TEST_DATE.getTime() + 3 * MINUTE), {
-            //     content_id_key: '@clickableuri',
-            //     content_id_value: 'whatever',
-            //     title: 'Home',
-            //     origin_level_1: FAKE_ORIGIN_1,
-            // });
-
-            // const FAKE_USER_ACTIONS_SESSION = [FAKE_EVENT_SEARCH, FAKE_EVENT_CLICK, FAKE_EVENT_CUSTOM, FAKE_EVENT_VIEW];
-            // actions = FAKE_USER_ACTIONS_SESSION;
-
             const sortedActions = actions.sort(sortMostRecentFirst);
             this.sessions = this.splitActionsBySessions(sortedActions);
 
@@ -146,7 +111,7 @@ export class UserActivity extends Component {
         try {
             return new Date(value);
         } catch (e) {
-            console.warn(`Invalid date for ticket creation '${value}'`);
+            console.warn(l(`${UserActivity.ID}_invalidDate`) + ` '${value}'`);
             return null;
         }
     }
@@ -234,12 +199,8 @@ export class UserActivity extends Component {
         const potentialSessionIndex = this.sessions.findIndex((session) => session.actions[0].timestamp <= this.options.ticketCreationDateTime);
 
         if (potentialSessionIndex !== -1) {
-            console.log('potentialSession ', this.sessions[potentialSessionIndex]);
             const lastActionInSession = this.sessions[potentialSessionIndex].actions[0];
-            console.log('lastActionInSession ', lastActionInSession.timestamp.getTime());
-            console.log('this.options.ticketCreationDateTime ', this.options.ticketCreationDateTime.getTime());
             const ispartofthesamesession = this.isPartOfTheSameSession(lastActionInSession, this.options.ticketCreationDateTime);
-            console.log(ispartofthesamesession);
 
             if (!this.isPartOfTheSameSession(lastActionInSession, this.options.ticketCreationDateTime)) {
                 // If the session before the ticket create is not part of the same session, create a standalone session.
@@ -251,7 +212,6 @@ export class UserActivity extends Component {
     }
 
     private findSurroundingSessions(from: number, to: number): UserActionSession[] {
-        console.log(`Finding surrounding sessions from ${from} to ${to}`);
         // +1 because with slice `end` is not included.
         return this.sessions.slice(Math.max(0, from), Math.min(this.sessions.length, to + 1));
     }
@@ -294,10 +254,10 @@ export class UserActivity extends Component {
                 hitExpanded = true;
             } else {
                 if (!hitExpanded && sessions[index + 1]?.expanded) {
-                    htmlElements.push(this.buildFoldedSession(session, 'Show new session'));
+                    htmlElements.push(this.buildFoldedSession(session, l(`${UserActivity.ID}_showNewSession`)));
                 }
                 if (hitExpanded && sessions[index - 1]?.expanded) {
-                    htmlElements.push(this.buildFoldedSession(session, 'Show past session'));
+                    htmlElements.push(this.buildFoldedSession(session, l(`${UserActivity.ID}_showPastSession`)));
                 }
             }
         });
@@ -312,7 +272,7 @@ export class UserActivity extends Component {
         const hr = document.createElement('hr');
         const span = document.createElement('span');
         span.classList.add(TEXT_CLASS);
-        span.innerText = showMoreButtonText || 'Show More';
+        span.innerText = showMoreButtonText || l(`${UserActivity.ID}_showMore`);
 
         hr.appendChild(span);
 
@@ -344,7 +304,7 @@ export class UserActivity extends Component {
     private buildSessionHeader(session: UserActionSession): HTMLElement {
         const sessionHeader = document.createElement('div');
         sessionHeader.classList.add('coveo-session-header');
-        sessionHeader.innerText = `Session ${formatDate(session.timestamp)}`;
+        sessionHeader.innerText = l(`${UserActivity.ID}_session`) + ` ${formatDate(session.timestamp)}`;
 
         return sessionHeader;
     }
@@ -370,7 +330,7 @@ export class UserActivity extends Component {
 
         const span = document.createElement('span');
         span.classList.add(TEXT_CLASS);
-        span.innerText = 'More actions';
+        span.innerText = l(`${UserActivity.ID}_showMoreActions`);
 
         li.addEventListener('click', () => {
             this.hasExpandedActions = true;
@@ -410,7 +370,7 @@ export class UserActivity extends Component {
         const li = document.createElement('li');
         li.classList.add(EVENT_CLASS, SEARCH_EVENT_CLASS);
 
-        li.appendChild(this.buildTitleSection(action, action.query || 'Empty Search'));
+        li.appendChild(this.buildTitleSection(action, action.query || l(`${UserActivity.ID}_emptySearch`)));
         li.appendChild(this.buildFooterElement(action));
         li.appendChild(this.buildIcon(search));
 
@@ -478,7 +438,7 @@ export class UserActivity extends Component {
         const li = document.createElement('li');
         li.classList.add(EVENT_CLASS, CUSTOM_EVENT_CLASS, CASE_CREATION_ACTION_CLASS);
 
-        li.appendChild(this.buildTitleSection(action, 'Ticket Created'));
+        li.appendChild(this.buildTitleSection(action, l(`${UserActivity.ID}_ticketCreated`)));
         li.appendChild(this.buildFooterElement(action));
         li.appendChild(this.buildIcon(flag));
 
