@@ -22,7 +22,7 @@ pipeline {
     stages {
         stage("Build") {
             steps {
-                withDockerContainer(image: NODE_IMAGE) {
+                withDockerContainer(image: NODE_IMAGE, args: "-u node") {
                     withCredentials([string(credentialsId: 'coveralls-search-ui-extensions', variable: 'COVERALLS_REPO_TOKEN')]) {
                         sh "npm ci"
                         sh "npm run build"
