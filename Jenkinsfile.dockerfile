@@ -37,4 +37,4 @@ RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
 USER pptruser
 ENV npm_config_cache=/usr/.npm
 ENV HOME=/usr/cache
-ENV CYPRESS_CACHE_FOLDER=usr/cache
+ENV CYPRESS_CACHE_FOLDER=/usr/cache
