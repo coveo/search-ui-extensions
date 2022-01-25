@@ -20,12 +20,14 @@ pipeline {
     }
 
     stages {
-        stage("Build") {
+        stage("Build and Test") {
             steps {
-                withDockerContainer(image: NODE_IMAGE, args: "-u node") {
+                withDockerContainer(dockerfile: './Dockerfile') {
                     withCredentials([string(credentialsId: 'coveralls-search-ui-extensions', variable: 'COVERALLS_REPO_TOKEN')]) {
-                        sh "npm ci"
+                        sh "npm install"
+                        sh "npm run lint"
                         sh "npm run build"
+                        sh "npm run testCoverage"
                     }
                 }
             }
