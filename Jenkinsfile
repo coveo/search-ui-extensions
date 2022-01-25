@@ -23,12 +23,14 @@ pipeline {
         stage("Build and Test") {
             steps {
                 def buildImage = docker.build("build-image", "./DockerFile") 
-                buildImage.inside {
-                    withCredentials([string(credentialsId: 'coveralls-search-ui-extensions', variable: 'COVERALLS_REPO_TOKEN')]) {
-                        sh "npm install"
-                        sh "npm run lint"
-                        sh "npm run build"
-                        sh "npm run testCoverage"
+                script {
+                    buildImage.inside {
+                        withCredentials([string(credentialsId: 'coveralls-search-ui-extensions', variable: 'COVERALLS_REPO_TOKEN')]) {
+                            sh "npm install"
+                            sh "npm run lint"
+                            sh "npm run build"
+                            sh "npm run testCoverage"
+                        }
                     }
                 }
             }
