@@ -32,6 +32,7 @@ pipeline {
                     }
                 }
             }
+        }
 
         stage("Snyk") {
             steps {
