@@ -23,4 +23,12 @@ Translation.register(Language.English, {
     UserActivity_click: 'Clicked Document',
     UserActivity_view: 'Page View',
     UserActivity_custom: 'Custom Action',
+    UserActivity_ticketCreated: 'Ticket Created',
+    UserActivity_showNewSession: 'Show new session',
+    UserActivity_showPastSession: 'Show past session',
+    UserActivity_showMore: 'Show More',
+    UserActivity_showMoreActions: 'More Actions',
+    UserActivity_session: 'Session',
+    UserActivity_emptySearch: 'Empty Search',
+    UserActivity_invalidDate: 'Invalid date for ticket creation',
 });

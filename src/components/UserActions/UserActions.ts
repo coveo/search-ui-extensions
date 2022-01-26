@@ -54,7 +54,7 @@ export interface IUserActionsOptions {
     /**
      * Label of the activity section.
      *
-     * Default: `User Recent Activity`
+     * Default: `User Activity Timeline`
      */
     activityLabel: string;
 
@@ -105,7 +105,7 @@ export class UserActions extends Component {
             defaultValue: 'Session Summary',
         }),
         activityLabel: ComponentOptions.buildStringOption({
-            defaultValue: "User's Recent Activity",
+            defaultValue: 'User Activity Timeline',
         }),
         viewedByCustomer: ComponentOptions.buildBooleanOption({
             defaultValue: true,

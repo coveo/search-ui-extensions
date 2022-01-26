@@ -1,99 +1,68 @@
 import { SinonSandbox, createSandbox, SinonStub } from 'sinon';
 import { UserAction } from '../../../src/models/UserProfileModel';
-import { Mock, Fake } from 'coveo-search-ui-tests';
+import { Fake, Mock } from 'coveo-search-ui-tests';
 import { UserActionType } from '../../../src/rest/UserProfilingEndpoint';
 import { UserActivity } from '../../../src/Index';
 import { fakeUserProfileModel } from '../../utils';
-import { formatDate, formatTime, formatDateAndTime, formatDateAndTimeShort, formatTimeInterval } from '../../../src/utils/time';
+import { formatDate, formatTime } from '../../../src/utils/time';
 
 describe('UserActivity', () => {
-    const TEST_DATE_STRING = 'December 17, 1995 1:00:00 AM';
-    const ACTIVITY_SELECTOR = '.coveo-activity';
-    const ACTIVITY_TITLE_SELECTOR = '.coveo-activity-title';
-    const ACTIVIY_TIMESTAMP_SELECTOR = '.coveo-activity-timestamp';
+    const TEST_DATE_TIME = 1642443657767;
+    const TEST_DATE = new Date(TEST_DATE_TIME);
+    const FAKE_ORIGIN_1 = 'origin1';
+    const FAKE_DOCUMENT_TITLE = 'Martine a la plage';
+    const MINUTE = 60000;
 
-    const FAKE_CLICK_EVENT = new UserAction(UserActionType.Click, new Date(TEST_DATE_STRING), {
-        origin_level_1: 'relevant' + Math.random(),
-        uri_hash: 'product' + Math.random(),
-        c_contentidkey: '@sysurihash',
-        c_contentidvalue: '' + Math.random(),
+    const FAKE_EVENT_SEARCH = new UserAction(
+        UserActionType.Search,
+        TEST_DATE,
+        { cause: 'searchFromLink', origin_level_1: FAKE_ORIGIN_1, query_expression: 'foo' },
+        null,
+        'foo'
+    );
+    const FAKE_EVENT_CLICK = new UserAction(UserActionType.Click, new Date(TEST_DATE.getTime() + 1 * MINUTE), {
+        c_contentidkey: 'permanentid',
+        c_contentidvalue: 'somepermanentid',
+        origin_level_1: FAKE_ORIGIN_1,
+        title: FAKE_DOCUMENT_TITLE,
+        uri_hash: 'whatever',
     });
-    FAKE_CLICK_EVENT.document = Fake.createFakeResult();
-
-    const FAKE_SEARCH_EVENT = new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
-        origin_level_1: 'relevant' + Math.random(),
-        cause: 'interfaceLoad',
+    FAKE_EVENT_CLICK.document = Fake.createFakeResult();
+    const FAKE_EVENT_CUSTOM = new UserAction(UserActionType.Custom, new Date(TEST_DATE.getTime() + 2 * MINUTE), {
+        event_type: 'case',
+        event_value: 'caseDetach',
+        origin_level_1: FAKE_ORIGIN_1,
     });
-
-    const FAKE_USER_SEARCH_EVENT = new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
-        origin_level_1: 'relevant' + Math.random(),
-        query_expression: 'someSearch' + Math.random(),
-        cause: 'searchboxSubmit',
-    });
-    FAKE_USER_SEARCH_EVENT.query = FAKE_USER_SEARCH_EVENT.raw.query_expression;
-
-    const FAKE_VIEW_EVENT = new UserAction(UserActionType.PageView, new Date(TEST_DATE_STRING), {
-        origin_level_1: 'relevant' + Math.random(),
-        content_id_key: '@someKey' + Math.random(),
-        content_id_value: 'someValue' + Math.random(),
-    });
-
-    const FAKE_CUSTOM_EVENT = new UserAction(UserActionType.Custom, new Date(TEST_DATE_STRING), {
-        origin_level_1: 'relevant' + Math.random(),
-        event_type: 'Submit' + Math.random(),
-        event_value: 'Case Submit' + Math.random(),
+    const FAKE_EVENT_VIEW = new UserAction(UserActionType.PageView, new Date(TEST_DATE.getTime() + 3 * MINUTE), {
+        content_id_key: '@clickableuri',
+        content_id_value: 'whatever',
+        title: 'Home',
+        origin_level_1: FAKE_ORIGIN_1,
     });
 
-    const FAKE_CUSTOM_EVENT_WITHOUT_TYPE = new UserAction(UserActionType.Custom, new Date(TEST_DATE_STRING), {
-        origin_level_1: 'relevant' + Math.random(),
-        event_value: 'Case Submit' + Math.random(),
-    });
+    const FAKE_USER_ACTIONS_SESSION = [FAKE_EVENT_SEARCH, FAKE_EVENT_CLICK, FAKE_EVENT_CUSTOM, FAKE_EVENT_VIEW];
 
-    const IRRELEVANT_ACTIONS = [
-        new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
-            origin_level_1: 'not relevant' + Math.random(),
-            query_expression: 'not relevant',
-            cause: 'interfaceLoad',
-        }),
-        new UserAction(UserActionType.PageView, new Date(TEST_DATE_STRING), {
-            origin_level_1: 'not relevant' + Math.random(),
-            content_id_key: '@sysurihash',
-            content_id_value: 'product1',
-        }),
-        new UserAction(UserActionType.Custom, new Date(TEST_DATE_STRING), {
-            origin_level_1: 'not relevant' + Math.random(),
-            c_contentidkey: '@sysurihash',
-            c_contentidvalue: 'headphones-gaming',
-            event_type: 'addPurchase',
-            event_value: 'headphones-gaming',
-        }),
-        new UserAction(UserActionType.Custom, new Date(TEST_DATE_STRING), {
-            origin_level_1: 'relevant' + Math.random(),
-            c_contentidkey: '@sysurihash',
-            c_contentidvalue: 'headphones-gaming',
-            event_type: 'addPurchase',
-            event_value: 'headphones-gaming',
-        }),
-    ];
+    const SESSION_SELECTOR = 'div.coveo-session-container';
+    const SESSION_HEADER_SELECTOR = 'div.coveo-session-header';
+    const SESSION_ACTIONS_SELECTOR = 'div.coveo-session-container > li.coveo-action';
+    const TICKET_CREATED_ACTION_SELECTOR = 'li.coveo-case-creation-action';
+    const ACTION_FOOTER_SELECTOR = 'div.coveo-footer';
+    const ACTION_TITLE_SELECTOR = '.coveo-activity-title';
+    const ACTION_SEARCH_SELECTOR = 'li.coveo-action.coveo-search';
+    const ACTION_CLICK_SELECTOR = 'li.coveo-action.coveo-click';
+    const ACTION_CUSTOM_SELECTOR = 'li.coveo-action.coveo-custom';
+    const ACTION_VIEW_SELECTOR = 'li.coveo-action.coveo-view';
+    const FOLDED_ACTIONS_SELECTOR = 'li.coveo-folded-actions';
+    const FOLDED_SESSIONS_SELECTOR = 'ol.coveo-activity > li.coveo-folded';
 
-    const FAKE_USER_ACTIONS = [
-        new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
-            origin_level_1: 'relevant' + Math.random(),
-            cause: 'searchboxSubmit',
-            query_expression: 'Best product',
-        }),
-        new UserAction(UserActionType.Click, new Date(TEST_DATE_STRING), {
-            origin_level_1: 'relevant' + Math.random(),
-            uri_hash: 'product' + Math.random(),
-            c_contentidkey: '@sysurihash',
-            c_contentidvalue: 'product1',
-        }),
-    ];
-
-    const getMockComponent = async (returnedActions: UserAction | UserAction[], element = document.createElement('div')) => {
+    const getMockComponent = async (
+        returnedActions: UserAction | UserAction[],
+        ticketCreationDateTime: Date | string | number,
+        element = document.createElement('div')
+    ) => {
         const mock = Mock.advancedComponentSetup<UserActivity>(
             UserActivity,
-            new Mock.AdvancedComponentSetupOptions(element, { userId: 'testuserId' }, (env) => {
+            new Mock.AdvancedComponentSetupOptions(element, { userId: 'testuserId', ticketCreationDateTime: ticketCreationDateTime }, (env) => {
                 env.element = element;
                 getActionsPromise = Promise.resolve(returnedActions);
                 fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => getActionsPromise);
@@ -115,353 +84,385 @@ describe('UserActivity', () => {
         sandbox.restore();
     });
 
-    it('should show the starting date and time of the user action session', async () => {
-        const mock = await getMockComponent(FAKE_USER_ACTIONS);
-        const timestamps = FAKE_USER_ACTIONS.map((action) => action.timestamp).sort();
+    describe('sessions', () => {
+        it('should regroup actions in the same session', async () => {
+            const mock = await getMockComponent(FAKE_USER_ACTIONS_SESSION, null);
 
-        const firstAction = timestamps[0];
-
-        expect(mock.cmp.element.innerHTML).toMatch(formatDate(firstAction));
-        expect(mock.cmp.element.innerHTML).toMatch(formatTime(firstAction));
-    });
-
-    it('should duration of the user action session', async () => {
-        const mock = await getMockComponent(FAKE_USER_ACTIONS);
-        const timestamps = FAKE_USER_ACTIONS.map((action) => action.timestamp).sort();
-
-        expect(mock.cmp.element.innerHTML).toMatch(formatTimeInterval(timestamps[timestamps.length - 1].getTime() - timestamps[0].getTime()));
-    });
-
-    it('should fold each actions that are tagged as not meaningful', async () => {
-        const mock = await getMockComponent([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]);
-
-        IRRELEVANT_ACTIONS.forEach((action) => {
-            expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).not.toMatch(action.raw.origin_level_1);
+            const sessionHeaders = mock.cmp.element.querySelectorAll(SESSION_HEADER_SELECTOR);
+            expect(sessionHeaders.length).toEqual(1);
         });
-    });
 
-    it('should show each actions that are tagged as meaningful', async () => {
-        const mock = await getMockComponent([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]);
+        it('should display a header with the date of the most recent action in the session', async () => {
+            const mock = await getMockComponent(FAKE_USER_ACTIONS_SESSION, null);
+            const expectedDate = FAKE_USER_ACTIONS_SESSION.map((action) => action.timestamp).sort((a, b) => b.getTime() - a.getTime())[0];
+            const expectedSessionHeader = `Session ${formatDate(expectedDate)}`;
 
-        FAKE_USER_ACTIONS.forEach((action) => {
-            expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).toMatch(action.raw.origin_level_1);
+            const sessionHeaders = mock.cmp.element.querySelectorAll(SESSION_HEADER_SELECTOR);
+            expect(sessionHeaders.length).toEqual(1);
+            expect(sessionHeaders[0].innerHTML).toMatch(expectedSessionHeader);
         });
-    });
 
-    it('should show all actions when no action are tagged as meaningful', async () => {
-        const mock = await getMockComponent(IRRELEVANT_ACTIONS);
+        it('should display the correct number of actions and in the correct order', async () => {
+            const mock = await getMockComponent(FAKE_USER_ACTIONS_SESSION, null);
+            const sortedActions = FAKE_USER_ACTIONS_SESSION.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
-        IRRELEVANT_ACTIONS.forEach((action) => {
-            expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).toMatch(action.raw.origin_level_1);
+            const sessionActions = mock.cmp.element.querySelectorAll(SESSION_ACTIONS_SELECTOR);
+            expect(sessionActions.length).toEqual(FAKE_USER_ACTIONS_SESSION.length);
+            sortedActions.forEach((action, index) => {
+                const expectedTime = `${formatTime(action.timestamp)}`;
+                expect(sessionActions[index].querySelector(ACTION_FOOTER_SELECTOR).innerHTML).toMatch(expectedTime);
+            });
         });
-    });
 
-    describe('folded events', () => {
-        it('should unfold on click', async () => {
-            const mock = await getMockComponent([...FAKE_USER_ACTIONS, ...IRRELEVANT_ACTIONS]);
+        it('should display a link to show a past session', async () => {
+            const secondSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
+                ...action,
+                timestamp: new Date(action.timestamp.getTime() + 60 * MINUTE),
+            }));
+            const thirdSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
+                ...action,
+                timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE),
+            }));
 
-            const folded = mock.cmp.element.querySelector<HTMLElement>('.coveo-folded');
+            const mock = await getMockComponent([...FAKE_USER_ACTIONS_SESSION, ...secondSession, ...thirdSession], null);
 
-            expect(folded).not.toBeNull();
-            folded.click();
-            IRRELEVANT_ACTIONS.forEach((action) => {
-                expect(mock.cmp.element.querySelector(ACTIVITY_SELECTOR).innerHTML).toMatch(action.raw.origin_level_1);
+            const foldedSessionLink = mock.cmp.element.querySelectorAll(FOLDED_SESSIONS_SELECTOR);
+            expect(foldedSessionLink.length).toBe(1);
+        });
+
+        it('should expand a new session when clicking on the link to show a past session', async () => {
+            const secondSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
+                ...action,
+                timestamp: new Date(action.timestamp.getTime() + 60 * MINUTE),
+            }));
+            const thirdSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
+                ...action,
+                timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE),
+            }));
+
+            const mock = await getMockComponent([...FAKE_USER_ACTIONS_SESSION, ...secondSession, ...thirdSession], null);
+
+            const visibleSessionsBeforeClick = mock.cmp.element.querySelectorAll(SESSION_SELECTOR);
+            expect(visibleSessionsBeforeClick.length).toBe(1);
+
+            const foldedSessionLink = mock.cmp.element.querySelector<HTMLElement>(FOLDED_SESSIONS_SELECTOR);
+            foldedSessionLink.click();
+
+            const visibleSessionsAfterClick = mock.cmp.element.querySelectorAll(SESSION_SELECTOR);
+            expect(visibleSessionsAfterClick.length).toBe(2);
+        });
+
+        it('should remove the link to show past session when no more sessions can be shown', async () => {
+            const secondSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
+                ...action,
+                timestamp: new Date(action.timestamp.getTime() + 60 * MINUTE),
+            }));
+            const thirdSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
+                ...action,
+                timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE),
+            }));
+
+            const mock = await getMockComponent([...FAKE_USER_ACTIONS_SESSION, ...secondSession, ...thirdSession], null);
+
+            const visibleSessionsBeforeClick = mock.cmp.element.querySelectorAll(SESSION_SELECTOR);
+            expect(visibleSessionsBeforeClick.length).toBe(1);
+
+            let foldedSessionLink = mock.cmp.element.querySelector<HTMLElement>(FOLDED_SESSIONS_SELECTOR);
+            foldedSessionLink.click();
+            foldedSessionLink = mock.cmp.element.querySelector<HTMLElement>(FOLDED_SESSIONS_SELECTOR);
+            foldedSessionLink.click();
+
+            const visibleSessionsAfterClick = mock.cmp.element.querySelectorAll(SESSION_SELECTOR);
+            expect(visibleSessionsAfterClick.length).toBe(3);
+
+            const foldedSessionLinkAfterClick = mock.cmp.element.querySelectorAll(FOLDED_SESSIONS_SELECTOR);
+            expect(foldedSessionLinkAfterClick.length).toBe(0);
+        });
+
+        describe('with a ticket creation date', () => {
+            it('should not contain a Ticket Created event when the ticket creation date is too old', async () => {
+                const ticketCreationDate = new Date(TEST_DATE.getTime() - 60 * MINUTE);
+                const mock = await getMockComponent(FAKE_USER_ACTIONS_SESSION, ticketCreationDate);
+
+                const sessionActions = mock.cmp.element.querySelectorAll(SESSION_ACTIONS_SELECTOR);
+
+                expect(sessionActions.length).toBe(FAKE_USER_ACTIONS_SESSION.length);
+                expect(mock.cmp.element.querySelectorAll(TICKET_CREATED_ACTION_SELECTOR).length).toBe(0);
+            });
+
+            it('should create a virtual session when the ticket creation date is too recent compared to the most recent session', async () => {
+                const ticketCreationDate = new Date(TEST_DATE.getTime() + 60 * MINUTE);
+                const mock = await getMockComponent(FAKE_USER_ACTIONS_SESSION, ticketCreationDate);
+
+                const sessionActions = mock.cmp.element.querySelectorAll(SESSION_ACTIONS_SELECTOR);
+
+                expect(sessionActions.length).toBe(1);
+                expect(mock.cmp.element.querySelectorAll(TICKET_CREATED_ACTION_SELECTOR).length).toBe(1);
+            });
+
+            it('should become the most recent action in a session that occured within 30 minutes', async () => {
+                const ticketCreationDate = new Date(TEST_DATE.getTime() + 4 * MINUTE);
+                const mock = await getMockComponent(FAKE_USER_ACTIONS_SESSION, ticketCreationDate);
+
+                const sessionActions = mock.cmp.element.querySelectorAll(SESSION_ACTIONS_SELECTOR);
+                expect(sessionActions.length).toBe(FAKE_USER_ACTIONS_SESSION.length + 1);
+                expect(mock.cmp.element.querySelectorAll(TICKET_CREATED_ACTION_SELECTOR).length).toBe(1);
+                expect(sessionActions[0].innerHTML).toMatch('Ticket Created');
+            });
+
+            it('should display folded actions for actions that occured after the ticket creation within a session', async () => {
+                const ticketCreationDate = new Date(TEST_DATE.getTime() + 2.1 * MINUTE);
+                const mock = await getMockComponent(FAKE_USER_ACTIONS_SESSION, ticketCreationDate);
+
+                const sessionActions = mock.cmp.element.querySelectorAll(SESSION_ACTIONS_SELECTOR);
+                expect(sessionActions.length).toBe(4);
+                expect(sessionActions[0].innerHTML).toMatch('Ticket Created');
+            });
+
+            it('should display a link to expand actions after the ticket creation within a session', async () => {
+                const ticketCreationDate = new Date(TEST_DATE.getTime() + 2.1 * MINUTE);
+                const mock = await getMockComponent(FAKE_USER_ACTIONS_SESSION, ticketCreationDate);
+
+                const foldedActions = mock.cmp.element.querySelectorAll(FOLDED_ACTIONS_SELECTOR);
+                expect(foldedActions.length).toBe(1);
+            });
+
+            it('should expand the folded actions when clicking on the more actions link', async () => {
+                const ticketCreationDate = new Date(TEST_DATE.getTime() + 2.1 * MINUTE);
+                const mock = await getMockComponent(FAKE_USER_ACTIONS_SESSION, ticketCreationDate);
+
+                const sessionActionsBeforeClick = mock.cmp.element.querySelectorAll(SESSION_ACTIONS_SELECTOR);
+                expect(sessionActionsBeforeClick.length).toBe(4);
+                const foldedActions = mock.cmp.element.querySelector<HTMLElement>(FOLDED_ACTIONS_SELECTOR);
+                foldedActions.click();
+
+                const sessionActionsAfterClick = mock.cmp.element.querySelectorAll(SESSION_ACTIONS_SELECTOR);
+                expect(sessionActionsAfterClick.length).toBe(5);
+            });
+
+            it('should show links to view sessions before and after the ticket creation session', async () => {
+                const moreRecentSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
+                    ...action,
+                    timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE),
+                }));
+                const ticketCreationDate = new Date(TEST_DATE.getTime() + 60 * MINUTE);
+                const mock = await getMockComponent([...moreRecentSession, ...FAKE_USER_ACTIONS_SESSION], ticketCreationDate);
+
+                const foldedSessionLink = mock.cmp.element.querySelectorAll(FOLDED_SESSIONS_SELECTOR);
+                expect(foldedSessionLink.length).toBe(2);
+            });
+
+            it('should expand the session before the ticket creation session when clicking on "Show new session"', async () => {
+                const moreRecentSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
+                    ...action,
+                    timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE),
+                }));
+                const ticketCreationDate = new Date(TEST_DATE.getTime() + 60 * MINUTE);
+                const mock = await getMockComponent([...moreRecentSession, ...FAKE_USER_ACTIONS_SESSION], ticketCreationDate);
+
+                const foldedSessionLinkBeforeClick = mock.cmp.element.querySelector<HTMLElement>(FOLDED_SESSIONS_SELECTOR);
+                expect(foldedSessionLinkBeforeClick.innerText).toMatch('Show new session');
+                foldedSessionLinkBeforeClick.click();
+
+                const sessionHeaders = mock.cmp.element.querySelectorAll(SESSION_HEADER_SELECTOR);
+                expect(sessionHeaders.length).toBe(2);
+            });
+
+            it('should not display a link to show more sessions when all sessions have been expanded', async () => {
+                const moreRecentSession = FAKE_USER_ACTIONS_SESSION.map((action) => ({
+                    ...action,
+                    timestamp: new Date(action.timestamp.getTime() + 120 * MINUTE),
+                }));
+                const ticketCreationDate = new Date(TEST_DATE.getTime() + 60 * MINUTE);
+                const mock = await getMockComponent([...moreRecentSession, ...FAKE_USER_ACTIONS_SESSION], ticketCreationDate);
+
+                const foldedSessionLinkBeforeSession = mock.cmp.element.querySelector<HTMLElement>(FOLDED_SESSIONS_SELECTOR);
+                expect(foldedSessionLinkBeforeSession.innerText).toMatch('Show new session');
+                foldedSessionLinkBeforeSession.click();
+
+                const foldedSessionLinkAfterSession = mock.cmp.element.querySelector<HTMLElement>(FOLDED_SESSIONS_SELECTOR);
+                expect(foldedSessionLinkAfterSession.innerText).toMatch('Show past session');
+                foldedSessionLinkAfterSession.click();
+
+                const foldedSessionLinks = mock.cmp.element.querySelectorAll(FOLDED_SESSIONS_SELECTOR);
+                expect(foldedSessionLinks.length).toBe(0);
             });
         });
     });
 
-    describe('search event', () => {
-        ['omniboxAnalytics', 'userActionsSubmit', 'omniboxFromLink', 'searchboxAsYouType', 'searchboxSubmit', 'searchFromLink'].map((cause) => {
-            it(`should display the "User Query" as event title when there is a query expression and the cause is ${cause}`, async () => {
-                const mock = await getMockComponent([
-                    new UserAction(UserActionType.Search, new Date(TEST_DATE_STRING), {
-                        origin_level_1: 'relevant' + Math.random(),
-                        query_expression: 'someSearch' + Math.random(),
-                        cause: cause,
-                    }),
-                ]);
+    describe('actions', () => {
+        describe('search', () => {
+            it('should display the query as the action title', async () => {
+                const mock = await getMockComponent([FAKE_EVENT_SEARCH], null);
 
-                const clickElement = mock.cmp.element.querySelector('.coveo-search');
+                const actionsEl = mock.cmp.element.querySelectorAll(ACTION_SEARCH_SELECTOR);
+                expect(actionsEl.length).toBe(1);
+                const actionTitleEl = actionsEl[0].querySelector(ACTION_TITLE_SELECTOR);
+                expect(actionTitleEl.innerHTML).toMatch(FAKE_EVENT_SEARCH.raw.query_expression);
+            });
 
-                const action = await mock.cmp['userProfileModel'].getActions('');
+            it('should display the time of the action as footer', async () => {
+                const mock = await getMockComponent([FAKE_EVENT_SEARCH], null);
 
-                expect(action[0].raw.cause).toBe(cause);
-                expect(clickElement).not.toBeNull();
-                expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('User Query');
+                const actionEl = mock.cmp.element.querySelector<HTMLElement>(ACTION_SEARCH_SELECTOR);
+                const actionFooter = actionEl.querySelector(ACTION_FOOTER_SELECTOR);
+                expect(actionFooter.innerHTML).toMatch(`${formatTime(FAKE_EVENT_SEARCH.timestamp)}`);
+            });
+
+            it('should display the originLevel1 of the action as footer if available', async () => {
+                const mock = await getMockComponent([FAKE_EVENT_SEARCH], null);
+
+                const actionEl = mock.cmp.element.querySelector<HTMLElement>(ACTION_SEARCH_SELECTOR);
+                const actionFooterEl = actionEl.querySelector(ACTION_FOOTER_SELECTOR);
+                expect(actionFooterEl.innerHTML).toMatch(FAKE_EVENT_SEARCH.raw.origin_level_1);
             });
         });
 
-        it('should display the "Query" as event title', async () => {
-            const mock = await getMockComponent([FAKE_SEARCH_EVENT]);
+        describe('click', () => {
+            it('should display an anchor as the action title', async () => {
+                const mock = await getMockComponent([FAKE_EVENT_CLICK], null);
 
-            const clickElement = mock.cmp.element.querySelector('.coveo-search');
+                const actionsEl = mock.cmp.element.querySelectorAll(ACTION_CLICK_SELECTOR);
+                expect(actionsEl.length).toBe(1);
+                const actionTitleEl = actionsEl[0].querySelector<HTMLAnchorElement>(ACTION_TITLE_SELECTOR);
+                expect(actionTitleEl instanceof HTMLAnchorElement).toBe(true);
+                expect(actionTitleEl.innerText).toBe(FAKE_EVENT_CLICK.document.title);
+                expect(actionTitleEl.href).toMatch(FAKE_EVENT_CLICK.document.clickUri);
+            });
 
-            expect(clickElement).not.toBeNull();
-            expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('Query');
+            it('should display the time of the action as footer', async () => {
+                const mock = await getMockComponent([FAKE_EVENT_CLICK], null);
+
+                const actionEl = mock.cmp.element.querySelector<HTMLElement>(ACTION_CLICK_SELECTOR);
+                const actionFooterEl = actionEl.querySelector(ACTION_FOOTER_SELECTOR);
+                expect(actionFooterEl.innerHTML).toMatch(`${formatTime(FAKE_EVENT_CLICK.timestamp)}`);
+            });
+
+            it('should display the originLevel1 of the action as footer if available', async () => {
+                const mock = await getMockComponent([FAKE_EVENT_CLICK], null);
+
+                const actionEl = mock.cmp.element.querySelector<HTMLElement>(ACTION_CLICK_SELECTOR);
+                const actionFooterEl = actionEl.querySelector(ACTION_FOOTER_SELECTOR);
+                expect(actionFooterEl.innerHTML).toMatch(FAKE_EVENT_CLICK.raw.origin_level_1);
+            });
         });
 
-        it('should display the query made by the user as event data', async () => {
-            const mock = await getMockComponent([FAKE_USER_SEARCH_EVENT]);
-
-            const clickElement = mock.cmp.element.querySelector('.coveo-search');
-
-            expect(clickElement).not.toBeNull();
-            expect(clickElement.querySelector<HTMLElement>('.coveo-data').innerText).toBe(FAKE_USER_SEARCH_EVENT.query);
-        });
-
-        it('should display the time of the event', async () => {
-            const mock = await getMockComponent([FAKE_SEARCH_EVENT]);
-
-            const searchElement = mock.cmp.element.querySelector('.coveo-search');
-
-            expect(searchElement).not.toBeNull();
-            expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                formatDateAndTimeShort(FAKE_SEARCH_EVENT.timestamp)
-            );
-        });
-
-        it('should display the time of the event in long format if in a wider interface', async () => {
-            const element = document.createElement('div');
-            Object.defineProperties(element, {
-                offsetWidth: {
-                    get() {
-                        return '500';
+        describe('pageview', () => {
+            it('should display the title of the pageview action', async () => {
+                const viewEvent = {
+                    ...FAKE_EVENT_VIEW,
+                    raw: {
+                        ...FAKE_EVENT_VIEW.raw,
+                        content_id_key: 'foo',
                     },
-                },
+                };
+                const mock = await getMockComponent([viewEvent], null);
+
+                const actionsEl = mock.cmp.element.querySelectorAll(ACTION_VIEW_SELECTOR);
+                expect(actionsEl.length).toBe(1);
+                const actionTitleEl = actionsEl[0].querySelector<HTMLElement>(ACTION_TITLE_SELECTOR);
+                expect(actionTitleEl.innerText).toBe(viewEvent.raw.title);
             });
 
-            const mock = await getMockComponent([FAKE_SEARCH_EVENT], element);
+            it('should display an anchor as the title of the pageview action when content_id_key is @clickableuri', async () => {
+                const mock = await getMockComponent([FAKE_EVENT_VIEW], null);
 
-            const searchElement = mock.cmp.element.querySelector('.coveo-search');
-            expect(searchElement).not.toBeNull();
-            expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                formatDateAndTime(FAKE_SEARCH_EVENT.timestamp)
-            );
+                const actionsEl = mock.cmp.element.querySelectorAll(ACTION_VIEW_SELECTOR);
+                expect(actionsEl.length).toBe(1);
+                const actionTitleEl = actionsEl[0].querySelector<HTMLElement>('.coveo-activity-title-section');
+                const customActionAnchorEl = actionTitleEl.firstElementChild as HTMLAnchorElement;
+                expect(customActionAnchorEl instanceof HTMLAnchorElement).toBe(true);
+                expect(customActionAnchorEl.innerText).toBe(FAKE_EVENT_VIEW.raw.title);
+                expect(customActionAnchorEl.href).toMatch(FAKE_EVENT_VIEW.raw.content_id_value);
+            });
+
+            it('should display the time of the action as footer', async () => {
+                const mock = await getMockComponent([FAKE_EVENT_VIEW], null);
+
+                const actionEl = mock.cmp.element.querySelector<HTMLElement>(ACTION_VIEW_SELECTOR);
+                const actionFooterEl = actionEl.querySelector(ACTION_FOOTER_SELECTOR);
+                expect(actionFooterEl.innerHTML).toMatch(`${formatTime(FAKE_EVENT_VIEW.timestamp)}`);
+            });
+
+            it('should display the originLevel1 of the action as footer if available', async () => {
+                const mock = await getMockComponent([FAKE_EVENT_VIEW], null);
+
+                const actionEl = mock.cmp.element.querySelector<HTMLElement>(ACTION_VIEW_SELECTOR);
+                const actionFooterEl = actionEl.querySelector(ACTION_FOOTER_SELECTOR);
+
+                expect(actionFooterEl.innerHTML).toMatch(FAKE_EVENT_VIEW.raw.origin_level_1);
+            });
         });
 
-        it('should display the originLevel1 as event footer', async () => {
-            const mock = await getMockComponent([FAKE_SEARCH_EVENT]);
+        describe('custom', () => {
+            it('should display the event value as the title', async () => {
+                const mock = await getMockComponent([FAKE_EVENT_CUSTOM], null);
 
-            const clickElement = mock.cmp.element.querySelector('.coveo-search');
+                const actionsEl = mock.cmp.element.querySelectorAll(ACTION_CUSTOM_SELECTOR);
+                expect(actionsEl.length).toBe(1);
+                const actionTitleEl = actionsEl[0].querySelector(ACTION_TITLE_SELECTOR);
+                expect(actionTitleEl.innerHTML).toMatch(FAKE_EVENT_CUSTOM.raw.event_value);
+            });
 
-            expect(clickElement).not.toBeNull();
-            expect(clickElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(FAKE_SEARCH_EVENT.raw.origin_level_1);
+            it('should fallback on the event type as the title if there are no event value', async () => {
+                const customEventWithoutValue = {
+                    ...FAKE_EVENT_CUSTOM,
+                    raw: {
+                        ...FAKE_EVENT_CUSTOM.raw,
+                        event_value: '',
+                    },
+                };
+                const mock = await getMockComponent([customEventWithoutValue], null);
+
+                const actionsEl = mock.cmp.element.querySelectorAll(ACTION_CUSTOM_SELECTOR);
+                expect(actionsEl.length).toBe(1);
+                const actionTitleEl = actionsEl[0].querySelector(ACTION_TITLE_SELECTOR);
+                expect(actionTitleEl.innerHTML).toMatch(customEventWithoutValue.raw.event_type);
+            });
+
+            it('should display the time of the action as footer', async () => {
+                const mock = await getMockComponent([FAKE_EVENT_CUSTOM], null);
+
+                const actionEl = mock.cmp.element.querySelector<HTMLElement>(ACTION_CUSTOM_SELECTOR);
+                const actionFooter = actionEl.querySelector(ACTION_FOOTER_SELECTOR);
+                expect(actionFooter.innerHTML).toMatch(`${formatTime(FAKE_EVENT_CUSTOM.timestamp)}`);
+            });
+
+            it('should display the originLevel1 of the action as footer if available', async () => {
+                const mock = await getMockComponent([FAKE_EVENT_CUSTOM], null);
+
+                const actionEl = mock.cmp.element.querySelector<HTMLElement>(ACTION_CUSTOM_SELECTOR);
+                const actionFooterEl = actionEl.querySelector(ACTION_FOOTER_SELECTOR);
+                expect(actionFooterEl.innerHTML).toMatch(FAKE_EVENT_CUSTOM.raw.origin_level_1);
+            });
         });
     });
 
-    describe('click event', () => {
-        it('should display the "Clicked Document" as event title', async () => {
-            const mock = await getMockComponent([FAKE_CLICK_EVENT]);
+    it('Should disable itself when the userId is falsey', () => {
+        let getActionStub: SinonStub<[HTMLElement, UserActivity], void>;
+        const mock = Mock.advancedComponentSetup<UserActivity>(
+            UserActivity,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: null }, (env) => {
+                getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
+                return env;
+            })
+        );
 
-            const clickElement = mock.cmp.element.querySelector('.coveo-click');
-
-            expect(clickElement).not.toBeNull();
-            expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('Clicked Document');
-        });
-
-        it('should display a link to the clicked document as event data', async () => {
-            const mock = await getMockComponent([FAKE_CLICK_EVENT]);
-
-            const clickElement = mock.cmp.element.querySelector('.coveo-click');
-
-            expect(clickElement).not.toBeNull();
-            expect(clickElement.querySelector<HTMLAnchorElement>('.coveo-data') instanceof HTMLAnchorElement).toBe(true);
-            expect(clickElement.querySelector<HTMLAnchorElement>('.coveo-data').innerText).toBe(FAKE_CLICK_EVENT.document.title);
-            expect(clickElement.querySelector<HTMLAnchorElement>('.coveo-data').href).toMatch(FAKE_CLICK_EVENT.document.clickUri);
-        });
-        it('should display the time of the event', async () => {
-            const mock = await getMockComponent([FAKE_CLICK_EVENT]);
-
-            const clickElement = mock.cmp.element.querySelector('.coveo-click');
-
-            expect(clickElement).not.toBeNull();
-            expect(clickElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                formatDateAndTimeShort(FAKE_CLICK_EVENT.timestamp)
-            );
-        });
-
-        it('should display the time of the event in long format if in a wider interface', async () => {
-            const element = document.createElement('div');
-            Object.defineProperties(element, {
-                offsetWidth: {
-                    get() {
-                        return '500';
-                    },
-                },
-            });
-
-            const mock = await getMockComponent([FAKE_CLICK_EVENT], element);
-
-            const searchElement = mock.cmp.element.querySelector('.coveo-click');
-            expect(searchElement).not.toBeNull();
-            expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                formatDateAndTime(FAKE_CLICK_EVENT.timestamp)
-            );
-        });
-
-        it('should display the originLevel1 as event footer', async () => {
-            const mock = await getMockComponent([FAKE_CLICK_EVENT]);
-
-            const clickElement = mock.cmp.element.querySelector('.coveo-click');
-
-            expect(clickElement).not.toBeNull();
-            expect(clickElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(FAKE_CLICK_EVENT.raw.origin_level_1);
-        });
+        expect(getActionStub.called).toBe(false);
+        expect(mock.cmp.disabled).toBe(true);
     });
 
-    describe('page view event', () => {
-        it('should display the "Page View" as event title', async () => {
-            const mock = await getMockComponent([FAKE_VIEW_EVENT]);
+    it('Should disable itself when the userId is empty string', () => {
+        let getActionStub: SinonStub<[HTMLElement, UserActivity], void>;
+        const mock = Mock.advancedComponentSetup<UserActivity>(
+            UserActivity,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: '' }, (env) => {
+                getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
+                return env;
+            })
+        );
 
-            const viewElement = mock.cmp.element.querySelector('.coveo-view');
-
-            expect(viewElement).not.toBeNull();
-            expect(viewElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('Page View');
-        });
-
-        it('should display the content id key and value as event data', async () => {
-            const mock = await getMockComponent([FAKE_VIEW_EVENT]);
-
-            const viewElement = mock.cmp.element.querySelector('.coveo-view');
-
-            expect(viewElement).not.toBeNull();
-            expect(viewElement.querySelector<HTMLElement>('.coveo-data').innerText).toMatch(FAKE_VIEW_EVENT.raw.content_id_key);
-            expect(viewElement.querySelector<HTMLElement>('.coveo-data').innerText).toMatch(FAKE_VIEW_EVENT.raw.content_id_value);
-        });
-
-        it('should display the time of the event', async () => {
-            const mock = await getMockComponent([FAKE_VIEW_EVENT]);
-
-            const viewElement = mock.cmp.element.querySelector('.coveo-view');
-
-            expect(viewElement).not.toBeNull();
-            expect(viewElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                formatDateAndTimeShort(FAKE_VIEW_EVENT.timestamp)
-            );
-        });
-
-        it('should display the time of the event in long format if in a wider interface', async () => {
-            const element = document.createElement('div');
-            Object.defineProperties(element, {
-                offsetWidth: {
-                    get() {
-                        return '500';
-                    },
-                },
-            });
-
-            const mock = await getMockComponent([FAKE_VIEW_EVENT], element);
-
-            const searchElement = mock.cmp.element.querySelector('.coveo-view');
-            expect(searchElement).not.toBeNull();
-            expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                formatDateAndTime(FAKE_VIEW_EVENT.timestamp)
-            );
-        });
-
-        it('should display the originLevel1 as event footer', async () => {
-            const mock = await getMockComponent([FAKE_VIEW_EVENT]);
-
-            const viewElement = mock.cmp.element.querySelector('.coveo-view');
-
-            expect(viewElement).not.toBeNull();
-            expect(viewElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(FAKE_VIEW_EVENT.raw.origin_level_1);
-        });
-    });
-
-    describe('custom event', () => {
-        it('should display the event type as event title', async () => {
-            const mock = await getMockComponent([FAKE_CUSTOM_EVENT]);
-
-            const clickElement = mock.cmp.element.querySelector('.coveo-custom');
-
-            expect(clickElement).not.toBeNull();
-            expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe(FAKE_CUSTOM_EVENT.raw.event_type);
-        });
-
-        it('should display "Custom Action" as event title when the event type is unavailable', async () => {
-            const mock = await getMockComponent([FAKE_CUSTOM_EVENT_WITHOUT_TYPE]);
-
-            const clickElement = mock.cmp.element.querySelector('.coveo-custom');
-
-            expect(clickElement).not.toBeNull();
-            expect(clickElement.querySelector<HTMLElement>(ACTIVITY_TITLE_SELECTOR).innerText).toBe('Custom Action');
-        });
-
-        it('should display the event value as event data', async () => {
-            const mock = await getMockComponent([FAKE_CUSTOM_EVENT]);
-
-            const clickElement = mock.cmp.element.querySelector('.coveo-custom');
-
-            expect(clickElement).not.toBeNull();
-            expect(clickElement.querySelector<HTMLElement>('.coveo-data').innerText).toBe(FAKE_CUSTOM_EVENT.raw.event_value);
-        });
-
-        it('should display the time of the event', async () => {
-            const mock = await getMockComponent([FAKE_CUSTOM_EVENT]);
-
-            const clickElement = mock.cmp.element.querySelector('.coveo-custom');
-
-            expect(clickElement).not.toBeNull();
-            expect(clickElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                formatDateAndTimeShort(FAKE_CUSTOM_EVENT.timestamp)
-            );
-        });
-
-        it('should display the time of the event in long format if in a wider interface', async () => {
-            const element = document.createElement('div');
-            Object.defineProperties(element, {
-                offsetWidth: {
-                    get() {
-                        return '500';
-                    },
-                },
-            });
-
-            const mock = await getMockComponent([FAKE_CUSTOM_EVENT], element);
-
-            const searchElement = mock.cmp.element.querySelector('.coveo-custom');
-            expect(searchElement).not.toBeNull();
-            expect(searchElement.querySelector<HTMLElement>(ACTIVIY_TIMESTAMP_SELECTOR).innerText).toMatch(
-                formatDateAndTime(FAKE_CUSTOM_EVENT.timestamp)
-            );
-        });
-
-        it('should display the originLevel1 as event footer', async () => {
-            const mock = await getMockComponent([FAKE_CUSTOM_EVENT]);
-
-            const clickElement = mock.cmp.element.querySelector('.coveo-custom');
-
-            expect(clickElement).not.toBeNull();
-            expect(clickElement.querySelector<HTMLElement>('.coveo-footer').innerText).toMatch(FAKE_CUSTOM_EVENT.raw.origin_level_1);
-        });
-
-        it('Should disable itself when the userId is falsey', () => {
-            let getActionStub: SinonStub<[HTMLElement, UserActivity], void>;
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: null }, (env) => {
-                    getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
-                    return env;
-                })
-            );
-
-            expect(getActionStub.called).toBe(false);
-            expect(mock.cmp.disabled).toBe(true);
-        });
-
-        it('Should disable itself when the userId is empty string', () => {
-            let getActionStub: SinonStub<[HTMLElement, UserActivity], void>;
-            const mock = Mock.advancedComponentSetup<UserActivity>(
-                UserActivity,
-                new Mock.AdvancedComponentSetupOptions(null, { userId: '' }, (env) => {
-                    getActionStub = fakeUserProfileModel(env.root, sandbox).getActions;
-                    return env;
-                })
-            );
-
-            expect(getActionStub.called).toBe(false);
-            expect(mock.cmp.disabled).toBe(true);
-        });
+        expect(getActionStub.called).toBe(false);
+        expect(mock.cmp.disabled).toBe(true);
     });
 });

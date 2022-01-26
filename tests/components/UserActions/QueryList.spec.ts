@@ -47,7 +47,7 @@ describe('QueryList', () => {
         expect(emptyElement.innerText).toBe('No queries made by this user');
     });
 
-    it('should show "Recent Queries" as title', async () => {
+    it('should show "Most Recent Queries" as title', async () => {
         const mock = Mock.advancedComponentSetup<QueryList>(
             QueryList,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
@@ -58,10 +58,10 @@ describe('QueryList', () => {
 
         await waitForPromiseCompletion();
 
-        expect(mock.cmp.element.querySelector('.coveo-title').innerHTML).toMatch('Recent Queries');
+        expect(mock.cmp.element.querySelector('.coveo-title').innerHTML).toMatch('Most Recent Queries');
     });
 
-    it('should show 4 queries by default', async () => {
+    it('should show 3 queries by default', async () => {
         const mock = Mock.advancedComponentSetup<QueryList>(
             QueryList,
             new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
@@ -74,7 +74,7 @@ describe('QueryList', () => {
 
         const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
 
-        expect(list.childElementCount).toBe(4);
+        expect(list.childElementCount).toBe(3);
     });
 
     it('should show a number of queries equal to the "numberOfItems" option', async () => {
@@ -106,7 +106,7 @@ describe('QueryList', () => {
 
         const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 3; i++) {
             const icon = list.children.item(i).querySelector<HTMLElement>('svg');
             expect(icon).toBeDefined;
         }

@@ -14,6 +14,10 @@ import {
 import { UserActionEvents } from '../components/UserActions/Events';
 import { UserProfilingEndpoint, IActionHistory, UserActionType } from '../rest/UserProfilingEndpoint';
 
+export class UserActionSession {
+    constructor(public timestamp: Date, public actions: UserAction[], public expanded: boolean = false) {}
+}
+
 /**
  * Represent an action that a user has made.
  */
@@ -31,6 +35,8 @@ export class UserAction {
             cause?: string;
             content_id_key?: string;
             content_id_value?: string;
+            language?: string;
+            title?: string;
         },
         public document?: IQueryResult,
         public query?: string

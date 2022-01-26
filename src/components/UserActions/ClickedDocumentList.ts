@@ -23,7 +23,7 @@ export interface IClickedDocumentList {
     /**
      * Number of Clicked Documents shown.
      *
-     * Default: `4`
+     * Default: `3`
      * Minimum: `1`
      */
     numberOfItems: number;
@@ -31,7 +31,7 @@ export interface IClickedDocumentList {
     /**
      * Label of the list of Clicked Documents.
      *
-     * Default: `Recent Clicked Documents`
+     * Default: `Most Recent Clicked Documents`
      */
     listLabel: string;
 
@@ -63,11 +63,11 @@ export class ClickedDocumentList extends Component {
      */
     static readonly options: IClickedDocumentList = {
         numberOfItems: ComponentOptions.buildNumberOption({
-            defaultValue: 4,
+            defaultValue: 3,
             min: 1,
         }),
         listLabel: ComponentOptions.buildStringOption({
-            defaultValue: 'Recent Clicked Documents',
+            defaultValue: 'Most Recent Clicked Documents',
         }),
         userId: ComponentOptions.buildStringOption({ required: true }),
         template: ComponentOptions.buildTemplateOption({

@@ -60,7 +60,7 @@ describe('ClickedDocumentList', () => {
         );
         await waitForPromiseCompletion();
 
-        expect(mock.cmp.element.querySelector('.coveo-title').innerHTML).toMatch('Recent Clicked Documents');
+        expect(mock.cmp.element.querySelector('.coveo-title').innerHTML).toMatch('Most Recent Clicked Documents');
     });
 
     it('should show the title specified in "listLabel" option', async () => {
@@ -77,7 +77,7 @@ describe('ClickedDocumentList', () => {
         expect(mock.cmp.element.querySelector('.coveo-title').innerHTML).toMatch(customTitle);
     });
 
-    it('should show 4 documents by default', async () => {
+    it('should show 3 documents by default', async () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
         const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
@@ -91,7 +91,7 @@ describe('ClickedDocumentList', () => {
 
         const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
 
-        expect(list.childElementCount).toBe(4);
+        expect(list.childElementCount).toBe(3);
     });
 
     it('should show a number of documents equal to the "numberOfItems" option', async () => {
@@ -125,7 +125,7 @@ describe('ClickedDocumentList', () => {
 
         const list = mock.env.element.querySelector<HTMLOListElement>('.coveo-list');
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 3; i++) {
             const icon = list.children.item(i).querySelector<HTMLElement>('svg');
             expect(icon).toBeDefined;
         }
