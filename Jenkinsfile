@@ -45,7 +45,7 @@ pipeline {
             steps {
                 withDockerContainer(image: NODE_IMAGE, args: "-u root:root") {
                     withCredentials([string(credentialsId: 'snyk_token', variable: 'SNYK_TOKEN')]) {
-                        sh "npx snyk --org=coveo-jsui"
+                        sh "npx snyk test --org=coveo-jsui"
                     }
                 }
             }
