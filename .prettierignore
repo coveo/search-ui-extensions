@@ -10,3 +10,4 @@ node_modules/**/*
 LICENSE
 Jenkinsfile
 .deployment.config
+.cache/**/*
