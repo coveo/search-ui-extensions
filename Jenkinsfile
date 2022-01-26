@@ -1,5 +1,5 @@
 library(
-    identifier: "jenkins-common-lib@v1.6",
+    identifier: "jenkins-common-lib@master",
     retriever: modernSCM(github(credentialsId: "github-app-dev", repository: "jenkins-common-lib", repoOwner: "coveo")),
     changelog: false
 )
