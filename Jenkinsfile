@@ -43,8 +43,10 @@ pipeline {
 
         stage("Snyk") {
             steps {
-                withCredentials([string(credentialsId: 'snyk_token', variable: 'SNYK_TOKEN')]) {
-                    runSnyk(org: "coveo-jsui", directory: ".")
+                withDockerContainer(image: DEPLOY_PIPELINE_IMAGE) {
+                    withCredentials([string(credentialsId: 'snyk_token', variable: 'SNYK_TOKEN')]) {
+                        runSnyk(org: "coveo-jsui", directory: ".")
+                    }
                 }
             }
         }
