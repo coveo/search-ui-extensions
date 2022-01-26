@@ -200,7 +200,6 @@ export class UserActivity extends Component {
 
         if (potentialSessionIndex !== -1) {
             const lastActionInSession = this.sessions[potentialSessionIndex].actions[0];
-            const ispartofthesamesession = this.isPartOfTheSameSession(lastActionInSession, this.options.ticketCreationDateTime);
 
             if (!this.isPartOfTheSameSession(lastActionInSession, this.options.ticketCreationDateTime)) {
                 // If the session before the ticket create is not part of the same session, create a standalone session.
