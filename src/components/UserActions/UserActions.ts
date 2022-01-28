@@ -171,6 +171,7 @@ export class UserActions extends Component {
     public async show() {
         if (!this.isOpened) {
             this.isOpened = true;
+            this.renderLoading();
             this.element.dispatchEvent(new CustomEvent(UserActions.Events.Show));
             this.bindings.usageAnalytics.logCustomEvent(UserActionEvents.open, {}, this.element);
             this.root.classList.add(UserActions.USER_ACTION_OPENED);
@@ -278,6 +279,19 @@ export class UserActions extends Component {
             },
             bindings: this.bindings,
         });
+    }
+
+    private renderLoading() {
+        this.element.innerHTML = '';
+        const loadingElement = document.createElement('div');
+        loadingElement.classList.add('coveo-loading-container');
+        loadingElement.innerHTML = `
+        <div role="status" class="slds-spinner slds-spinner--medium">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>`;
+        this.element.appendChild(loadingElement);
     }
 
     private render() {

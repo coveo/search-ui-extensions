@@ -4,7 +4,7 @@
 $row-height: 6em;
 $path-line-width: 0.05em;
 $headers-gap: 2em;
-$dot-width: $headers-gap / 3;
+$dot-width: calc($headers-gap / 3);
 $font-size: 1em;
 $font-size-titles: 1.2em;
 $font-size-small: 0.8em;
@@ -76,6 +76,12 @@ $clickable-blue: #004990;
         .coveo-main-section {
             display: none;
         }
+    }
+
+    .coveo-loading-container {
+        position: relative;
+        height: 10rem;
+        top: 10rem;
     }
 }
 
