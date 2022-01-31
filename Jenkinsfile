@@ -19,6 +19,7 @@ pipeline {
         DEPLOY_PIPELINE_IMAGE = '458176070654.dkr.ecr.us-east-1.amazonaws.com/jenkins/deployment_package:v7'
         CYPRESS_CACHE_FOLDER = "${WORKSPACE}/.cache/cypress"
         NPM_CONFIG_CACHE = "${WORKSPACE}/.cache/npm"
+        XDG_CONFIG_HOME = "${WORKSPACE}"
     }
 
     stages {
