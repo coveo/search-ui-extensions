@@ -131,6 +131,62 @@ describe('ClickedDocumentList', () => {
         }
     });
 
+    it('should display a tooltip on hover with the origin_level_1', async () => {
+        sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
+
+        const expectedOriginLevel1 = 'tooltip-content';
+        const CLICK_EVENTS = [BUILD_ACTION('foo', 1)];
+        CLICK_EVENTS[0].raw.origin_level_1 = expectedOriginLevel1;
+
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(CLICK_EVENTS));
+                return env;
+            })
+        );
+        await waitForPromiseCompletion();
+
+        const listElement = mock.env.element.querySelector<HTMLElement>('.coveo-list-row');
+        const hoverEvent = new MouseEvent('mouseenter', {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+        });
+        listElement.dispatchEvent(hoverEvent);
+
+        const tooltipElement = mock.env.element.querySelector<HTMLElement>('.coveo-tooltip-origin1');
+        expect(tooltipElement).not.toBeNull();
+        expect(tooltipElement.innerText).toBe(expectedOriginLevel1);
+    });
+
+    it('should not display a tooltip if the origin_level_1 is missing', async () => {
+        sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
+
+        const CLICK_EVENTS = [BUILD_ACTION('foo', 1)];
+        CLICK_EVENTS[0].raw.origin_level_1 = undefined;
+
+        const mock = Mock.advancedComponentSetup<ClickedDocumentList>(
+            ClickedDocumentList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(CLICK_EVENTS));
+                return env;
+            })
+        );
+        await waitForPromiseCompletion();
+
+        const listElement = mock.env.element.querySelector<HTMLElement>('.coveo-list-row');
+        const hoverEvent = new MouseEvent('mouseenter', {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+        });
+        listElement.dispatchEvent(hoverEvent);
+
+        const tooltipElement = mock.env.element.querySelector<HTMLElement>('.coveo-tooltip-origin1');
+        expect(tooltipElement).toBeNull();
+    });
+
     it('should show all documents when expanded', async () => {
         sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
@@ -152,16 +208,16 @@ describe('ClickedDocumentList', () => {
         expect(list.childElementCount).toBe(TEST_CLICKS.length);
     });
 
-    it('should not show the same query twice', async () => {
+    it('should not show the same document twice', async () => {
         // Setup.
         const createComponentInsideStub = sandbox.stub(Initialization, 'automaticallyCreateComponentsInsideResult');
 
         const CLICK_EVENTS = [
-            BUILD_ACTION('someQuery', 4),
-            BUILD_ACTION('someQuery2', 3),
-            BUILD_ACTION('someQuery2', 2),
-            BUILD_ACTION('someQuery2', 1),
-            BUILD_ACTION('someQuery', 0),
+            BUILD_ACTION('someDocument', 4),
+            BUILD_ACTION('someDocument2', 3),
+            BUILD_ACTION('someDocument2', 2),
+            BUILD_ACTION('someDocument2', 1),
+            BUILD_ACTION('someDocument', 0),
         ];
 
         const SORTED_AND_TRIMMED_CLICK_EVENTS = [CLICK_EVENTS[0], CLICK_EVENTS[1]];

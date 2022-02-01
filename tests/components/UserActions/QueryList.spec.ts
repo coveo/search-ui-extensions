@@ -112,6 +112,64 @@ describe('QueryList', () => {
         }
     });
 
+    it('should display a tooltip on hover with the origin_level_1', async () => {
+        const expectedOriginLevel1 = 'tooltip-content';
+        const SEARCH_EVENTS = [
+            new UserAction(
+                UserActionType.Search,
+                new Date(0),
+                { query_expression: 'someQuery', origin_level_1: expectedOriginLevel1 },
+                null,
+                'someQuery'
+            ),
+        ];
+
+        const mock = Mock.advancedComponentSetup<QueryList>(
+            QueryList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(SEARCH_EVENTS));
+                return env;
+            })
+        );
+        await waitForPromiseCompletion();
+
+        const listElement = mock.env.element.querySelector<HTMLElement>('.coveo-list-row');
+        const hoverEvent = new MouseEvent('mouseenter', {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+        });
+        listElement.dispatchEvent(hoverEvent);
+
+        const tooltipElement = mock.env.element.querySelector<HTMLElement>('.coveo-tooltip-origin1');
+        expect(tooltipElement).not.toBeNull();
+        expect(tooltipElement.innerText).toBe(expectedOriginLevel1);
+    });
+
+    it('should not display a tooltip if the origin_level_1 is missing', async () => {
+        const SEARCH_EVENTS = [new UserAction(UserActionType.Search, new Date(0), { query_expression: 'someQuery' }, null, 'someQuery')];
+
+        const mock = Mock.advancedComponentSetup<QueryList>(
+            QueryList,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => Promise.resolve(SEARCH_EVENTS));
+                return env;
+            })
+        );
+        await waitForPromiseCompletion();
+
+        const listElement = mock.env.element.querySelector<HTMLElement>('.coveo-list-row');
+        const hoverEvent = new MouseEvent('mouseenter', {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+        });
+        listElement.dispatchEvent(hoverEvent);
+
+        const tooltipElement = mock.env.element.querySelector<HTMLElement>('.coveo-tooltip-origin1');
+        expect(tooltipElement).toBeNull();
+    });
+
     it('should show all queries when expanded', async () => {
         const mock = Mock.advancedComponentSetup<QueryList>(
             QueryList,
