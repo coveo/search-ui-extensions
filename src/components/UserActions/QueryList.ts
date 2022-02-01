@@ -1,5 +1,5 @@
 import { Component, IComponentBindings, Initialization, ComponentOptions, get, Omnibox, l } from 'coveo-search-ui';
-import { UserProfileModel } from '../../models/UserProfileModel';
+import { UserAction, UserProfileModel } from '../../models/UserProfileModel';
 import { ExpandableList } from './ExpandableList';
 import { search } from '../../utils/icons';
 import './Strings';
@@ -90,7 +90,7 @@ export class QueryList extends Component {
     };
 
     private userProfileModel: UserProfileModel;
-    private sortedQueryList: string[];
+    private sortedQueryList: UserAction[];
 
     /**
      * Create an instance of **QueryList**. Initialize is needed the **UserProfileModel** and fetch user actions related to the **UserId**.
@@ -115,21 +115,26 @@ export class QueryList extends Component {
                 .filter((action) => action.query)
                 .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
                 .reverse()
-                .map((action) => action.query)
-                .reduce(this.removeDuplicateQueries, []);
+                .reduce(this.filterDuplicateQueries, []);
             this.render();
         }, this.logger.error.bind(this.logger));
     }
 
-    private removeDuplicateQueries(acc: string[], query: string): string[] {
-        return acc.indexOf(query) === -1 ? [...acc, query] : acc;
+    private filterDuplicateQueries(accumulator: UserAction[], action: UserAction): UserAction[] {
+        return !accumulator.find((existing) => existing.query === action.query) ? [...accumulator, action] : accumulator;
     }
 
     private render() {
-        new ExpandableList<string>(this.element, this.sortedQueryList, {
+        new ExpandableList<UserAction>(this.element, this.sortedQueryList, {
             maximumItemsShown: this.sortedQueryList.length,
             minimumItemsShown: this.options.numberOfItems,
-            transform: (query: string) => this.options.transform(query).then(this.makeClickable.bind(this, query)),
+            transform: (action: UserAction) =>
+                this.options.transform(action.query).then((element) => {
+                    if (action.raw.origin_level_1) {
+                        this.addTooltipElement(element, action);
+                    }
+                    return this.makeClickable(action.query, element);
+                }),
             listLabel: this.options.listLabel,
             messageWhenEmpty: l(`${QueryList.ID}_no_queries`),
             showMoreMessage: l(`${QueryList.ID}_more`),
@@ -155,6 +160,16 @@ export class QueryList extends Component {
             listItem.style.cursor = 'pointer';
         }
         return listItem;
+    }
+
+    private addTooltipElement(element: HTMLElement, action: UserAction) {
+        const tooltip = document.createElement('div');
+        tooltip.classList.add('coveo-tooltip-origin1');
+        tooltip.innerText = action.raw.origin_level_1;
+
+        const insertBeforeElement = element.querySelector('.coveo-link');
+        const parentNode = insertBeforeElement.parentNode;
+        parentNode.insertBefore(tooltip, insertBeforeElement);
     }
 }
 

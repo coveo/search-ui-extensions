@@ -97,6 +97,7 @@ $clickable-blue: #004990;
         li {
             .coveo-list-row {
                 display: flex;
+                position: relative;
 
                 a {
                     width: calc(100% - #{$icon-container-size});
@@ -115,6 +116,30 @@ $clickable-blue: #004990;
                             width: $icon-size;
                         }
                     }
+                }
+
+                .coveo-tooltip-origin1 {
+                    display: none;
+                    position: absolute;
+                    top: -2.75em;
+                    padding: 8px 12px;
+                    background-color: $clickable-blue;
+                    border-radius: 4px;
+                    color: white;
+                    margin-left: 1.5em;
+
+                    &:after {
+                        position: absolute;
+                        top: 100%;
+                        content: '';
+                        left: 1em;
+                        border: 10px solid $clickable-blue;
+                        border-color: $clickable-blue transparent transparent transparent;
+                    }
+                }
+
+                &:hover .coveo-tooltip-origin1 {
+                    display: flex;
                 }
             }
         }
