@@ -133,6 +133,11 @@ describe('QueryList', () => {
         );
         await waitForPromiseCompletion();
 
+        const tooltipElement = mock.env.element.querySelector<HTMLElement>('.coveo-tooltip-origin1');
+        expect(tooltipElement).not.toBeNull();
+        expect(tooltipElement.innerText).toBe(expectedOriginLevel1);
+        
+        // trigger the hover
         const listElement = mock.env.element.querySelector<HTMLElement>('.coveo-list-row');
         const hoverEvent = new MouseEvent('mouseenter', {
             view: window,
@@ -141,9 +146,8 @@ describe('QueryList', () => {
         });
         listElement.dispatchEvent(hoverEvent);
 
-        const tooltipElement = mock.env.element.querySelector<HTMLElement>('.coveo-tooltip-origin1');
-        expect(tooltipElement).not.toBeNull();
-        expect(tooltipElement.innerText).toBe(expectedOriginLevel1);
+        const pseudo = getComputedStyle(tooltipElement, ':after');
+        expect(pseudo).not.toBeNull();
     });
 
     it('should not display a tooltip if the origin_level_1 is missing', async () => {
@@ -157,14 +161,6 @@ describe('QueryList', () => {
             })
         );
         await waitForPromiseCompletion();
-
-        const listElement = mock.env.element.querySelector<HTMLElement>('.coveo-list-row');
-        const hoverEvent = new MouseEvent('mouseenter', {
-            view: window,
-            bubbles: true,
-            cancelable: true,
-        });
-        listElement.dispatchEvent(hoverEvent);
 
         const tooltipElement = mock.env.element.querySelector<HTMLElement>('.coveo-tooltip-origin1');
         expect(tooltipElement).toBeNull();
