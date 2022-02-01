@@ -150,7 +150,7 @@ describe('ClickedDocumentList', () => {
         const tooltipElement = mock.env.element.querySelector<HTMLElement>('.coveo-tooltip-origin1');
         expect(tooltipElement).not.toBeNull();
         expect(tooltipElement.innerText).toBe(expectedOriginLevel1);
-        
+
         // trigger the hover
         const listElement = mock.env.element.querySelector<HTMLElement>('.coveo-list-row');
         const hoverEvent = new MouseEvent('mouseenter', {
