@@ -140,13 +140,15 @@ export class ClickedDocumentList extends Component {
     }
 
     private addTooltipElement(element: HTMLElement, action: UserAction) {
-        const tooltip = document.createElement('div');
-        tooltip.classList.add('coveo-tooltip-origin1');
-        tooltip.innerText = action.raw.origin_level_1;
-
-        const parentNode = element.querySelector('.CoveoResultLink').parentNode;
         const insertBeforeElement = element.querySelector('.CoveoResultLink');
-        parentNode.insertBefore(tooltip, insertBeforeElement);
+        if (insertBeforeElement) {
+            const tooltip = document.createElement('div');
+            tooltip.classList.add('coveo-tooltip-origin1');
+            tooltip.innerText = action.raw.origin_level_1;
+
+            const parentNode = insertBeforeElement.parentNode;
+            parentNode.insertBefore(tooltip, insertBeforeElement);
+        }
     }
 }
 

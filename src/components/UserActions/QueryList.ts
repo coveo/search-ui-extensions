@@ -163,13 +163,15 @@ export class QueryList extends Component {
     }
 
     private addTooltipElement(element: HTMLElement, action: UserAction) {
-        const tooltip = document.createElement('div');
-        tooltip.classList.add('coveo-tooltip-origin1');
-        tooltip.innerText = action.raw.origin_level_1;
-
         const insertBeforeElement = element.querySelector('.coveo-link');
-        const parentNode = insertBeforeElement.parentNode;
-        parentNode.insertBefore(tooltip, insertBeforeElement);
+        if (insertBeforeElement) {
+            const tooltip = document.createElement('div');
+            tooltip.classList.add('coveo-tooltip-origin1');
+            tooltip.innerText = action.raw.origin_level_1;
+
+            const parentNode = insertBeforeElement.parentNode;
+            parentNode.insertBefore(tooltip, insertBeforeElement);
+        }
     }
 }
 
