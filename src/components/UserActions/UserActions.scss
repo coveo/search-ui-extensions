@@ -133,7 +133,7 @@ $clickable-blue: #004990;
                         top: 100%;
                         content: '';
                         left: 1em;
-                        border: 10px solid $clickable-blue;
+                        border: 10px solid;
                         border-color: $clickable-blue transparent transparent transparent;
                     }
                 }

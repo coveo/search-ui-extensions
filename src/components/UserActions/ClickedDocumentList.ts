@@ -8,7 +8,7 @@ import './Strings';
 /**
  * Initialization options of the **ClickedDocumentList** class.
  */
-export interface IClickedDocumentListOptions {
+export interface IClickedDocumentList {
     /**
      * Number of Clicked Documents shown.
      *
@@ -50,7 +50,7 @@ export class ClickedDocumentList extends Component {
     /**
      * Default initialization options of the **ClickedDocumentList** class.
      */
-    static readonly options: IClickedDocumentListOptions = {
+    static readonly options: IClickedDocumentList = {
         numberOfItems: ComponentOptions.buildNumberOption({
             defaultValue: 3,
             min: 1,
@@ -82,7 +82,7 @@ export class ClickedDocumentList extends Component {
      * @param options Initialization options of the component.
      * @param bindings Bindings of the Search-UI environment.
      */
-    constructor(public element: HTMLElement, public options: IClickedDocumentListOptions, public bindings: IComponentBindings) {
+    constructor(public element: HTMLElement, public options: IClickedDocumentList, public bindings: IComponentBindings) {
         super(element, ClickedDocumentList.ID, bindings);
 
         this.options = ComponentOptions.initComponentOptions(element, ClickedDocumentList, options);
