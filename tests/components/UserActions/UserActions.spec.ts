@@ -293,7 +293,7 @@ describe('UserActions', () => {
             })
         );
         await mock.cmp.show();
-        
+
         const noActions = mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions');
 
         expect(noActions).not.toBeNull();
