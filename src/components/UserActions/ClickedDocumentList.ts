@@ -1,15 +1,4 @@
-import {
-    Component,
-    IComponentBindings,
-    Initialization,
-    ComponentOptions,
-    IQueryResult,
-    Template,
-    HtmlTemplate,
-    QueryUtils,
-    l,
-    get,
-} from 'coveo-search-ui';
+import { Component, IComponentBindings, Initialization, ComponentOptions, Template, HtmlTemplate, QueryUtils, l, get } from 'coveo-search-ui';
 import { UserProfileModel, UserAction } from '../../models/UserProfileModel';
 import { ExpandableList } from './ExpandableList';
 import { UserActionType } from '../../rest/UserProfilingEndpoint';
@@ -84,7 +73,7 @@ export class ClickedDocumentList extends Component {
     };
 
     private userProfileModel: UserProfileModel;
-    private sortedDocumentsList: IQueryResult[];
+    private sortedDocumentsList: UserAction[];
 
     /**
      * Create an instance of **ClickedDocumentList**. Initialize is needed the **UserProfileModel** and fetch user actions related to the **UserId**.
@@ -113,7 +102,7 @@ export class ClickedDocumentList extends Component {
                 .reduce(this.filterDuplicatesClickAction, [])
                 .map((action) => {
                     action.document.searchInterface = this.searchInterface;
-                    return action.document;
+                    return action;
                 });
             this.render();
         }, this.logger.error.bind(this.logger));
@@ -124,19 +113,22 @@ export class ClickedDocumentList extends Component {
     }
 
     private render() {
-        new ExpandableList<IQueryResult>(this.element, this.sortedDocumentsList, {
+        new ExpandableList<UserAction>(this.element, this.sortedDocumentsList, {
             maximumItemsShown: this.sortedDocumentsList.length,
             minimumItemsShown: this.options.numberOfItems,
-            transform: (result) => {
-                QueryUtils.setStateObjectOnQueryResult(this.queryStateModel.get(), result);
-                QueryUtils.setSearchInterfaceObjectOnQueryResult(this.searchInterface, result);
-                return (<Promise<HTMLElement>>this.options.template.instantiateToElement(result, {
+            transform: (action) => {
+                QueryUtils.setStateObjectOnQueryResult(this.queryStateModel.get(), action.document);
+                QueryUtils.setSearchInterfaceObjectOnQueryResult(this.searchInterface, action.document);
+                return (<Promise<HTMLElement>>this.options.template.instantiateToElement(action.document, {
                     wrapInDiv: true,
                     checkCondition: true,
                     currentLayout: 'list',
                     responsiveComponents: this.searchInterface.responsiveComponents,
                 })).then((element) => {
-                    Initialization.automaticallyCreateComponentsInsideResult(element, result);
+                    Initialization.automaticallyCreateComponentsInsideResult(element, action.document);
+                    if (action.raw.origin_level_1) {
+                        this.addTooltipElement(element, action);
+                    }
                     return element;
                 });
             },
@@ -145,6 +137,18 @@ export class ClickedDocumentList extends Component {
             showMoreMessage: l(`${ClickedDocumentList.ID}_more`),
             showLessMessage: l(`${ClickedDocumentList.ID}_less`),
         });
+    }
+
+    private addTooltipElement(element: HTMLElement, action: UserAction) {
+        const insertBeforeElement = element.querySelector('.CoveoResultLink');
+        if (insertBeforeElement) {
+            const tooltip = document.createElement('div');
+            tooltip.classList.add('coveo-tooltip-origin1');
+            tooltip.innerText = action.raw.origin_level_1;
+
+            const parentNode = insertBeforeElement.parentNode;
+            parentNode.insertBefore(tooltip, insertBeforeElement);
+        }
     }
 }
 
