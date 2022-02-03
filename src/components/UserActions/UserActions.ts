@@ -318,7 +318,21 @@ export class UserActions extends Component {
     private renderNoActions() {
         const element = document.createElement('div');
         element.classList.add('coveo-no-actions');
-        element.innerText = l(`${UserActions.ID}_no_actions`);
+        element.innerHTML = `
+        <div class="coveo-user-actions-title">${l(UserActions.ID)}</div>
+        <div>${l(UserActions.ID + '_no_actions_title')}</div>
+        <br/>
+        <div>${l(UserActions.ID + '_no_actions_causes_title')}
+            <ul class="coveo-no-actions-causes">
+                <li>${l(UserActions.ID + '_no_actions_cause_not_enabled')}</li>
+                <li>${l(UserActions.ID + '_no_actions_cause_not_associated')}</li>
+                <li>${l(UserActions.ID + '_no_actions_cause_case_too_old')}</li>
+            </ul>
+        </div>
+        <br/>
+        <div>${l(UserActions.ID + '_no_actions_contact_admin')}</div>
+        `;
+        // element.innerText = l(`${UserActions.ID}_no_actions_title`);
 
         this.element.innerHTML = '';
         this.element.appendChild(element);

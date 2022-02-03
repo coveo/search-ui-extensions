@@ -52,8 +52,24 @@ $clickable-blue: #004990;
     }
 
     .coveo-no-actions {
-        padding: 3em;
-        text-align: center;
+        padding: 1em;
+        border: 1px solid #b5c4cf;
+        border-radius: 2px;
+        background-color: #f7f8f9;
+        height: 15rem;
+        text-align: left;
+
+        .coveo-user-actions-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: left;
+            width: auto;
+            margin-bottom: 1em;
+        }
+
+        .coveo-no-actions-causes {
+            margin: 0.5em 0;
+        }
     }
 
     .coveo-enable-prompt {
