@@ -398,6 +398,36 @@ describe('UserActions', () => {
         });
     });
 
+    it('should show a loading animation while waiting for user actions', async () => {
+        sandbox.stub(Initialization, 'automaticallyCreateComponentsInside');
+
+        const mock = Mock.advancedComponentSetup<UserActions>(
+            UserActions,
+            new Mock.AdvancedComponentSetupOptions(null, { userId: 'testuserId' }, (env) => {
+                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => {
+                    return new Promise<UserAction[]>((resolve, _) => {
+                        myResolve = resolve;
+                    });
+                });
+                return env;
+            })
+        );
+        let myResolve: (value: any[]) => void;
+
+        mock.cmp.show();
+
+        const loadingElement = mock.cmp.element.querySelector('.slds-spinner');
+        expect(loadingElement).not.toBeNull();
+        myResolve([]);
+
+        // Because show is asynchronous, the event completion is not awaited. waitForPromiseCompletion ensure everything is settled.
+        await waitForPromiseCompletion();
+
+        // Loading should be gone after the actions loaded.
+        const loadingElementAfter = mock.cmp.element.querySelector('.slds-spinner');
+        expect(loadingElementAfter).toBeNull();
+    });
+
     describe('show', () => {
         let modelMock: SinonStubbedInstance<UserProfileModel>;
         let mock: Mock.IBasicComponentSetup<UserActions>;
