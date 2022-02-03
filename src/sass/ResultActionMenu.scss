@@ -21,7 +21,7 @@ $tooltip-z-index: 1000;
     svg {
         height: $menu-height;
         width: $menu-height;
-        padding: $menu-height * (1 / 6);
+        padding: $menu-height * calc(1 / 6);
         border: thin solid transparent;
         box-sizing: border-box;
     }
@@ -67,7 +67,7 @@ $tooltip-z-index: 1000;
                 fill: $calypso;
                 height: $menu-height;
                 width: $menu-height;
-                padding: $menu-height * (1 / 6) 0;
+                padding: $menu-height * calc(1 / 6) 0;
                 box-sizing: border-box;
             }
         }
