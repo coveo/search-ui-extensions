@@ -323,8 +323,8 @@ export class UserActions extends Component {
         <div>
             <span>${l(UserActions.ID + '_no_actions_causes_title')}</span>
             <ul class="coveo-no-actions-causes">
-                <li>${l(UserActions.ID + '_no_actions_cause_not_associated')}</li>
-                <li>${l(UserActions.ID + '_no_actions_cause_case_too_old')}</li>
+                <li>${l(UserActions.ID + '_no_actions_cause_not_associated')}.</li>
+                <li>${l(UserActions.ID + '_no_actions_cause_case_too_old')}.</li>
             </ul>
         </div>
         <p>${l(UserActions.ID + '_no_actions_contact_admin')}.</p>
