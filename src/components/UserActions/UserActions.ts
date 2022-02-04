@@ -175,7 +175,6 @@ export class UserActions extends Component {
             this.element.dispatchEvent(new CustomEvent(UserActions.Events.Show));
             this.bindings.usageAnalytics.logCustomEvent(UserActionEvents.open, {}, this.element);
             this.root.classList.add(UserActions.USER_ACTION_OPENED);
-
             try {
                 const userActions = await (get(this.root, UserProfileModel) as UserProfileModel).getActions(this.options.userId);
                 if (userActions.length > 0) {
@@ -316,21 +315,36 @@ export class UserActions extends Component {
     }
 
     private renderNoActions() {
-        const element = document.createElement('div');
-        element.classList.add('coveo-no-actions');
-        element.innerText = l(`${UserActions.ID}_no_actions`);
+        const messageContainer = document.createElement('div');
+        messageContainer.classList.add('coveo-no-actions');
+        messageContainer.innerHTML = `
+        <div class="coveo-user-actions-title">${l(UserActions.ID)}</div>
+        <p>${l(UserActions.ID + '_no_actions_title')}.</p>
+        <div>
+            <span>${l(UserActions.ID + '_no_actions_causes_title')}</span>
+            <ul class="coveo-no-actions-causes">
+                <li>${l(UserActions.ID + '_no_actions_cause_not_associated')}.</li>
+                <li>${l(UserActions.ID + '_no_actions_cause_case_too_old')}.</li>
+            </ul>
+        </div>
+        <p>${l(UserActions.ID + '_no_actions_contact_admin')}.</p>
+        `;
 
         this.element.innerHTML = '';
-        this.element.appendChild(element);
+        this.element.appendChild(messageContainer);
     }
 
     private renderEnablePrompt() {
-        const element = document.createElement('div');
-        element.classList.add('coveo-enable-prompt');
-        element.innerText = l(`${UserActions.ID}_enable_prompt`);
+        const messageContainer = document.createElement('div');
+        messageContainer.classList.add('coveo-no-actions');
+        messageContainer.innerHTML = `
+        <div class="coveo-user-actions-title">${l(UserActions.ID)}</div>
+        <p>${l(UserActions.ID + '_no_actions_cause_not_enabled')}.</p>
+        <p>${l(UserActions.ID + '_no_actions_contact_admin')}.</p>
+        `;
 
         this.element.innerHTML = '';
-        this.element.appendChild(element);
+        this.element.appendChild(messageContainer);
     }
 
     private showViewedByCustomer() {

@@ -276,9 +276,9 @@ describe('UserActions', () => {
         );
         await mock.cmp.show();
 
-        expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-enable-prompt')).not.toBeNull();
-        expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-enable-prompt').innerText).toBe(
-            l(`${UserActions.ID}_enable_prompt`).replace('\n', '')
+        expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions')).not.toBeNull();
+        expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions').innerText).toContain(
+            l(`${UserActions.ID}_no_actions_cause_not_enabled`)
         );
     });
 
@@ -294,8 +294,12 @@ describe('UserActions', () => {
         );
         await mock.cmp.show();
 
-        expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions')).not.toBeNull();
-        expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions').innerText).toBe(l(`${UserActions.ID}_no_actions`));
+        const noActions = mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions');
+
+        expect(noActions).not.toBeNull();
+        expect(noActions.innerText).toContain(l(`${UserActions.ID}_no_actions_title`));
+        expect(noActions.innerText).toContain(l(`${UserActions.ID}_no_actions_cause_not_associated`));
+        expect(noActions.innerText).toContain(l(`${UserActions.ID}_no_actions_cause_case_too_old`));
     });
 
     it('should show a message when actions cannot be gathered', async () => {
@@ -310,7 +314,8 @@ describe('UserActions', () => {
         );
         await mock.cmp.show();
 
-        expect(mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions').innerText).toBe(l(`${UserActions.ID}_no_actions`));
+        const messageEl = mock.cmp.element.querySelector<HTMLElement>('.coveo-no-actions');
+        expect(messageEl.innerText).toContain(l(`${UserActions.ID}_no_actions_title`));
     });
 
     describe('when the accordion header is clicked', () => {
