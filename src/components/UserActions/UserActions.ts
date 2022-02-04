@@ -315,9 +315,9 @@ export class UserActions extends Component {
     }
 
     private renderNoActions() {
-        const element = document.createElement('div');
-        element.classList.add('coveo-no-actions');
-        element.innerHTML = `
+        const messageContainer = document.createElement('div');
+        messageContainer.classList.add('coveo-no-actions');
+        messageContainer.innerHTML = `
         <div class="coveo-user-actions-title">${l(UserActions.ID)}</div>
         <div>${l(UserActions.ID + '_no_actions_title')}.</div>
         <br/>
@@ -332,13 +332,13 @@ export class UserActions extends Component {
         `;
 
         this.element.innerHTML = '';
-        this.element.appendChild(element);
+        this.element.appendChild(messageContainer);
     }
 
     private renderEnablePrompt() {
-        const element = document.createElement('div');
-        element.classList.add('coveo-no-actions');
-        element.innerHTML = `
+        const messageContainer = document.createElement('div');
+        messageContainer.classList.add('coveo-no-actions');
+        messageContainer.innerHTML = `
         <div class="coveo-user-actions-title">${l(UserActions.ID)}</div>
         <div>${l(UserActions.ID + '_no_actions_cause_not_enabled')}.</div>
         <br/>
@@ -346,7 +346,7 @@ export class UserActions extends Component {
         `;
 
         this.element.innerHTML = '';
-        this.element.appendChild(element);
+        this.element.appendChild(messageContainer);
     }
 
     private showViewedByCustomer() {

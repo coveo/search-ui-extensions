@@ -298,6 +298,8 @@ describe('UserActions', () => {
 
         expect(noActions).not.toBeNull();
         expect(noActions.innerText).toContain(l(`${UserActions.ID}_no_actions_title`));
+        expect(noActions.innerText).toContain(l(`${UserActions.ID}_no_actions_cause_not_associated`));
+        expect(noActions.innerText).toContain(l(`${UserActions.ID}_no_actions_cause_case_too_old`));
     });
 
     it('should show a message when actions cannot be gathered', async () => {
