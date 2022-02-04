@@ -319,16 +319,15 @@ export class UserActions extends Component {
         messageContainer.classList.add('coveo-no-actions');
         messageContainer.innerHTML = `
         <div class="coveo-user-actions-title">${l(UserActions.ID)}</div>
-        <div>${l(UserActions.ID + '_no_actions_title')}.</div>
-        <br/>
-        <div>${l(UserActions.ID + '_no_actions_causes_title')}
+        <p>${l(UserActions.ID + '_no_actions_title')}.</p>
+        <div>
+            <span>${l(UserActions.ID + '_no_actions_causes_title')}</span>
             <ul class="coveo-no-actions-causes">
                 <li>${l(UserActions.ID + '_no_actions_cause_not_associated')}</li>
                 <li>${l(UserActions.ID + '_no_actions_cause_case_too_old')}</li>
             </ul>
         </div>
-        <br/>
-        <div>${l(UserActions.ID + '_no_actions_contact_admin')}.</div>
+        <p>${l(UserActions.ID + '_no_actions_contact_admin')}.</p>
         `;
 
         this.element.innerHTML = '';
@@ -340,9 +339,8 @@ export class UserActions extends Component {
         messageContainer.classList.add('coveo-no-actions');
         messageContainer.innerHTML = `
         <div class="coveo-user-actions-title">${l(UserActions.ID)}</div>
-        <div>${l(UserActions.ID + '_no_actions_cause_not_enabled')}.</div>
-        <br/>
-        <div>${l(UserActions.ID + '_no_actions_contact_admin')}.</div>
+        <p>${l(UserActions.ID + '_no_actions_cause_not_enabled')}.</p>
+        <p>${l(UserActions.ID + '_no_actions_contact_admin')}.</p>
         `;
 
         this.element.innerHTML = '';
