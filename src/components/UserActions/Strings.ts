@@ -23,6 +23,8 @@ Translation.register(Language.English, {
     UserActivity_duration: 'Duration',
     UserActivity_other_event: 'Other Event',
     UserActivity_other_events: 'Other Events',
+    UserActivity_no_actions_timeline: 'No actions to display in the timeline',
+    UserActivity_no_actions_cause_filtered: 'All the actions were filtered',
 
     UserActivity_search: 'Query',
     UserActivity_query: 'User Query',

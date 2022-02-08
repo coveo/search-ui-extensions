@@ -107,6 +107,12 @@ export class UserActivity extends Component {
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
 
         this.userProfileModel.getActions(this.options.userId).then((actions) => {
+            const FAKE_EVENT_CUSTOM = new UserAction(UserActionType.Custom, new Date(), {
+                event_type: 'ticket_field_update',
+                event_value: 'caseDetach',
+                origin_level_1: 'foo',
+            });
+            actions = [FAKE_EVENT_CUSTOM];
             const sortMostRecentFirst = (a: UserAction, b: UserAction) => b.timestamp.getTime() - a.timestamp.getTime();
             const sortedActions = actions.sort(sortMostRecentFirst);
 
@@ -185,8 +191,12 @@ export class UserActivity extends Component {
                 console.warn(`Could not find a user action session corresponding to this date: ${this.options.ticketCreationDateTime}.`);
             }
         }
-        this.sessionsToDisplay = this.sessions.slice(0, 5);
-        this.sessionsToDisplay[0].expanded = true;
+        if (this.sessions.length > 0) {
+            this.sessionsToDisplay = this.sessions.slice(0, 5);
+            this.sessionsToDisplay[0].expanded = true;
+        } else {
+            this.sessionsToDisplay = [];
+        }
     }
 
     private buildTicketCreatedAction(): UserAction {
@@ -257,17 +267,36 @@ export class UserActivity extends Component {
     }
 
     private buildActivitySection(): HTMLElement {
-        const list = document.createElement('ol');
+        if (this.sessionsToDisplay.length > 0) {
+            const list = document.createElement('ol');
 
-        const sessionsBuilt = this.buildSessionsItems(this.sessionsToDisplay);
+            const sessionsBuilt = this.buildSessionsItems(this.sessionsToDisplay);
 
-        sessionsBuilt.forEach((sessionItem) => {
-            if (sessionItem) {
-                list.appendChild(sessionItem);
-            }
-        });
+            sessionsBuilt.forEach((sessionItem) => {
+                if (sessionItem) {
+                    list.appendChild(sessionItem);
+                }
+            });
 
-        return list;
+            return list;
+        } else {
+            return this.buildNoActionsMessage();
+        }
+    }
+
+    private buildNoActionsMessage(): HTMLElement {
+        const noActionsDiv = document.createElement('div');
+        noActionsDiv.innerHTML = `
+        <p>${l(UserActivity.ID + '_no_actions_timeline')}.</p>
+        <div>
+            <span>${l('UserActions_no_actions_causes_title')}</span>
+            <ul class="coveo-no-actions-causes">
+                <li>${l('UserActions_no_actions_cause_not_associated')}.</li>
+                <li>${l(UserActivity.ID + '_no_actions_cause_filtered')}.</li>
+            </ul>
+        </div>
+        <p>${l('UserActions_no_actions_contact_admin')}.</p>`;
+        return noActionsDiv;
     }
 
     private buildSessionsItems(sessions: UserActionSession[]): HTMLElement[] {
