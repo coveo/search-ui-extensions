@@ -107,12 +107,6 @@ export class UserActivity extends Component {
         this.userProfileModel = get(this.root, UserProfileModel) as UserProfileModel;
 
         this.userProfileModel.getActions(this.options.userId).then((actions) => {
-            const FAKE_EVENT_CUSTOM = new UserAction(UserActionType.Custom, new Date(), {
-                event_type: 'ticket_field_update',
-                event_value: 'caseDetach',
-                origin_level_1: 'foo',
-            });
-            actions = [FAKE_EVENT_CUSTOM];
             const sortMostRecentFirst = (a: UserAction, b: UserAction) => b.timestamp.getTime() - a.timestamp.getTime();
             const sortedActions = actions.sort(sortMostRecentFirst);
 
