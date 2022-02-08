@@ -37,6 +37,13 @@ export interface IUserActivityOptions {
      * - a JavaScript Date
      */
     ticketCreationDateTime: Date;
+
+    /**
+     * List of causes or event types to exclude from custom events being displayed.
+     *
+     * Default: `[ticket_create_start, ticket_field_update, ticket_next_stage, ticket_classification_click]`
+     */
+    customActionsExclude: string[];
 }
 
 const MAIN_CLASS = 'coveo-user-activity';
@@ -59,6 +66,10 @@ export class UserActivity extends Component {
     static readonly ID = 'UserActivity';
     static readonly options: IUserActivityOptions = {
         userId: ComponentOptions.buildStringOption({ required: true }),
+        customActionsExclude: ComponentOptions.buildListOption({
+            defaultValue: ['ticket_create_start', 'ticket_field_update', 'ticket_next_stage', 'ticket_classification_click'],
+            required: true,
+        }),
         ticketCreationDateTime: ComponentOptions.buildCustomOption<Date>((value: string) => UserActivity.parseDate(value), {
             required: false,
         }),
@@ -97,9 +108,13 @@ export class UserActivity extends Component {
 
         this.userProfileModel.getActions(this.options.userId).then((actions) => {
             const sortMostRecentFirst = (a: UserAction, b: UserAction) => b.timestamp.getTime() - a.timestamp.getTime();
-
             const sortedActions = actions.sort(sortMostRecentFirst);
-            this.sessions = this.splitActionsBySessions(sortedActions);
+
+            let filteredActions = sortedActions;
+            if (this.options.customActionsExclude && this.options.customActionsExclude.length > 0) {
+                filteredActions = actions.filter((action) => this.filterActions(action));
+            }
+            this.sessions = this.splitActionsBySessions(filteredActions);
 
             this.buildSessionsToDisplay();
 
@@ -114,6 +129,19 @@ export class UserActivity extends Component {
             console.warn(l(`${UserActivity.ID}_invalidDate`) + ` '${value}'`);
             return null;
         }
+    }
+
+    private filterActions(action: UserAction): boolean {
+        const eventValue = action.raw.event_value || '';
+        const eventType = action.raw.event_type || '';
+        if (action.type === UserActionType.Custom) {
+            return (
+                action.type === UserActionType.Custom &&
+                !this.options.customActionsExclude.includes(eventValue) &&
+                !this.options.customActionsExclude.includes(eventType)
+            );
+        }
+        return true;
     }
 
     private isPartOfTheSameSession = (action: UserAction, previousDateTime: Date): boolean => {
