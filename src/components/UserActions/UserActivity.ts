@@ -108,11 +108,11 @@ export class UserActivity extends Component {
 
         this.userProfileModel.getActions(this.options.userId).then((actions) => {
             const sortMostRecentFirst = (a: UserAction, b: UserAction) => b.timestamp.getTime() - a.timestamp.getTime();
-            const sortedActions = actions.sort(sortMostRecentFirst);
+            const sortedActions = [...actions].sort(sortMostRecentFirst);
 
             let filteredActions = sortedActions;
             if (this.options.customActionsExclude && this.options.customActionsExclude.length > 0) {
-                filteredActions = actions.filter((action) => this.filterActions(action));
+                filteredActions = sortedActions.filter((action) => this.filterActions(action));
             }
             this.sessions = this.splitActionsBySessions(filteredActions);
 
@@ -132,16 +132,13 @@ export class UserActivity extends Component {
     }
 
     private filterActions(action: UserAction): boolean {
+        return action.type !== UserActionType.Custom || !this.shouldExcludeCustomAction(action);
+    }
+
+    private shouldExcludeCustomAction(action: UserAction): boolean {
         const eventValue = action.raw.event_value || '';
         const eventType = action.raw.event_type || '';
-        if (action.type === UserActionType.Custom) {
-            return (
-                action.type === UserActionType.Custom &&
-                !this.options.customActionsExclude.includes(eventValue) &&
-                !this.options.customActionsExclude.includes(eventType)
-            );
-        }
-        return true;
+        return this.options.customActionsExclude.includes(eventValue) || this.options.customActionsExclude.includes(eventType);
     }
 
     private isPartOfTheSameSession = (action: UserAction, previousDateTime: Date): boolean => {

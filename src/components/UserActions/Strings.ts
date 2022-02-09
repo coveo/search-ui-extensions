@@ -3,7 +3,7 @@ import { Translation, Language } from '../../utils/translation';
 Translation.register(Language.English, {
     UserActions: 'User Actions',
     UserActions_no_actions_title: 'No actions available for this user',
-    UserActions_no_actions_causes_title: 'Potential causes',
+    UserActions_no_actions_causes_title: 'Possible causes',
     UserActions_no_actions_cause_not_enabled: 'User actions are not enabled for your organization',
     UserActions_no_actions_cause_not_associated: 'There are no user actions associated with the user',
     UserActions_no_actions_cause_case_too_old: 'The case is too old to detect related actions',
