@@ -9,7 +9,7 @@
         "moduleResolution": "node",
         "sourceMap": true,
         "skipLibCheck": true,
-        "lib": ["es2015", "dom", "es2018.promise"],
+        "lib": ["es2015", "es2016", "dom", "es2018.promise"],
         "outDir": "../bin/es6",
         "declaration": true,
         "declarationDir": "../bin/typings",

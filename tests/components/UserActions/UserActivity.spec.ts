@@ -58,16 +58,21 @@ describe('UserActivity', () => {
     const getMockComponent = async (
         returnedActions: UserAction | UserAction[],
         ticketCreationDateTime: Date | string | number,
+        customActionsExclude: string[] | null = null,
         element = document.createElement('div')
     ) => {
         const mock = Mock.advancedComponentSetup<UserActivity>(
             UserActivity,
-            new Mock.AdvancedComponentSetupOptions(element, { userId: 'testuserId', ticketCreationDateTime: ticketCreationDateTime }, (env) => {
-                env.element = element;
-                getActionsPromise = Promise.resolve(returnedActions);
-                fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => getActionsPromise);
-                return env;
-            })
+            new Mock.AdvancedComponentSetupOptions(
+                element,
+                { userId: 'testuserId', ticketCreationDateTime: ticketCreationDateTime, customActionsExclude: customActionsExclude },
+                (env) => {
+                    env.element = element;
+                    getActionsPromise = Promise.resolve(returnedActions);
+                    fakeUserProfileModel(env.root, sandbox).getActions.callsFake(() => getActionsPromise);
+                    return env;
+                }
+            )
         );
         await getActionsPromise;
         return mock;
@@ -434,6 +439,51 @@ describe('UserActivity', () => {
                 const actionEl = mock.cmp.element.querySelector<HTMLElement>(ACTION_CUSTOM_SELECTOR);
                 const actionFooterEl = actionEl.querySelector(ACTION_FOOTER_SELECTOR);
                 expect(actionFooterEl.innerHTML).toMatch(FAKE_EVENT_CUSTOM.raw.origin_level_1);
+            });
+
+            describe('customActionsExclude option', () => {
+                it('should exclude events respecting the default value', async () => {
+                    const customEventShouldBeExcluded = {
+                        ...FAKE_EVENT_CUSTOM,
+                        raw: {
+                            ...FAKE_EVENT_CUSTOM.raw,
+                            event_value: 'ticket_field_update',
+                        },
+                    };
+                    const customEventShouldNotBeExcluded = FAKE_EVENT_CUSTOM;
+
+                    const mock = await getMockComponent([customEventShouldBeExcluded, customEventShouldNotBeExcluded], null);
+
+                    const customActionsElements = mock.cmp.element.querySelectorAll<HTMLElement>(ACTION_CUSTOM_SELECTOR);
+                    expect(customActionsElements.length).toBe(1);
+                    const actionTitleEl = customActionsElements[0].querySelector(ACTION_TITLE_SELECTOR);
+                    expect(actionTitleEl.innerHTML).toBe(FAKE_EVENT_CUSTOM.raw.event_value);
+                });
+
+                it('should respect changing the default values', async () => {
+                    const customEventShouldBeExcluded = {
+                        ...FAKE_EVENT_CUSTOM,
+                        raw: {
+                            ...FAKE_EVENT_CUSTOM.raw,
+                            event_value: 'foo',
+                        },
+                    };
+
+                    const customEventShouldNotBeExcluded = {
+                        ...FAKE_EVENT_CUSTOM,
+                        raw: {
+                            ...FAKE_EVENT_CUSTOM.raw,
+                            event_value: 'ticket_field_update',
+                        },
+                    };
+
+                    const mock = await getMockComponent([customEventShouldBeExcluded, customEventShouldNotBeExcluded], null, ['foo']);
+
+                    const customActionsElements = mock.cmp.element.querySelectorAll<HTMLElement>(ACTION_CUSTOM_SELECTOR);
+                    expect(customActionsElements.length).toBe(1);
+                    const actionTitleEl = customActionsElements[0].querySelector(ACTION_TITLE_SELECTOR);
+                    expect(actionTitleEl.innerHTML).toBe('ticket_field_update');
+                });
             });
         });
     });

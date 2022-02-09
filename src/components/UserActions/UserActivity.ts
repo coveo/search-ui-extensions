@@ -37,6 +37,13 @@ export interface IUserActivityOptions {
      * - a JavaScript Date
      */
     ticketCreationDateTime: Date;
+
+    /**
+     * List of causes or event types to exclude from custom events being displayed.
+     *
+     * Default: `[ticket_create_start, ticket_field_update, ticket_next_stage, ticket_classification_click]`
+     */
+    customActionsExclude: string[];
 }
 
 const MAIN_CLASS = 'coveo-user-activity';
@@ -59,6 +66,10 @@ export class UserActivity extends Component {
     static readonly ID = 'UserActivity';
     static readonly options: IUserActivityOptions = {
         userId: ComponentOptions.buildStringOption({ required: true }),
+        customActionsExclude: ComponentOptions.buildListOption({
+            defaultValue: ['ticket_create_start', 'ticket_field_update', 'ticket_next_stage', 'ticket_classification_click'],
+            required: true,
+        }),
         ticketCreationDateTime: ComponentOptions.buildCustomOption<Date>((value: string) => UserActivity.parseDate(value), {
             required: false,
         }),
@@ -97,9 +108,13 @@ export class UserActivity extends Component {
 
         this.userProfileModel.getActions(this.options.userId).then((actions) => {
             const sortMostRecentFirst = (a: UserAction, b: UserAction) => b.timestamp.getTime() - a.timestamp.getTime();
+            const sortedActions = [...actions].sort(sortMostRecentFirst);
 
-            const sortedActions = actions.sort(sortMostRecentFirst);
-            this.sessions = this.splitActionsBySessions(sortedActions);
+            let filteredActions = sortedActions;
+            if (this.options.customActionsExclude && this.options.customActionsExclude.length > 0) {
+                filteredActions = sortedActions.filter((action) => this.filterActions(action));
+            }
+            this.sessions = this.splitActionsBySessions(filteredActions);
 
             this.buildSessionsToDisplay();
 
@@ -114,6 +129,16 @@ export class UserActivity extends Component {
             console.warn(l(`${UserActivity.ID}_invalidDate`) + ` '${value}'`);
             return null;
         }
+    }
+
+    private filterActions(action: UserAction): boolean {
+        return action.type !== UserActionType.Custom || !this.shouldExcludeCustomAction(action);
+    }
+
+    private shouldExcludeCustomAction(action: UserAction): boolean {
+        const eventValue = action.raw.event_value || '';
+        const eventType = action.raw.event_type || '';
+        return this.options.customActionsExclude.includes(eventValue) || this.options.customActionsExclude.includes(eventType);
     }
 
     private isPartOfTheSameSession = (action: UserAction, previousDateTime: Date): boolean => {
@@ -157,8 +182,12 @@ export class UserActivity extends Component {
                 console.warn(`Could not find a user action session corresponding to this date: ${this.options.ticketCreationDateTime}.`);
             }
         }
-        this.sessionsToDisplay = this.sessions.slice(0, 5);
-        this.sessionsToDisplay[0].expanded = true;
+        if (this.sessions.length > 0) {
+            this.sessionsToDisplay = this.sessions.slice(0, 5);
+            this.sessionsToDisplay[0].expanded = true;
+        } else {
+            this.sessionsToDisplay = [];
+        }
     }
 
     private buildTicketCreatedAction(): UserAction {
@@ -229,17 +258,36 @@ export class UserActivity extends Component {
     }
 
     private buildActivitySection(): HTMLElement {
-        const list = document.createElement('ol');
+        if (this.sessionsToDisplay.length > 0) {
+            const list = document.createElement('ol');
 
-        const sessionsBuilt = this.buildSessionsItems(this.sessionsToDisplay);
+            const sessionsBuilt = this.buildSessionsItems(this.sessionsToDisplay);
 
-        sessionsBuilt.forEach((sessionItem) => {
-            if (sessionItem) {
-                list.appendChild(sessionItem);
-            }
-        });
+            sessionsBuilt.forEach((sessionItem) => {
+                if (sessionItem) {
+                    list.appendChild(sessionItem);
+                }
+            });
 
-        return list;
+            return list;
+        } else {
+            return this.buildNoActionsMessage();
+        }
+    }
+
+    private buildNoActionsMessage(): HTMLElement {
+        const noActionsDiv = document.createElement('div');
+        noActionsDiv.innerHTML = `
+        <p>${l(UserActivity.ID + '_no_actions_timeline')}.</p>
+        <div>
+            <span>${l('UserActions_no_actions_causes_title')}</span>
+            <ul class="coveo-no-actions-causes">
+                <li>${l('UserActions_no_actions_cause_not_associated')}.</li>
+                <li>${l(UserActivity.ID + '_no_actions_cause_filtered')}.</li>
+            </ul>
+        </div>
+        <p>${l('UserActions_no_actions_contact_admin')}.</p>`;
+        return noActionsDiv;
     }
 
     private buildSessionsItems(sessions: UserActionSession[]): HTMLElement[] {
