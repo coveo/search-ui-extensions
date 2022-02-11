@@ -30,7 +30,7 @@ jobs:
             - run: npm run build
             - run: npm run testCoverage
               env:
-                  COVERALLS_REPO_TOKEN : ${{ secrets.COVERALLS_TOKEN }}
+                  COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
             - run: npm publish
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
