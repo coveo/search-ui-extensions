@@ -28,5 +28,5 @@ jobs:
             - run: npm run build
             - run: npm run testCoverage
             - run: npm publish
-                env:
-                    NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
