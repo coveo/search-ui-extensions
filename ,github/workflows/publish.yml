@@ -1,4 +1,4 @@
-name: "Publish on NPM"
+name: 'Publish on NPM'
 
 on:
     push:
@@ -7,7 +7,7 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
-        
+
         strategy:
             matrix:
                 node-version: [16.x]
@@ -29,7 +29,7 @@ jobs:
     test:
         needs: build
         runs-on: ubuntu-latest
-        steps: 
+        steps:
             - run: npm run testCoverage
 
     publish:
