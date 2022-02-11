@@ -31,6 +31,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - run: npm run testCoverage
+            - name: Coveralls
+              uses: coverallsapp/github-action@master
+              with:
+                  github-token: ${{ secrets.COVERALLS_TOKEN }}
 
     publish:
         needs: test
