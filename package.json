@@ -61,7 +61,6 @@
         "@types/mocha": "^7.0.1",
         "@types/node": "^11.11.3",
         "@types/sinon": "^7.0.13",
-        "coveo-search-ui": "^2.10089.4",
         "coveo-search-ui-tests": "0.0.7",
         "coveralls": "^3.0.3",
         "cypress": "^4.12.1",
@@ -92,6 +91,9 @@
         "webpack-dev-server": "^3.11.0",
         "webpack-karma-die-hard": "^1.0.4",
         "xml2js": "^0.4.23"
+    },
+    "dependencies": {
+        "coveo-search-ui": "^2.10089.4"
     },
     "snyk": true
 }
