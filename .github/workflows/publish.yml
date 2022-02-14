@@ -1,8 +1,8 @@
 name: 'Publish on NPM'
 
 on:
-    push:
-        release: [created]
+    release:
+        types: [created]
     # trigger manually
     workflow_dispatch:
 
