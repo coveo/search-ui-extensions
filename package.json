@@ -54,6 +54,10 @@
         "starter",
         "seed"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/coveo/search-ui-extensions.git"
+    },
     "devDependencies": {
         "@cypress/webpack-preprocessor": "^4.1.2",
         "@types/chai": "^4.2.9",
