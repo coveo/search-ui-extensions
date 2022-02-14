@@ -32,5 +32,5 @@ jobs:
               env:
                   COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
             - run: |
-                npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_PUBLISH_TOKEN }}
-                npm publish
+                  npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_PUBLISH_TOKEN }}
+                  npm publish
