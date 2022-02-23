@@ -72,7 +72,7 @@ export class TopQueries extends Component {
         this.options = ComponentOptions.initComponentOptions(element, TopQueries, options);
 
         const titleElem = document.createElement('h2');
-        titleElem.innerHTML = options.title;
+        titleElem.innerText = options.title;
 
         this.listElem = document.createElement('ul');
 

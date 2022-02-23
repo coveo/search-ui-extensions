@@ -15,7 +15,7 @@ const DEFAULT_TRANSFORMATION = () => (query: string) => {
 
     const link = document.createElement('a');
     link.classList.add('coveo-link');
-    link.innerHTML = query;
+    link.innerText = query;
 
     container.appendChild(icon);
     container.appendChild(link);
