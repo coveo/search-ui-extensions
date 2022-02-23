@@ -124,6 +124,8 @@ $clickable-blue: #004990;
                 a {
                     width: calc(100% - #{$icon-container-size});
                     margin-bottom: 7px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
 
                 .coveo-row-icon {
@@ -273,6 +275,8 @@ $clickable-blue: #004990;
                 vertical-align: top;
                 text-align: left;
                 display: table-cell;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             .coveo-activity-timestamp {

@@ -434,6 +434,7 @@ export class UserActivity extends Component {
         const clickedURLElement = document.createElement('a');
         clickedURLElement.classList.add(ACTIVITY_TITLE_CLASS);
         clickedURLElement.innerText = (action.document && action.document.title) || '';
+        clickedURLElement.title = (action.document && action.document.title) || '';
         clickedURLElement.href = (action.document && action.document.clickUri) || '';
         titleSection.appendChild(clickedURLElement);
 
@@ -506,6 +507,7 @@ export class UserActivity extends Component {
         const el = document.createElement('div');
         el.classList.add(ACTIVITY_TITLE_CLASS);
         el.innerText = content;
+        el.title = content;
         return el;
     }
 
