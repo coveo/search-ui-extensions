@@ -44,7 +44,7 @@ $clickable-blue: #004990;
     padding: 0;
     background-color: $background-color-white;
 
-    >h1 {
+    > h1 {
         color: $coveo-blue-6;
         font-size: 2em;
         font-weight: bold;
@@ -132,7 +132,7 @@ $clickable-blue: #004990;
                     position: relative;
                     width: $icon-container-size;
 
-                    &> {
+                    & > {
                         svg {
                             position: absolute;
                             top: 2px;
@@ -258,7 +258,7 @@ $clickable-blue: #004990;
                 font-size: $font-size-small;
             }
 
-            &>.coveo-icon>svg {
+            & > .coveo-icon > svg {
                 font-size: 0.5em;
                 fill: $clickable-blue;
             }
@@ -346,13 +346,13 @@ $clickable-blue: #004990;
                 height: 1.5em;
                 width: 1.5em;
 
-                &>svg {
+                & > svg {
                     height: 1.5em;
                     width: 1.5em;
                 }
             }
 
-            &>div {
+            & > div {
                 padding-bottom: 0.5em;
             }
 
