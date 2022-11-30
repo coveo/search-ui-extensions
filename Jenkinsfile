@@ -15,7 +15,7 @@ pipeline {
         timeout(time: 1, unit: "HOURS")
     }
     environment {
-        NODE_IMAGE = "node:lts"
+        NODE_IMAGE = "node:16"
         DEPLOY_PIPELINE_IMAGE = '458176070654.dkr.ecr.us-east-1.amazonaws.com/jenkins/deployment_package:v7'
         CYPRESS_CACHE_FOLDER = "${WORKSPACE}/.cache/cypress"
         NPM_CONFIG_CACHE = "${WORKSPACE}/.cache/npm"
