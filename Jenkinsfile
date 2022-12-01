@@ -57,7 +57,7 @@ pipeline {
             }
             steps {
                 sh "mkdir -p s3/${TAG_NAME}"
-                sh "cp -r bin/commonjs bin/css bin/es6 bin/img bin/typings s3/${TAG_NAME}"
+                sh "cp -r bin/commonjs bin/css bin/es6 bin/img bin/typings s3/searchuiextensions/${TAG_NAME}"
 
                 script {
                     deploymentPackage.command(
