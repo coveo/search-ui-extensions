@@ -95,5 +95,8 @@
         "webpack-dev-server": "^3.11.0",
         "xml2js": "^0.4.23"
     },
-    "snyk": true
+    "snyk": true,
+    "overrides": {
+        "@babel/traverse": "^7.23.2"
+    }
 }
