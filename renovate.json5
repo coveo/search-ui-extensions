@@ -1,0 +1,13 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": ["github>coveo-platform/renovate-presets", "schedule:earlyMondays"],
+    "dependencyDashboard": true,
+    "internalChecksFilter": "strict",
+    "updatePinnedDependencies": false,
+    "packageRules": [
+        {
+            "matchDatasources": ["npm"],
+            "minimumReleaseAge": "7 days"
+        }
+    ]
+}
