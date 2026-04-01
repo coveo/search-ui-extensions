@@ -16,7 +16,7 @@
     ],
     "scripts": {
         "test": "karma start ./config/karma.config.js --single-run",
-        "testCoverage": "npm run test && cat ./bin/coverage/lcov.info | node ./node_modules/coveralls/bin/coveralls.js",
+        "testCoverage": "npm run test",
         "build": "npm run setup && npm run css && npm run build-es && npm run svg && npm run build-commonjs",
         "build-es": "tsc -p ./config/",
         "build-commonjs": "webpack --config ./config/webpack.config.js",
@@ -31,9 +31,6 @@
         "snyk-protect": "snyk protect",
         "prepare": "npm run snyk-protect"
     },
-    "pre-commit": [
-        "lint-fix"
-    ],
     "files": [
         "bin/commonjs/**/*",
         "bin/es6/**/*",
@@ -67,10 +64,9 @@
         "@types/sinon": "^7.0.13",
         "coveo-search-ui": "^2.10089.4",
         "coveo-search-ui-tests": "0.0.7",
-        "coveralls": "^3.0.3",
         "cypress": "^4.12.1",
         "istanbul-instrumenter-loader": "^3.0.1",
-        "jasmine": "3.6.1",
+        "jasmine": "^3.99.0",
         "karma": "^6.4.1",
         "karma-chrome-launcher": "^3.1.0",
         "karma-coverage-istanbul-reporter": "^2.0.5",
@@ -79,7 +75,6 @@
         "karma-spec-reporter": "0.0.32",
         "karma-webpack": "^4.0.0",
         "ncp": "^2.0.0",
-        "pre-commit": "^1.2.2",
         "prettier": "2.0.5",
         "puppeteer": "^2.0.0",
         "raw-loader": "^1.0.0",
