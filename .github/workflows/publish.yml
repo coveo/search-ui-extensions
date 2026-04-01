@@ -7,7 +7,7 @@ on:
     workflow_dispatch:
 
 permissions:
-  contents: read
+    contents: read
 
 jobs:
     publish:
@@ -22,7 +22,7 @@ jobs:
             - name: Harden the runner (Audit all outbound calls)
               uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
               with:
-                egress-policy: audit
+                  egress-policy: audit
 
             - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 #v2
             - name: Use Node.js ${{ matrix.node-version }}
@@ -37,8 +37,6 @@ jobs:
             - run: npm ci
             - run: npm run build
             - run: npm run testCoverage
-              env:
-                  COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
             - run: npm publish --access public
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
