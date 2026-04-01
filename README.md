@@ -2,7 +2,6 @@
 
 [![Build Status](https://travis-ci.org/coveo/search-ui-extensions.svg?branch=master)](https://travis-ci.org/coveo/search-ui-extensions)
 [![NPM Version](https://img.shields.io/npm/v/coveo-search-ui-extensions.svg)](https://www.npmjs.com/package/coveo-search-ui-extensions)
-[![Coverage Status](https://coveralls.io/repos/github/coveo/search-ui-extensions/badge.svg?branch=master)](https://coveralls.io/github/coveo/search-ui-extensions?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/github/coveo/search-ui-extensions/badge.svg?targetFile=package.json)](https://snyk.io/test/github/coveo/search-ui-extensions?targetFile=package.json)
 
 This repository contains new components meant to be used in conjunction with the [Coveo Javascript Search Framework](https://github.com/coveo/search-ui) to provide additional functionalities.
