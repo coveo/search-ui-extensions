@@ -64,7 +64,7 @@
         "@types/sinon": "^7.0.13",
         "coveo-search-ui": "^2.10089.4",
         "coveo-search-ui-tests": "0.0.7",
-        "cypress": "^4.12.1",
+        "cypress": "^15.0.0",
         "istanbul-instrumenter-loader": "^3.0.1",
         "jasmine": "^3.99.0",
         "karma": "^6.4.1",
