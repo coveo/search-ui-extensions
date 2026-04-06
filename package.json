@@ -60,7 +60,7 @@
         "@types/chai": "^4.2.9",
         "@types/jasmine": "^3.3.9",
         "@types/mocha": "^7.0.1",
-        "@types/node": "^11.11.3",
+        "@types/node": "^24.0.0",
         "@types/sinon": "^7.0.13",
         "coveo-search-ui": "^2.10089.4",
         "coveo-search-ui-tests": "0.0.7",
